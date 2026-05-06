@@ -4,9 +4,10 @@
 FROM node:24-alpine AS builder
 WORKDIR /app
 
-# Install dependencies using lockfile when available for reproducible builds
+# Install dependencies (npm install handles cross-platform optional deps
+# that npm ci rejects when lock file was generated on a different OS)
 COPY package*.json ./
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+RUN npm install
 
 # Copy the rest of the app and build
 COPY . .
