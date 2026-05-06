@@ -491,7 +491,7 @@ function validateStlVatCoverage(msg: ParsedMessage): void {
     if (isNaN(declaredCount)) continue
 
     // Count ILD lines with this VAT code (including mixed-rate component lines)
-    let actualCount = ildVatCounts.get(vatCode) ?? 0
+    const actualCount = ildVatCounts.get(vatCode) ?? 0
 
     // Also count mixed-rate 'A' lines that have MIXI=2 for S, MIXI=1 for Z
     // (mixed-rate items generate component ILD lines with the real code,
