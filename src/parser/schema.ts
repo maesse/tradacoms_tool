@@ -611,7 +611,14 @@ const ildSegment: SegmentDef = seg(
       sub(1, "Customer's item code", '', 'C', 'V', 'X(30)'),
     ]),
     elem('UNOR', 'Unit of ordering', '', 'C', '+', [
-      sub(0, 'Consumer units in traded unit', 'Number of consumer units per traded unit', 'C', 'V', '9(15)'),
+      sub(
+        0,
+        'Consumer units in traded unit',
+        'Number of consumer units per traded unit',
+        'C',
+        'V',
+        '9(15)',
+      ),
       sub(1, 'Ordering measure', 'Do not use', 'C', 'V', '9(10)V9(3)'),
       sub(2, 'Measure indicator', 'Do not use', 'C', 'V', 'X(6)'),
     ]),
@@ -932,9 +939,14 @@ const tlrSegment: SegmentDef = seg(
       '+',
       [sub(0, 'Quantity discount total', '', 'C', 'V', '9(10)V9(2)')],
     ),
-    elem('VLDT', 'Total discount amount for invoice value', 'Σ VLDA across all sub-totals.', 'C', '+', [
-      sub(0, 'Value discount total', '', 'C', 'V', '9(10)V9(2)'),
-    ]),
+    elem(
+      'VLDT',
+      'Total discount amount for invoice value',
+      'Σ VLDA across all sub-totals.',
+      'C',
+      '+',
+      [sub(0, 'Value discount total', '', 'C', 'V', '9(10)V9(2)')],
+    ),
     elem('SURT', 'Total surcharge amount', 'Do not use.', 'C', '+', [
       sub(0, 'Surcharge total', '', 'C', 'V', '9(10)V9(2)'),
     ]),

@@ -53,11 +53,15 @@ function unpin() {
   }
 }
 
-onClickOutside(contentRef, () => {
-  if (isPinned.value) {
-    unpin()
-  }
-}, { ignore: ['.field-tooltip-trigger'] })
+onClickOutside(
+  contentRef,
+  () => {
+    if (isPinned.value) {
+      unpin()
+    }
+  },
+  { ignore: ['.field-tooltip-trigger'] },
+)
 
 onBeforeUnmount(() => {
   if (globalPinnedInstance === unpin) {
