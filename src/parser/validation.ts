@@ -582,6 +582,72 @@ function validateVrsCoverage(transmission: ParsedTransmission): void {
       )
     }
   }
+
+  // Cross-check VRS values against sums of STL fields per VAT code
+  // Build STL sums grouped by VAT code
+  const stlSums = new Map<
+    string,
+    { evla: number; asda: number; vata: number; apse: number; apsi: number }
+  >()
+  for (const msg of invoicMessages) {
+    for (const seg of msg.segments) {
+      if (seg.tag !== 'STL') continue
+      const vatcRaw = seg.elements[1]?.subElements[0]?.raw
+      if (!vatcRaw || vatcRaw === '') continue
+      const sums = stlSums.get(vatcRaw) ?? { evla: 0, asda: 0, vata: 0, apse: 0, apsi: 0 }
+      const evla = parseInt(seg.elements[9]?.subElements[0]?.raw ?? '', 10)
+      const asda = parseInt(seg.elements[11]?.subElements[0]?.raw ?? '', 10)
+      const vata = parseInt(seg.elements[12]?.subElements[0]?.raw ?? '', 10)
+      const apse = parseInt(seg.elements[13]?.subElements[0]?.raw ?? '', 10)
+      const apsi = parseInt(seg.elements[14]?.subElements[0]?.raw ?? '', 10)
+      if (!isNaN(evla)) sums.evla += evla
+      if (!isNaN(asda)) sums.asda += asda
+      if (!isNaN(vata)) sums.vata += vata
+      if (!isNaN(apse)) sums.apse += apse
+      if (!isNaN(apsi)) sums.apsi += apsi
+      stlSums.set(vatcRaw, sums)
+    }
+  }
+
+  // Validate each VRS segment's values
+  // VRS fields: SEQA(0), VATC(1), VATP(2), VSDE(3), VSDI(4), VVAT(5), VPSE(6), VPSI(7)
+  // STL fields: EVLA(9), ASDA(11), VATA(12), APSE(13), APSI(14)
+  const vrsChecks: Array<{
+    vrsIdx: number
+    vrsName: string
+    stlField: 'evla' | 'asda' | 'vata' | 'apse' | 'apsi'
+    stlName: string
+  }> = [
+    { vrsIdx: 3, vrsName: 'VSDE', stlField: 'evla', stlName: 'EVLA' },
+    { vrsIdx: 4, vrsName: 'VSDI', stlField: 'asda', stlName: 'ASDA' },
+    { vrsIdx: 5, vrsName: 'VVAT', stlField: 'vata', stlName: 'VATA' },
+    { vrsIdx: 6, vrsName: 'VPSE', stlField: 'apse', stlName: 'APSE' },
+    { vrsIdx: 7, vrsName: 'VPSI', stlField: 'apsi', stlName: 'APSI' },
+  ]
+
+  for (const vrs of vrsSegments) {
+    const vrsVatcRaw = vrs.elements[1]?.subElements[0]?.raw
+    if (!vrsVatcRaw || vrsVatcRaw === '') continue
+    const sums = stlSums.get(vrsVatcRaw)
+    if (!sums) continue
+
+    for (const check of vrsChecks) {
+      const vrsSub = vrs.elements[check.vrsIdx]?.subElements[0]
+      if (!vrsSub || vrsSub.raw === '') continue
+      const vrsValue = parseInt(vrsSub.raw, 10)
+      if (isNaN(vrsValue)) continue
+      const expected = sums[check.stlField]
+      if (vrsValue !== expected) {
+        vrsSub.issues.push(
+          issue(
+            'error',
+            `VRS/${check.vrsName} (${vrsValue}) does not equal Σ STL/${check.stlName} for VAT code '${vrsVatcRaw}' (${expected})`,
+            vrsSub.span,
+          ),
+        )
+      }
+    }
+  }
 }
 
 function validateFileTotals(transmission: ParsedTransmission): void {
@@ -607,22 +673,30 @@ function validateFileTotals(transmission: ParsedTransmission): void {
     }
   }
 
-  // Cross-check FASE = Σ EVLT across all INVOIC TLR segments
-  const invoicMessages = transmission.messages.filter((m) => m.type === 'INVOIC')
-  validateFileTotalSum(totSeg, invoicMessages, 0, 6, 'FASE', 'EVLT')
-  // FVAT = Σ TVAT
-  validateFileTotalSum(totSeg, invoicMessages, 2, 9, 'FVAT', 'TVAT')
-  // FPSI = Σ TPSI
-  validateFileTotalSum(totSeg, invoicMessages, 4, 11, 'FPSI', 'TPSI')
+  // Cross-check TOT against Σ VRS values (the proper aggregation chain is STL → VRS → TOT)
+  const vattlr = transmission.messages.find((m) => m.type === 'VATTLR')
+  if (vattlr) {
+    const vrsSegments = vattlr.segments.filter((s) => s.tag === 'VRS')
+    // TOT.FASE(0) = Σ VRS.VSDE(3)
+    validateTotVrsSum(totSeg, vrsSegments, 0, 3, 'FASE', 'VSDE')
+    // TOT.FASI(1) = Σ VRS.VSDI(4)
+    validateTotVrsSum(totSeg, vrsSegments, 1, 4, 'FASI', 'VSDI')
+    // TOT.FVAT(2) = Σ VRS.VVAT(5)
+    validateTotVrsSum(totSeg, vrsSegments, 2, 5, 'FVAT', 'VVAT')
+    // TOT.FPSE(3) = Σ VRS.VPSE(6)
+    validateTotVrsSum(totSeg, vrsSegments, 3, 6, 'FPSE', 'VPSE')
+    // TOT.FPSI(4) = Σ VRS.VPSI(7)
+    validateTotVrsSum(totSeg, vrsSegments, 4, 7, 'FPSI', 'VPSI')
+  }
 }
 
-function validateFileTotalSum(
+function validateTotVrsSum(
   totSeg: ParsedSegment,
-  invoicMessages: ParsedMessage[],
+  vrsSegments: ParsedSegment[],
   totElemIdx: number,
-  tlrElemIdx: number,
+  vrsElemIdx: number,
   totName: string,
-  tlrName: string,
+  vrsName: string,
 ): void {
   const totSub = totSeg.elements[totElemIdx]?.subElements[0]
   if (!totSub || totSub.raw === '') return
@@ -631,12 +705,10 @@ function validateFileTotalSum(
   if (isNaN(totValue)) return
 
   let sum = 0
-  for (const msg of invoicMessages) {
-    const tlr = msg.segments.find((s) => s.tag === 'TLR')
-    if (!tlr) continue
-    const tlrSub = tlr.elements[tlrElemIdx]?.subElements[0]
-    if (!tlrSub || tlrSub.raw === '') continue
-    const val = parseInt(tlrSub.raw, 10)
+  for (const vrs of vrsSegments) {
+    const vrsSub = vrs.elements[vrsElemIdx]?.subElements[0]
+    if (!vrsSub || vrsSub.raw === '') continue
+    const val = parseInt(vrsSub.raw, 10)
     if (!isNaN(val)) sum += val
   }
 
@@ -644,7 +716,7 @@ function validateFileTotalSum(
     totSub.issues.push(
       issue(
         'error',
-        `${totName} value (${totValue}) does not equal sum of ${tlrName} across invoices (${sum})`,
+        `TOT/${totName} (${totValue}) does not equal Σ VRS/${vrsName} (${sum})`,
         totSub.span,
       ),
     )
