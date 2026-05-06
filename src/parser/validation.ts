@@ -415,7 +415,7 @@ function validateTlrSum(
   tlrElemIdx: number,
   stlElemIdx: number,
   tlrName: string,
-  stconsame: string,
+  stlName: string,
 ): void {
   const tlrSub = tlr.elements[tlrElemIdx]?.subElements[0]
   if (!tlrSub || tlrSub.raw === '') return
