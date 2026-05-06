@@ -93,6 +93,13 @@ function isElementEmpty(el: ParsedElement): boolean {
   return el.subElements.every(s => s.raw === '')
 }
 
+function isMandatoryElementEmpty(elIdx: number): boolean {
+  const el = props.segment.elements[elIdx]
+  if (!el) return false
+  const def = props.segment.def?.elements[elIdx]
+  return def?.requirement === 'M' && isElementEmpty(el)
+}
+
 function getElementPreview(elIdx: number): string {
   const el = props.segment.elements[elIdx]
   if (!el) return ''
@@ -180,6 +187,7 @@ function getElementPreview(elIdx: number): string {
                 'min-w-[0.5ch] inline-block': sub.raw === '',
                 'text-foreground font-medium': sub.def?.requirement === 'M' && !subHasIssue(sub) && sub.raw !== '',
                 'text-zinc-500 dark:text-zinc-400': sub.def?.requirement !== 'M' && !subHasIssue(sub) && sub.raw !== '',
+                'bg-red-100/50 dark:bg-red-900/20 border-b border-dashed border-red-400': sub.raw === '' && sub.def?.requirement === 'M' && isMandatoryElementEmpty(elIdx),
                 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400': subHasIssue(sub) && subIssueSeverity(sub) === 'error',
                 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400': subHasIssue(sub) && subIssueSeverity(sub) === 'warning',
                 'bg-sky-50 text-sky-700 dark:bg-sky-900/20 dark:text-sky-400': subHasIssue(sub) && subIssueSeverity(sub) === 'info',
@@ -188,7 +196,7 @@ function getElementPreview(elIdx: number): string {
               }"
               @mouseenter="onSubEnter(sub, elIdx)"
               @mouseleave="onSubLeave()"
-            ><template v-if="isDecimalFormatted(sub)"><span class="tabular-nums">{{ getDisplayValue(sub).split('.')[0] }}</span><span class="select-none text-emerald-600 dark:text-emerald-400 font-bold">.</span><span class="tabular-nums">{{ getDisplayValue(sub).split('.')[1] }}</span></template><template v-else-if="sub.raw">{{ sub.raw }}</template><template v-else>&nbsp;</template></span>
+            ><template v-if="isDecimalFormatted(sub)"><span class="tabular-nums">{{ getDisplayValue(sub).split('.')[0] }}</span><span class="select-none text-emerald-600 dark:text-emerald-400 font-bold">.</span><span class="tabular-nums">{{ getDisplayValue(sub).split('.')[1] }}</span></template><template v-else-if="sub.raw">{{ sub.raw }}</template></span>
 
             <template #content>
               <div class="px-3 py-2 space-y-1.5 min-w-[200px]">

@@ -591,7 +591,7 @@ const ildSegment: SegmentDef = seg(
       'M',
       '+',
       [
-        sub(0, 'EAN-13 article number', '"Bookland" EAN-13 or ISBN-13', 'C', 'F', '9(13)'),
+        sub(0, 'EAN-13 article number', 'EAN-13 product barcode', 'C', 'F', '9(13)'),
         sub(
           1,
           "Supplier's code for traded unit",
@@ -611,7 +611,7 @@ const ildSegment: SegmentDef = seg(
       sub(1, "Customer's item code", '', 'C', 'V', 'X(30)'),
     ]),
     elem('UNOR', 'Unit of ordering', '', 'C', '+', [
-      sub(0, 'Consumer units in traded unit', 'Always 1 in book supply', 'C', 'V', '9(15)'),
+      sub(0, 'Consumer units in traded unit', 'Number of consumer units per traded unit', 'C', 'V', '9(15)'),
       sub(1, 'Ordering measure', 'Do not use', 'C', 'V', '9(10)V9(3)'),
       sub(2, 'Measure indicator', 'Do not use', 'C', 'V', 'X(6)'),
     ]),
@@ -668,14 +668,14 @@ const ildSegment: SegmentDef = seg(
       'C',
       '+',
       [
-        sub(0, 'Description line 1', 'Author', 'C', 'V', 'X(40)'),
-        sub(1, 'Description line 2', 'Title', 'C', 'V', 'X(40)'),
+        sub(0, 'Description line 1', 'First line of product description', 'C', 'V', 'X(40)'),
+        sub(1, 'Description line 2', 'Second line of product description', 'C', 'V', 'X(40)'),
       ],
     ),
     elem(
       'MSPR',
       'Selling on price',
-      "Manufacturer's recommended selling price including VAT. Required in book trade.",
+      "Manufacturer's recommended selling price including VAT.",
       'C',
       '+',
       [
@@ -697,7 +697,7 @@ const ildSegment: SegmentDef = seg(
     elem(
       'BUCT',
       'Unit cost price (excl. VAT) before discount',
-      'Required in book trade. 4 decimal places.',
+      'Unit cost before discount. 4 decimal places.',
       'C',
       '+',
       [sub(0, 'Unit cost before discount', 'In pounds, 4 decimal places', 'C', 'V', '9(10)V9(4)')],
@@ -710,7 +710,7 @@ const ildSegment: SegmentDef = seg(
       '+',
       [sub(0, 'Discount value', 'In pounds, 4 decimal places', 'C', 'V', '9(10)V9(4)')],
     ),
-    elem('DSCP', 'Discount percentage', 'Required in book trade practice.', 'C', '+', [
+    elem('DSCP', 'Discount percentage', 'Discount percentage applied to the line.', 'C', '+', [
       sub(0, 'Discount percentage', '3 integer + 3 decimal', 'C', 'V', '9(3)V9(3)'),
     ]),
     elem('SUBA', 'Subsidy amount', 'Do not use.', 'C', '+', [
@@ -849,7 +849,7 @@ const stlSegment: SegmentDef = seg(
     elem(
       'QYDA',
       'Discount amount for invoice quantity',
-      'Not used in book trade practice.',
+      'Discount amount for invoice quantity.',
       'C',
       '+',
       [sub(0, 'Quantity discount', '', 'C', 'V', '9(10)V9(2)')],
@@ -857,7 +857,7 @@ const stlSegment: SegmentDef = seg(
     elem(
       'VLDA',
       'Discount amount for invoice value',
-      'Not used in book trade practice.',
+      'Discount amount for invoice value.',
       'C',
       '+',
       [sub(0, 'Value discount', '', 'C', 'V', '9(10)V9(2)')],
@@ -927,12 +927,12 @@ const tlrSegment: SegmentDef = seg(
     elem(
       'QYDT',
       'Total discount amount for invoice quantity',
-      'Not used in book trade.',
+      'Total discount amount for invoice quantity.',
       'C',
       '+',
       [sub(0, 'Quantity discount total', '', 'C', 'V', '9(10)V9(2)')],
     ),
-    elem('VLDT', 'Total discount amount for invoice value', 'Not used in book trade.', 'C', '+', [
+    elem('VLDT', 'Total discount amount for invoice value', 'Σ VLDA across all sub-totals.', 'C', '+', [
       sub(0, 'Value discount total', '', 'C', 'V', '9(10)V9(2)'),
     ]),
     elem('SURT', 'Total surcharge amount', 'Do not use.', 'C', '+', [

@@ -33,7 +33,7 @@ const hasWarnings = computed(() => messageIssues.value.some(i => i.severity === 
           'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400': hasWarnings,
         }"
       >{{ messageIssues.length }} issue{{ messageIssues.length > 1 ? 's' : '' }}</span>
-      <span class="ml-auto text-muted-foreground/60 tabular-nums">{{ message.segments.length }} segs</span>
+      <span class="ml-auto text-muted-foreground/60 tabular-nums">{{ message.segments.length }} segments</span>
     </div>
     <!-- Message-level issue details -->
     <div v-if="messageIssues.length > 0" class="select-none px-3 py-1.5 border-b bg-red-50/50 dark:bg-red-950/20 text-xs space-y-0.5">
