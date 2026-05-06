@@ -566,7 +566,7 @@ const totSegment: SegmentDef = seg('TOT', 'FILE TOTALS', 'Mandatory control tota
 
 export const stxSegmentDef: SegmentDef = seg('STX', 'START OF TRANSMISSION', 'Transmission envelope header.', 'M', 'Once', [
   elem('SEDE', 'Syntax and encoding details', '', 'M', '=', [
-    sub(0, 'Syntax identifier', 'Always ANAA', 'M', 'F', 'X(4)'),
+    sub(0, 'Syntax identifier', 'ANA or ANAA', 'M', 'V', 'X(4)'),
     sub(1, 'Syntax version number', 'Always 1', 'M', 'F', '9(1)'),
   ]),
   elem('SNDR', 'Sender identification', '', 'M', '+', [

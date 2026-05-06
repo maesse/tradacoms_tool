@@ -239,8 +239,12 @@ function validateDocumentStructure(transmission: ParsedTransmission): void {
   for (const msg of messages) {
     if (msg.type === 'INVOIC') {
       validateTlrAgainstStl(msg)
+      validateStlVatCoverage(msg)
     }
   }
+
+  // Cross-check VRS against file-wide VAT codes
+  validateVrsCoverage(transmission)
 
   // Cross-check INVTLR/TOT against file
   validateFileTotals(transmission)
@@ -362,6 +366,131 @@ function validateTlrSum(
       `${tlrName} value (${tlrValue}) does not equal sum of ${stlName} values (${sum})`,
       tlrSub.span,
     ))
+  }
+}
+
+/**
+ * Validate that within an INVOIC message:
+ * - The number of STL segments matches the number of distinct real VAT codes in ILD lines
+ * - Each STL/NRIL matches the count of ILD lines with that VAT code
+ */
+function validateStlVatCoverage(msg: ParsedMessage): void {
+  const ildSegments = msg.segments.filter(s => s.tag === 'ILD')
+  const stlSegments = msg.segments.filter(s => s.tag === 'STL')
+
+  if (ildSegments.length === 0 || stlSegments.length === 0) return
+
+  // Count ILD lines per real VAT code (A=mixed is resolved into components, but still counted)
+  const ildVatCounts = new Map<string, number>()
+  for (const ild of ildSegments) {
+    const vatcSub = ild.elements[9]?.subElements[0]
+    if (!vatcSub || vatcSub.raw === '') continue
+    const code = vatcSub.raw
+    // 'A' (mixed) lines contribute to the real rate components, but they're also counted
+    // in the STL NRIL for the component rates. Skip 'A' for the distinct count check.
+    if (code === 'A') continue
+    ildVatCounts.set(code, (ildVatCounts.get(code) ?? 0) + 1)
+  }
+
+  // Check STL count matches distinct real VAT codes
+  const distinctRealCodes = ildVatCounts.size
+  if (distinctRealCodes > 0 && stlSegments.length !== distinctRealCodes) {
+    const tlr = msg.segments.find(s => s.tag === 'TLR')
+    if (tlr) {
+      tlr.issues.push(issue('warning',
+        `Found ${stlSegments.length} STL segment(s) but ${distinctRealCodes} distinct VAT code(s) in ILD lines (${[...ildVatCounts.keys()].join(', ')})`,
+        tlr.span,
+      ))
+    }
+  }
+
+  // Validate each STL/NRIL matches line count for its VAT code
+  for (const stl of stlSegments) {
+    const stlVatcSub = stl.elements[1]?.subElements[0]
+    const nrilSub = stl.elements[3]?.subElements[0]
+    if (!stlVatcSub || stlVatcSub.raw === '' || !nrilSub || nrilSub.raw === '') continue
+
+    const vatCode = stlVatcSub.raw
+    const declaredCount = parseInt(nrilSub.raw, 10)
+    if (isNaN(declaredCount)) continue
+
+    // Count ILD lines with this VAT code (including mixed-rate component lines)
+    let actualCount = ildVatCounts.get(vatCode) ?? 0
+
+    // Also count mixed-rate 'A' lines that have MIXI=2 for S, MIXI=1 for Z
+    // (mixed-rate items generate component ILD lines with the real code,
+    // so they're already counted above; the 'A' parent line is not counted)
+    // Actually per spec, mixed-rate items produce 3 ILD lines: MIXI=0 (A), MIXI=1 (Z), MIXI=2 (S)
+    // The component lines (MIXI=1, MIXI=2) already have the real VAT code, not A
+    // So our count from above should already be correct.
+
+    if (declaredCount !== actualCount) {
+      nrilSub.issues.push(issue('error',
+        `STL/NRIL declares ${declaredCount} line(s) for VAT code '${vatCode}', but found ${actualCount} ILD line(s) with that code`,
+        nrilSub.span,
+      ))
+    }
+  }
+}
+
+/**
+ * Validate that the VATTLR message has VRS segments matching the distinct
+ * real VAT codes found across all INVOIC messages in the file.
+ */
+function validateVrsCoverage(transmission: ParsedTransmission): void {
+  const vattlr = transmission.messages.find(m => m.type === 'VATTLR')
+  if (!vattlr) return
+
+  const vrsSegments = vattlr.segments.filter(s => s.tag === 'VRS')
+  const invoicMessages = transmission.messages.filter(m => m.type === 'INVOIC')
+
+  // Collect all distinct real VAT codes from all STL segments across all invoices
+  const fileVatCodes = new Set<string>()
+  for (const msg of invoicMessages) {
+    for (const seg of msg.segments) {
+      if (seg.tag === 'STL') {
+        const vatcSub = seg.elements[1]?.subElements[0]
+        if (vatcSub && vatcSub.raw !== '') {
+          fileVatCodes.add(vatcSub.raw)
+        }
+      }
+    }
+  }
+
+  if (fileVatCodes.size === 0) return
+
+  // Check VRS count matches distinct VAT codes
+  if (vrsSegments.length !== fileVatCodes.size) {
+    vattlr.issues.push(issue('error',
+      `VATTLR has ${vrsSegments.length} VRS segment(s) but file contains ${fileVatCodes.size} distinct VAT code(s) (${[...fileVatCodes].join(', ')})`,
+      vattlr.span,
+    ))
+  }
+
+  // Check each VRS has a VAT code that exists in the file
+  for (const vrs of vrsSegments) {
+    const vrsVatcSub = vrs.elements[1]?.subElements[0]
+    if (!vrsVatcSub || vrsVatcSub.raw === '') continue
+
+    if (!fileVatCodes.has(vrsVatcSub.raw)) {
+      vrsVatcSub.issues.push(issue('warning',
+        `VRS VAT code '${vrsVatcSub.raw}' does not appear in any STL segment in the file`,
+        vrsVatcSub.span,
+      ))
+    }
+  }
+
+  // Check all file VAT codes are covered by a VRS segment
+  const vrsCodes = new Set(vrsSegments
+    .map(v => v.elements[1]?.subElements[0]?.raw)
+    .filter((c): c is string => c !== undefined && c !== ''))
+  for (const code of fileVatCodes) {
+    if (!vrsCodes.has(code)) {
+      vattlr.issues.push(issue('error',
+        `Missing VRS segment for VAT code '${code}' which appears in STL segments`,
+        vattlr.span,
+      ))
+    }
   }
 }
 
