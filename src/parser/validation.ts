@@ -95,7 +95,9 @@ function validateNumericFormat(sub: ParsedSubElement, notation: string): void {
 
   // Check it's all digits
   if (!/^\d+$/.test(value)) {
-    sub.issues.push(issue('error', `Expected numeric value (format: ${notation}), got "${value}"`, sub.span))
+    sub.issues.push(
+      issue('error', `Expected numeric value (format: ${notation}), got "${value}"`, sub.span),
+    )
     return
   }
 
@@ -108,9 +110,21 @@ function validateNumericFormat(sub: ParsedSubElement, notation: string): void {
   const maxLen = intDigits + decDigits
 
   if (sub.def?.lengthType === 'F' && value.length !== maxLen) {
-    sub.issues.push(issue('error', `Fixed-length numeric field: expected exactly ${maxLen} digits (format: ${notation}), got ${value.length}`, sub.span))
+    sub.issues.push(
+      issue(
+        'error',
+        `Fixed-length numeric field: expected exactly ${maxLen} digits (format: ${notation}), got ${value.length}`,
+        sub.span,
+      ),
+    )
   } else if (value.length > maxLen) {
-    sub.issues.push(issue('error', `Numeric value too long: max ${maxLen} digits (format: ${notation}), got ${value.length}`, sub.span))
+    sub.issues.push(
+      issue(
+        'error',
+        `Numeric value too long: max ${maxLen} digits (format: ${notation}), got ${value.length}`,
+        sub.span,
+      ),
+    )
   }
 }
 
@@ -118,7 +132,11 @@ function validateNumericFormat(sub: ParsedSubElement, notation: string): void {
  * Validate alphanumeric fields.
  * Format: X(n)
  */
-function validateAlphanumericFormat(sub: ParsedSubElement, notation: string, lengthType: string | null): void {
+function validateAlphanumericFormat(
+  sub: ParsedSubElement,
+  notation: string,
+  lengthType: string | null,
+): void {
   const value = sub.raw
   const match = notation.match(/^(?:\(X\)|X\()(\d+)\)$/)
   // Try standard pattern
@@ -128,9 +146,21 @@ function validateAlphanumericFormat(sub: ParsedSubElement, notation: string, len
   const maxLen = parseInt(m[1]!, 10)
 
   if (lengthType === 'F' && value.length !== maxLen) {
-    sub.issues.push(issue('error', `Fixed-length field: expected exactly ${maxLen} characters (format: ${notation}), got ${value.length}`, sub.span))
+    sub.issues.push(
+      issue(
+        'error',
+        `Fixed-length field: expected exactly ${maxLen} characters (format: ${notation}), got ${value.length}`,
+        sub.span,
+      ),
+    )
   } else if (value.length > maxLen) {
-    sub.issues.push(issue('warning', `Value exceeds maximum length: max ${maxLen} characters (format: ${notation}), got ${value.length}`, sub.span))
+    sub.issues.push(
+      issue(
+        'warning',
+        `Value exceeds maximum length: max ${maxLen} characters (format: ${notation}), got ${value.length}`,
+        sub.span,
+      ),
+    )
   }
 
   // Suppress unused variable
@@ -141,7 +171,9 @@ function validateAlphanumericFormat(sub: ParsedSubElement, notation: string, len
 
 function validateSegmentStructure(seg: ParsedSegment, msg: ParsedMessage): void {
   if (!seg.def) {
-    seg.issues.push(issue('warning', `Unknown segment tag "${seg.tag}" in message type ${msg.type}`, seg.span))
+    seg.issues.push(
+      issue('warning', `Unknown segment tag "${seg.tag}" in message type ${msg.type}`, seg.span),
+    )
     return
   }
 
@@ -152,7 +184,9 @@ function validateSegmentStructure(seg: ParsedSegment, msg: ParsedMessage): void 
 
     const parsedElem = seg.elements[i]
     if (!parsedElem || isElementEmpty(parsedElem)) {
-      seg.issues.push(issue('error', `Missing mandatory element ${elemDef.code} (${elemDef.name})`, seg.span))
+      seg.issues.push(
+        issue('error', `Missing mandatory element ${elemDef.code} (${elemDef.name})`, seg.span),
+      )
     }
   }
 
@@ -188,10 +222,13 @@ function validateMtrCount(mtrSeg: ParsedSegment, msg: ParsedMessage): void {
 
   const actualCount = msg.segments.length
   if (declaredCount !== actualCount) {
-    countSub.issues.push(issue('error',
-      `MTR segment count mismatch: declared ${declaredCount}, actual ${actualCount} segments in message`,
-      countSub.span,
-    ))
+    countSub.issues.push(
+      issue(
+        'error',
+        `MTR segment count mismatch: declared ${declaredCount}, actual ${actualCount} segments in message`,
+        countSub.span,
+      ),
+    )
   }
 }
 
@@ -201,7 +238,7 @@ function validateDocumentStructure(transmission: ParsedTransmission): void {
   const messages = transmission.messages
 
   // Check required message types present
-  const types = messages.map(m => m.type)
+  const types = messages.map((m) => m.type)
   const hasInvfil = types.includes('INVFIL')
   const hasInvoic = types.includes('INVOIC')
   const hasVattlr = types.includes('VATTLR')
@@ -210,16 +247,28 @@ function validateDocumentStructure(transmission: ParsedTransmission): void {
   const docSpan: Span = { start: 0, end: transmission.raw.length }
 
   if (!hasInvfil) {
-    transmission.issues.push(issue('error', 'Missing required INVFIL (Invoice File Header) message', docSpan))
+    transmission.issues.push(
+      issue('error', 'Missing required INVFIL (Invoice File Header) message', docSpan),
+    )
   }
   if (!hasInvoic) {
-    transmission.issues.push(issue('error', 'Missing required INVOIC (Invoice Details) message – at least one invoice is required', docSpan))
+    transmission.issues.push(
+      issue(
+        'error',
+        'Missing required INVOIC (Invoice Details) message – at least one invoice is required',
+        docSpan,
+      ),
+    )
   }
   if (!hasVattlr) {
-    transmission.issues.push(issue('error', 'Missing required VATTLR (File VAT Trailer) message', docSpan))
+    transmission.issues.push(
+      issue('error', 'Missing required VATTLR (File VAT Trailer) message', docSpan),
+    )
   }
   if (!hasInvtlr) {
-    transmission.issues.push(issue('error', 'Missing required INVTLR (Invoice File Trailer) message', docSpan))
+    transmission.issues.push(
+      issue('error', 'Missing required INVTLR (Invoice File Trailer) message', docSpan),
+    )
   }
 
   // Check message ordering
@@ -266,10 +315,13 @@ function validateMessageOrder(messages: ParsedMessage[], transmission: ParsedTra
     if (expectedIdx === -1) continue
 
     if (expectedIdx < orderIdx && msg.type !== 'INVOIC') {
-      transmission.issues.push(issue('warning',
-        `Message ${msg.type} appears out of expected order (expected: INVFIL → INVOIC(s) → VATTLR → INVTLR)`,
-        msg.span,
-      ))
+      transmission.issues.push(
+        issue(
+          'warning',
+          `Message ${msg.type} appears out of expected order (expected: INVFIL → INVOIC(s) → VATTLR → INVTLR)`,
+          msg.span,
+        ),
+      )
     }
     if (expectedIdx > orderIdx) {
       orderIdx = expectedIdx
@@ -280,7 +332,7 @@ function validateMessageOrder(messages: ParsedMessage[], transmission: ParsedTra
 function validateMhdSequence(messages: ParsedMessage[], transmission: ParsedTransmission): void {
   let expectedSeq = 1
   for (const msg of messages) {
-    const mhd = msg.segments.find(s => s.tag === 'MHD')
+    const mhd = msg.segments.find((s) => s.tag === 'MHD')
     if (!mhd) continue
 
     const seqSub = mhd.elements[0]?.subElements[0]
@@ -290,30 +342,45 @@ function validateMhdSequence(messages: ParsedMessage[], transmission: ParsedTran
     if (isNaN(actualSeq)) continue
 
     if (actualSeq !== expectedSeq) {
-      seqSub.issues.push(issue('error',
-        `MHD sequence number should be ${expectedSeq}, got ${actualSeq}`,
-        seqSub.span,
-      ))
+      seqSub.issues.push(
+        issue(
+          'error',
+          `MHD sequence number should be ${expectedSeq}, got ${actualSeq}`,
+          seqSub.span,
+        ),
+      )
     }
     expectedSeq++
   }
 }
 
 function validateInvoicContent(msg: ParsedMessage): void {
-  const hasIld = msg.segments.some(s => s.tag === 'ILD')
+  const hasIld = msg.segments.some((s) => s.tag === 'ILD')
   if (!hasIld) {
-    msg.issues.push(issue('error', 'INVOIC message must contain at least one ILD (Invoice Line Details) segment', msg.span))
+    msg.issues.push(
+      issue(
+        'error',
+        'INVOIC message must contain at least one ILD (Invoice Line Details) segment',
+        msg.span,
+      ),
+    )
   }
 
-  const hasOdd = msg.segments.some(s => s.tag === 'ODD')
+  const hasOdd = msg.segments.some((s) => s.tag === 'ODD')
   if (!hasOdd) {
-    msg.issues.push(issue('error', 'INVOIC message must contain at least one ODD (Order and Delivery References) segment', msg.span))
+    msg.issues.push(
+      issue(
+        'error',
+        'INVOIC message must contain at least one ODD (Order and Delivery References) segment',
+        msg.span,
+      ),
+    )
   }
 }
 
 function validateTlrAgainstStl(msg: ParsedMessage): void {
-  const stlSegments = msg.segments.filter(s => s.tag === 'STL')
-  const tlrSegment = msg.segments.find(s => s.tag === 'TLR')
+  const stlSegments = msg.segments.filter((s) => s.tag === 'STL')
+  const tlrSegment = msg.segments.find((s) => s.tag === 'TLR')
 
   if (!tlrSegment || stlSegments.length === 0) return
 
@@ -322,10 +389,13 @@ function validateTlrAgainstStl(msg: ParsedMessage): void {
   if (nstlSub && nstlSub.raw !== '') {
     const declared = parseInt(nstlSub.raw, 10)
     if (!isNaN(declared) && declared !== stlSegments.length) {
-      nstlSub.issues.push(issue('error',
-        `TLR/NSTL declares ${declared} STL segments, but found ${stlSegments.length}`,
-        nstlSub.span,
-      ))
+      nstlSub.issues.push(
+        issue(
+          'error',
+          `TLR/NSTL declares ${declared} STL segments, but found ${stlSegments.length}`,
+          nstlSub.span,
+        ),
+      )
     }
   }
 
@@ -345,7 +415,7 @@ function validateTlrSum(
   tlrElemIdx: number,
   stlElemIdx: number,
   tlrName: string,
-  stlName: string,
+  stconsame: string,
 ): void {
   const tlrSub = tlr.elements[tlrElemIdx]?.subElements[0]
   if (!tlrSub || tlrSub.raw === '') return
@@ -362,10 +432,13 @@ function validateTlrSum(
   }
 
   if (tlrValue !== sum) {
-    tlrSub.issues.push(issue('error',
-      `${tlrName} value (${tlrValue}) does not equal sum of ${stlName} values (${sum})`,
-      tlrSub.span,
-    ))
+    tlrSub.issues.push(
+      issue(
+        'error',
+        `${tlrName} value (${tlrValue}) does not equal sum of ${stlName} values (${sum})`,
+        tlrSub.span,
+      ),
+    )
   }
 }
 
@@ -375,8 +448,8 @@ function validateTlrSum(
  * - Each STL/NRIL matches the count of ILD lines with that VAT code
  */
 function validateStlVatCoverage(msg: ParsedMessage): void {
-  const ildSegments = msg.segments.filter(s => s.tag === 'ILD')
-  const stlSegments = msg.segments.filter(s => s.tag === 'STL')
+  const ildSegments = msg.segments.filter((s) => s.tag === 'ILD')
+  const stlSegments = msg.segments.filter((s) => s.tag === 'STL')
 
   if (ildSegments.length === 0 || stlSegments.length === 0) return
 
@@ -395,12 +468,15 @@ function validateStlVatCoverage(msg: ParsedMessage): void {
   // Check STL count matches distinct real VAT codes
   const distinctRealCodes = ildVatCounts.size
   if (distinctRealCodes > 0 && stlSegments.length !== distinctRealCodes) {
-    const tlr = msg.segments.find(s => s.tag === 'TLR')
+    const tlr = msg.segments.find((s) => s.tag === 'TLR')
     if (tlr) {
-      tlr.issues.push(issue('warning',
-        `Found ${stlSegments.length} STL segment(s) but ${distinctRealCodes} distinct VAT code(s) in ILD lines (${[...ildVatCounts.keys()].join(', ')})`,
-        tlr.span,
-      ))
+      tlr.issues.push(
+        issue(
+          'warning',
+          `Found ${stlSegments.length} STL segment(s) but ${distinctRealCodes} distinct VAT code(s) in ILD lines (${[...ildVatCounts.keys()].join(', ')})`,
+          tlr.span,
+        ),
+      )
     }
   }
 
@@ -425,10 +501,13 @@ function validateStlVatCoverage(msg: ParsedMessage): void {
     // So our count from above should already be correct.
 
     if (declaredCount !== actualCount) {
-      nrilSub.issues.push(issue('error',
-        `STL/NRIL declares ${declaredCount} line(s) for VAT code '${vatCode}', but found ${actualCount} ILD line(s) with that code`,
-        nrilSub.span,
-      ))
+      nrilSub.issues.push(
+        issue(
+          'error',
+          `STL/NRIL declares ${declaredCount} line(s) for VAT code '${vatCode}', but found ${actualCount} ILD line(s) with that code`,
+          nrilSub.span,
+        ),
+      )
     }
   }
 }
@@ -438,11 +517,11 @@ function validateStlVatCoverage(msg: ParsedMessage): void {
  * real VAT codes found across all INVOIC messages in the file.
  */
 function validateVrsCoverage(transmission: ParsedTransmission): void {
-  const vattlr = transmission.messages.find(m => m.type === 'VATTLR')
+  const vattlr = transmission.messages.find((m) => m.type === 'VATTLR')
   if (!vattlr) return
 
-  const vrsSegments = vattlr.segments.filter(s => s.tag === 'VRS')
-  const invoicMessages = transmission.messages.filter(m => m.type === 'INVOIC')
+  const vrsSegments = vattlr.segments.filter((s) => s.tag === 'VRS')
+  const invoicMessages = transmission.messages.filter((m) => m.type === 'INVOIC')
 
   // Collect all distinct real VAT codes from all STL segments across all invoices
   const fileVatCodes = new Set<string>()
@@ -461,10 +540,13 @@ function validateVrsCoverage(transmission: ParsedTransmission): void {
 
   // Check VRS count matches distinct VAT codes
   if (vrsSegments.length !== fileVatCodes.size) {
-    vattlr.issues.push(issue('error',
-      `VATTLR has ${vrsSegments.length} VRS segment(s) but file contains ${fileVatCodes.size} distinct VAT code(s) (${[...fileVatCodes].join(', ')})`,
-      vattlr.span,
-    ))
+    vattlr.issues.push(
+      issue(
+        'error',
+        `VATTLR has ${vrsSegments.length} VRS segment(s) but file contains ${fileVatCodes.size} distinct VAT code(s) (${[...fileVatCodes].join(', ')})`,
+        vattlr.span,
+      ),
+    )
   }
 
   // Check each VRS has a VAT code that exists in the file
@@ -473,49 +555,60 @@ function validateVrsCoverage(transmission: ParsedTransmission): void {
     if (!vrsVatcSub || vrsVatcSub.raw === '') continue
 
     if (!fileVatCodes.has(vrsVatcSub.raw)) {
-      vrsVatcSub.issues.push(issue('warning',
-        `VRS VAT code '${vrsVatcSub.raw}' does not appear in any STL segment in the file`,
-        vrsVatcSub.span,
-      ))
+      vrsVatcSub.issues.push(
+        issue(
+          'warning',
+          `VRS VAT code '${vrsVatcSub.raw}' does not appear in any STL segment in the file`,
+          vrsVatcSub.span,
+        ),
+      )
     }
   }
 
   // Check all file VAT codes are covered by a VRS segment
-  const vrsCodes = new Set(vrsSegments
-    .map(v => v.elements[1]?.subElements[0]?.raw)
-    .filter((c): c is string => c !== undefined && c !== ''))
+  const vrsCodes = new Set(
+    vrsSegments
+      .map((v) => v.elements[1]?.subElements[0]?.raw)
+      .filter((c): c is string => c !== undefined && c !== ''),
+  )
   for (const code of fileVatCodes) {
     if (!vrsCodes.has(code)) {
-      vattlr.issues.push(issue('error',
-        `Missing VRS segment for VAT code '${code}' which appears in STL segments`,
-        vattlr.span,
-      ))
+      vattlr.issues.push(
+        issue(
+          'error',
+          `Missing VRS segment for VAT code '${code}' which appears in STL segments`,
+          vattlr.span,
+        ),
+      )
     }
   }
 }
 
 function validateFileTotals(transmission: ParsedTransmission): void {
-  const invtlr = transmission.messages.find(m => m.type === 'INVTLR')
+  const invtlr = transmission.messages.find((m) => m.type === 'INVTLR')
   if (!invtlr) return
 
-  const totSeg = invtlr.segments.find(s => s.tag === 'TOT')
+  const totSeg = invtlr.segments.find((s) => s.tag === 'TOT')
   if (!totSeg) return
 
   // FTNI should match number of INVOIC messages
   const ftniSub = totSeg.elements[5]?.subElements[0]
   if (ftniSub && ftniSub.raw !== '') {
     const declared = parseInt(ftniSub.raw, 10)
-    const actualInvoicCount = transmission.messages.filter(m => m.type === 'INVOIC').length
+    const actualInvoicCount = transmission.messages.filter((m) => m.type === 'INVOIC').length
     if (!isNaN(declared) && declared !== actualInvoicCount) {
-      ftniSub.issues.push(issue('error',
-        `TOT/FTNI declares ${declared} invoice messages, but file contains ${actualInvoicCount}`,
-        ftniSub.span,
-      ))
+      ftniSub.issues.push(
+        issue(
+          'error',
+          `TOT/FTNI declares ${declared} invoice messages, but file contains ${actualInvoicCount}`,
+          ftniSub.span,
+        ),
+      )
     }
   }
 
   // Cross-check FASE = Σ EVLT across all INVOIC TLR segments
-  const invoicMessages = transmission.messages.filter(m => m.type === 'INVOIC')
+  const invoicMessages = transmission.messages.filter((m) => m.type === 'INVOIC')
   validateFileTotalSum(totSeg, invoicMessages, 0, 6, 'FASE', 'EVLT')
   // FVAT = Σ TVAT
   validateFileTotalSum(totSeg, invoicMessages, 2, 9, 'FVAT', 'TVAT')
@@ -539,7 +632,7 @@ function validateFileTotalSum(
 
   let sum = 0
   for (const msg of invoicMessages) {
-    const tlr = msg.segments.find(s => s.tag === 'TLR')
+    const tlr = msg.segments.find((s) => s.tag === 'TLR')
     if (!tlr) continue
     const tlrSub = tlr.elements[tlrElemIdx]?.subElements[0]
     if (!tlrSub || tlrSub.raw === '') continue
@@ -548,10 +641,13 @@ function validateFileTotalSum(
   }
 
   if (totValue !== sum) {
-    totSub.issues.push(issue('error',
-      `${totName} value (${totValue}) does not equal sum of ${tlrName} across invoices (${sum})`,
-      totSub.span,
-    ))
+    totSub.issues.push(
+      issue(
+        'error',
+        `${totName} value (${totValue}) does not equal sum of ${tlrName} across invoices (${sum})`,
+        totSub.span,
+      ),
+    )
   }
 }
 
@@ -566,10 +662,13 @@ function validateEndCount(transmission: ParsedTransmission): void {
 
   const actual = transmission.messages.length
   if (declared !== actual) {
-    countSub.issues.push(issue('error',
-      `END message count declares ${declared} messages, but transmission contains ${actual}`,
-      countSub.span,
-    ))
+    countSub.issues.push(
+      issue(
+        'error',
+        `END message count declares ${declared} messages, but transmission contains ${actual}`,
+        countSub.span,
+      ),
+    )
   }
 }
 
@@ -610,10 +709,13 @@ function validateTypCodes(seg: ParsedSegment): void {
 
   const validCodes = ['0700', '0709']
   if (!validCodes.includes(tcdeSub.raw)) {
-    tcdeSub.issues.push(issue('error',
-      `Invalid transaction code "${tcdeSub.raw}". Valid BIC codes: 0700 (Original invoice), 0709 (Copy invoice)`,
-      tcdeSub.span,
-    ))
+    tcdeSub.issues.push(
+      issue(
+        'error',
+        `Invalid transaction code "${tcdeSub.raw}". Valid BIC codes: 0700 (Original invoice), 0709 (Copy invoice)`,
+        tcdeSub.span,
+      ),
+    )
   }
 }
 
@@ -623,10 +725,13 @@ function validateIldCodes(seg: ParsedSegment): void {
   if (vatcSub && vatcSub.raw !== '') {
     const validVatc = ['S', 'Z', 'A', 'O', 'E', 'X', 'H', 'L']
     if (!validVatc.includes(vatcSub.raw)) {
-      vatcSub.issues.push(issue('error',
-        `Invalid VAT category code "${vatcSub.raw}". Valid: S (Standard), Z (Zero), A (Mixed), O (Outside scope)`,
-        vatcSub.span,
-      ))
+      vatcSub.issues.push(
+        issue(
+          'error',
+          `Invalid VAT category code "${vatcSub.raw}". Valid: S (Standard), Z (Zero), A (Mixed), O (Outside scope)`,
+          vatcSub.span,
+        ),
+      )
     }
   }
 
@@ -635,10 +740,13 @@ function validateIldCodes(seg: ParsedSegment): void {
   if (mixiSub && mixiSub.raw !== '') {
     const validMixi = ['0', '1', '2']
     if (!validMixi.includes(mixiSub.raw)) {
-      mixiSub.issues.push(issue('error',
-        `Invalid mixed-rate indicator "${mixiSub.raw}". Valid: 0 (whole product), 1 (zero-rated component), 2 (standard-rate component)`,
-        mixiSub.span,
-      ))
+      mixiSub.issues.push(
+        issue(
+          'error',
+          `Invalid mixed-rate indicator "${mixiSub.raw}". Valid: 0 (whole product), 1 (zero-rated component), 2 (standard-rate component)`,
+          mixiSub.span,
+        ),
+      )
     }
   }
 
@@ -647,10 +755,13 @@ function validateIldCodes(seg: ParsedSegment): void {
   if (igpiSub && igpiSub.raw !== '') {
     const validIgpi = ['I', 'G']
     if (!validIgpi.includes(igpiSub.raw)) {
-      igpiSub.issues.push(issue('warning',
-        `Unexpected IGPI code "${igpiSub.raw}". Expected: I (line-level charge) or G (invoice-level charge)`,
-        igpiSub.span,
-      ))
+      igpiSub.issues.push(
+        issue(
+          'warning',
+          `Unexpected IGPI code "${igpiSub.raw}". Expected: I (line-level charge) or G (invoice-level charge)`,
+          igpiSub.span,
+        ),
+      )
     }
   }
 
@@ -658,10 +769,9 @@ function validateIldCodes(seg: ParsedSegment): void {
   const pindSub = seg.elements[20]?.subElements[0]
   if (pindSub && pindSub.raw === 'F') {
     // Just info for now
-    pindSub.issues.push(issue('info',
-      'Free item: all monetary values should be zero for this line',
-      pindSub.span,
-    ))
+    pindSub.issues.push(
+      issue('info', 'Free item: all monetary values should be zero for this line', pindSub.span),
+    )
   }
 }
 
@@ -672,10 +782,13 @@ function validateVatcCode(seg: ParsedSegment): void {
 
   const validCodes = ['S', 'Z', 'O']
   if (!validCodes.includes(vatcSub.raw)) {
-    vatcSub.issues.push(issue('error',
-      `Invalid VAT category code "${vatcSub.raw}" in ${seg.tag}. Valid in trailers: S (Standard), Z (Zero-rated), O (Outside scope). Code A (mixed) should not appear in ${seg.tag}.`,
-      vatcSub.span,
-    ))
+    vatcSub.issues.push(
+      issue(
+        'error',
+        `Invalid VAT category code "${vatcSub.raw}" in ${seg.tag}. Valid in trailers: S (Standard), Z (Zero-rated), O (Outside scope). Code A (mixed) should not appear in ${seg.tag}.`,
+        vatcSub.span,
+      ),
+    )
   }
 }
 
@@ -703,7 +816,7 @@ function validateSegmentDates(seg: ParsedSegment): void {
 
 function isDateField(name: string): boolean {
   const dateKeywords = ['date', 'Date', 'YYMMDD']
-  return dateKeywords.some(kw => name.toLowerCase().includes(kw.toLowerCase()))
+  return dateKeywords.some((kw) => name.toLowerCase().includes(kw.toLowerCase()))
 }
 
 function validateDateValue(sub: ParsedSubElement): void {
@@ -715,19 +828,25 @@ function validateDateValue(sub: ParsedSubElement): void {
   const dd = parseInt(value.slice(4, 6), 10)
 
   if (mm < 1 || mm > 12) {
-    sub.issues.push(issue('error', `Invalid month ${mm} in date "${value}" (format: YYMMDD)`, sub.span))
+    sub.issues.push(
+      issue('error', `Invalid month ${mm} in date "${value}" (format: YYMMDD)`, sub.span),
+    )
     return
   }
 
   if (dd < 1 || dd > 31) {
-    sub.issues.push(issue('error', `Invalid day ${dd} in date "${value}" (format: YYMMDD)`, sub.span))
+    sub.issues.push(
+      issue('error', `Invalid day ${dd} in date "${value}" (format: YYMMDD)`, sub.span),
+    )
     return
   }
 
   // Basic month-day validation
   const daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
   if (dd > daysInMonth[mm - 1]!) {
-    sub.issues.push(issue('error', `Invalid day ${dd} for month ${mm} in date "${value}"`, sub.span))
+    sub.issues.push(
+      issue('error', `Invalid day ${dd} for month ${mm} in date "${value}"`, sub.span),
+    )
   }
 
   // Suppress unused
@@ -737,9 +856,13 @@ function validateDateValue(sub: ParsedSubElement): void {
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 function isElementEmpty(el: ParsedElement): boolean {
-  return el.subElements.every(sub => sub.raw === '')
+  return el.subElements.every((sub) => sub.raw === '')
 }
 
-function issue(severity: ValidationIssue['severity'], message: string, span: Span): ValidationIssue {
+function issue(
+  severity: ValidationIssue['severity'],
+  message: string,
+  span: Span,
+): ValidationIssue {
   return { severity, message, span }
 }
