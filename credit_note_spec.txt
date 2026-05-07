@@ -1,0 +1,2739 @@
+--- PAGE 1 ---
+ 
+ 
+ 
+ 
+BIC EDI Standards 
+and 
+Implementation Guidelines 
+ 
+ 
+The Book Trade 
+ 
+ 
+TRADACOMS 
+File format specifications 
+The Credit Note File 
+ 
+ 
+ 
+December 2022 
+
+--- PAGE 2 ---
+CREDIT format for book trade credit notes 
+© Copyright BIC 2007 
+1 
+December 2022 
+ 
+ 
+ 
+Credit Note 
+Using the Credit Note message 
+Changes since November 2009 ............................................................................................... 2 
+1 The Credit Note Message..................................................................................................... 3 
+2 Credit Note message version number .................................................................................. 4 
+3 Use of the Credit Note message........................................................................................... 4 
+4 VAT Procedures ................................................................................................................... 4 
+5 Functions of the Credit Note message .................................................................................. 4 
+6 VAT on Credit Note line items .............................................................................................. 5 
+7 Additional Notes ................................................................................................................... 6 
+7.1 Types of Credit Note ...................................................................................................... 6 
+7.2 Absence of data ............................................................................................................. 6 
+7.3 Debit lines on Credit Notes ............................................................................................. 7 
+7.4 Handling of items on which credit has been refused (e.g. because items were returned in . 7 
+unsaleable condition) ............................................................................................................. 7 
+7.5 Supplier and customer details (SDT and CDT) ............................................................... 7 
+7.6 Control Totals ................................................................................................................ 7 
+8 Example of Credit Note transmission .................................................................................... 8 
+9 Credit Note file header ....................................................................................................... 10 
+Example of a complete Credit Note file header ................................................................... 15 
+10 Credit Note “message level” content ................................................................................. 16 
+11 Credit Note “line level” content ......................................................................................... 22 
+Example showing credit note line for a zero-rated product .................................................. 25 
+Example showing credit note line with standard rate VAT .................................................. 26 
+12 Credit Note message trailer .............................................................................................. 29 
+Example showing Credit Note message trailer segments CST and CTR: ............................ 32 
+13 
+Credit Note file VAT trailer .............................................................................................. 33 
+14 
+Credit Note file trailer ...................................................................................................... 35 
+ 
+ 
+ 
+ 
+ 
+Copyright © 2007 Book Industry Communication. These guidelines are based on Tradacoms 
+file format standards reproduced with kind permission of GS1 UK. 
+
+--- PAGE 3 ---
+CREDIT format for book trade credit notes 
+© Copyright BIC 2007 
+2 
+December 2022 
+ 
+ 
+ 
+Changes since November 2009 
+ 
+Minor changes to document formatting, terminology and references.  
+This TRADACOMS Credit Note documentation should be read in conjunction with BIC’s Industry Returns 
+Initiative (IRI) collateral. Please be aware that EDIFACT is the EDI standard on which IRI messages are 
+based.  
+ 
+ 
+
+--- PAGE 4 ---
+CREDIT format for book trade credit notes 
+© Copyright BIC 2007 
+3 
+December 2022 
+ 
+ 
+ 
+1 The Credit Note Message 
+ 
+The Credit Note message is ANA TRADACOMS File Format 9, Version 9. 
+The structure of the Credit Note message is outlined in the table below. 
+Message 
+Consisting of segments 
+Repeat as shown below 
+CREHDR 
+MHD = Message Header 
+One message only, at the start of the file 
+Credit Note 
+TYP = Transaction Type Details 
+File Header 
+SDT  = Supplier Details 
+CDT  = Customer Details 
+DNA = Data Narrative 
+Repeat as necessary at header level 
+FIL 
+= File Details 
+MTR = Message Trailer 
+CREDIT 
+MHD = Message Header 
+One message for each credit note 
+Credit Note 
+CLO = Customer's Location 
+Details 
+CRF  = Credit Note References 
+PYT 
+= Settlement terms 
+Repeat as necessary at message level 
+OIR 
+= Original Invoice References 
+Repeat for each reference 
+DNA = Data Narrative 
+Repeat as necessary at message 
+level 
+CLD  = Credit Note Line Details 
+Repeat for each line item 
+DNB = Data Narrative 
+Repeat if necessary at line level 
+CST  = VAT Rate Credit Sub Trailer 
+Repeat for each VAT rate in the message 
+CTR  = Credit Trailer 
+MTR = Message Trailer 
+VATTLR 
+File VAT 
+MHD = Message Header 
+One message only, after all CREDIT 
+messages in the file 
+Trailer 
+VRS  = VAT Rate Summary 
+Repeat for each VAT rate in the file 
+MTR = Message Trailer 
+CRETLR 
+MHD = Message Header 
+One message only, at the end of the file 
+Credit Note 
+TOT  = File Totals 
+File Trailer 
+MTR = Message Trailer 
+
+--- PAGE 5 ---
+CREDIT format for book trade credit notes 
+© Copyright BIC 2007 
+4 
+December 2022 
+ 
+ 
+ 
+ 
+2 Credit Note message version number 
+ 
+The BIC Credit Note message version number for implementations which comply with this issue is T02. 
+This version number should be sent as DNAC code 206 in the DNA segment in the message file header 
+(CREHDR). See section 9 below. 
+ 
+ 
+3 Use of the Credit Note message 
+ 
+A TRADACOMS Credit Note file has four principal components: the file header message, CREHDR; the 
+credit note details message, CREDIT, which may be repeated as many times as are desired; the file 
+VAT trailer, VATTLR, which occurs once only in each file; and the file trailer CRETLR. 
+ 
+The credit note details message has three sections: the credit note “message level” segments MHD to 
+DNA; the credit note “line level” segments CLD and DNB; and the credit note “trailer” segments CST, 
+CTR and MTR. 
+ 
+Each of these sections of the Credit Note file is given a detailed commentary in sections 9 to 14 below. 
+In book trade practice an EDI Credit Note must have at least one credit note line, i.e., at least one CLD 
+segment. A Credit Note consisting only of a header and trailer is invalid. It is possible, however, to 
+send an EDI Credit Note in which the only line items are “sundry charges”. 
+ 
+ 
+4 VAT Procedures 
+ 
+The Credit Note message must be used in accordance with the requirements of HM Revenue and 
+Customs. Guidance as to current requirements should be obtained from HMRC. BIC cannot accept 
+responsibility for any failure to comply with VAT procedures. 
+ 
+ 
+5 Functions of the Credit Note message 
+ 
+The Credit Note message enables a supplier to communicate to a customer an original credit note 
+(transaction code 0740 in TYP TCDE). The EDI document is the VAT credit note, unless otherwise 
+agreed with HMRC. 
+ 
+The message could also be used to send a debit note from a customer to a supplier, but only when 
+agreed in advance between trading partners. This application is not covered in the present guidelines. 
+
+--- PAGE 6 ---
+CREDIT format for book trade credit notes 
+© Copyright BIC 2007 
+5 
+December 2022 
+ 
+ 
+ 
+ 
+6 VAT on Credit Note line items 
+ 
+For book trade purposes it is necessary to be able to handle products which are zero-rated, products 
+which carry the standard rate of VAT on their full price, and products which are part zero-rated and part 
+VAT-able at standard rate. The first two of these cases are straightforward, and are illustrated by the 
+following 2 examples: 
+ 
+ 
+Credit Note line for a zero-rated product: 2 books credited @ £9.99 each with 40% discount 
+ 
+QTYC 
+2 
+Quantity 
+UCRV 
+£5.9940 
+Unit credit value after discount and excluding VAT 
+EXLV 
+£11.9880 
+Extended line value 
+VATC 
+Z 
+Zero-rated 
+VATP 
+0 
+VAT percentage rate 
+UCRB 
+£9.9900 
+Unit credit value before discount and excluding VAT 
+(optional) 
+ 
+CLD=6+9780713639040++++2+59940+119880+Z+0+23++++99900′ 
+ 
+ 
+Credit Note line with standard rate VAT: 2 videos credited @ £9.99 (£8.50 + VAT) each with 40% 
+discount 
+ 
+QTYC 
+2 
+Quantity 
+UCRV 
+£5.1000 
+Unit credit value after discount and excluding VAT 
+EXLV 
+£10.2000 
+Extended line value: 2 x £5.10 
+VATC 
+S 
+Standard rate VAT 
+VATP 
+17.5 
+VAT percentage rate 
+UCRB 
+£8.5000 
+Unit credit value before discount and excluding VAT 
+(optional) 
+ 
+CLD=7+9780713639040++++2+51000+102000+S+17500+23++++85000′ 
+
+--- PAGE 7 ---
+CREDIT format for book trade credit notes 
+© Copyright BIC 2007 
+6 
+December 2022 
+ 
+ 
+Credit Note line with mixed-rate VAT (e.g. book & cassette pack) 
+ 
+The correct approach to handling a mixed-rate product is to use three credit note lines for the 
+transaction. The first line carries details which apply to the product and transaction as a whole, while 
+the second and third detail the component which is zero-rated and component which is VATable (or 
+vice versa – the order of the second and third lines is immaterial). 
+ 
+Example: 1 copy of book and cassette pack supplied, retail £37.50 with 40% discount: book £10.99, 
+cassette £26.51 (£22.56 + VAT): 
+ 
+Line 32 
+Pack 
+Line 33 
+Book 
+Line 34 
+Cassette 
+QTYC 
+1 
+1 
+1 
+Quantity 
+UCRV 
+£20.1312 
+£6.5940 
+£13.5372 
+Unit credit value after line discount and 
+excluding VAT 
+EXLV 
+£20.1312 
+£6.5940 
+£13.5372 
+Extended line value 
+VATC 
+A 
+Z 
+S 
+VAT rate code 
+VATP 
+0 
+0 
+17.500 
+VAT rate percentage 
+MIXI 
+0 
+1 
+2 
+Mixed-rate VAT item code 
+UCRB 
+£33.5520 
+£10.9900 
+£22.5620 
+Unit credit value before discount and 
+excluding VAT (optional) 
+0 
+0 
+£2.37 
+VAT amount on each line 
+ 
+CLD=32+9780563399104++++1+201312+201312+A+0+23+0+++335520′ 
+CLD=33+9780563399104++++1+65940+65940+Z+0+23+1+++109900′ 
+CLD=34+9780563399104++++1+135372+135372+S+17500+23+2+++225620′ 
+ 
+ 
+ 
+7 Additional Notes 
+7.1 Types of Credit Note 
+Credit notes may be regarded as being of four types: 
+(a) 
+Invoice and product specific, as in errors in line extensions 
+(b) 
+Invoice specific, product non-specific, as in totalling errors 
+(c) 
+Invoice non-specific, product specific, as in returns 
+(d) 
+Invoice and product non-specific, as in overriding discounts or rebates 
+The TRADACOMS Credit Note message format is designed to accommodate all four types within a 
+single framework, on the basis that certain data elements are conditional and may be omitted when 
+relevant data does not exist. 
+ 
+7.2 Absence of data 
+For a mandatory composite data element for which there is no available data, for example 
+CLD/SPRO where neither an EAN-13 nor ISBN-13 can be given, it is customary to place one zero 
+(0) in the first variable length sub-element, thus: 
+CLD=1+:0+... 
+The same principle applies for simple mandatory data elements (either alphanumeric or numeric). 
+The receiver of the file should be notified of data elements where this may occur in order that 
+exception processing can take place. 
+This is not, however, regarded as good EDI practice, and such cases should be the exception 
+rather than the rule. 
+
+--- PAGE 8 ---
+CREDIT format for book trade credit notes 
+© Copyright BIC 2007 
+7 
+December 2022 
+ 
+ 
+7.3 Debit lines on Credit Notes 
+Debit lines in Credit Notes are not used in book trade practice. 
+ 
+7.4 Handling of items for which credit has been refused (e.g., because items were returned 
+in unsaleable condition) 
+NOTE: the following is not recommended for new implementations. The recommended 
+formats for the handling of these items are the BIC Returns (IRI) messages. 
+If, on receipt of returns, credit is refused on some or all copies of a specified title, the credit note may 
+report this as follows: 
+(a) If credit is refused on all copies, there should be one CLD line in which the QTYC element 
+shows the number of copies returned; the monetary amounts UCRV and EXLV must both be 
+zero, and the CRRE element must carry the “reason for credit” code 52 indicating “credit 
+refused”. The DNB segment linked to CLD may optionally carry an RTEX element 981 
+allowing up to 40 characters of free text to explain why credit was refused. 
+(b) If credit is given on some copies and refused on others, there should be two CLD lines. 
+In the first line, the QTYC element shows the number of copies on which credit is given, and 
+the rest of the line is constructed in the normal way. 
+In the second line, the QTYC element shows the number of copies on which credit is refused; 
+the monetary amounts UCRV and EXLV are both zero; and the CRRE element carries the 
+“reason for credit” code 52 indicating “credit refused”. The DNB segment linked to CLD may 
+optionally carry an RTEX element 981 allowing up to 40 characters of free text to explain why 
+credit was refused. 
+Note: since the QTYC element is used to show positively the number of copies on which credit is being 
+refused, it is essential that UCRV should be zero, so that the rule EXLV = QTYC x UCRV still holds. 
+ 
+7.5 Supplier and customer details (SDT and CDT) 
+The supplier and customer details reported in the CREHDR message must be those relating to the 
+VAT identity of the issuer (SDT) and the recipient (CDT) of the credit note. These may not be the 
+physical locations of the supply or receipt of the goods or service to which the credit applies. 
+ 
+7.6 Control Totals 
+The following checklist summarises the calculations which are used in the Credit Note file where 
+applicable: 
+CLD segment 
+QTYC quantity credited 
+UCRV unit credit value after discount 
+EXLV nett credit value – EXLV = UCRV x QTYC 
+ 
+CST Segment (one per VAT rate) 
+LVLA = Σ EXLV 
+EVLA = LVLA - QYCA - VLDA 
+SEDA is calculated from the sum of those lines (EVLA) which attract settlement discount 
+ASDA = EVLA - SEDA 
+VATA is calculated from VATP applied to ASDA 
+APSE = EVLA + VATA 
+APSI = ASDA + VATA 
+ 
+TLR Segment 
+LVLT = Σ LVLA 
+QYCT = Σ QYCA 
+VLCT = Σ VLCA 
+EVLT = Σ EVLA 
+SEDT = Σ SEDA 
+
+--- PAGE 9 ---
+CREDIT format for book trade credit notes 
+© Copyright BIC 2007 
+8 
+December 2022 
+ 
+ 
+ASDT = Σ ASDA 
+TVAT = Σ VATA 
+TPSE = Σ APSE 
+TPSI = Σ APSI 
+ 
+VRS Segment (one per VAT rate) 
+VSDE = Σ EVLA 
+VSDI = Σ ASDA 
+VVAT = Σ VATA 
+VPSE = Σ APSE 
+VPSI = Σ APSI 
+VPSI - VPSE = VSDI - VSDE 
+ 
+TOT Segment 
+FASE = Σ VSDE = Σ EVLT = Σ EVLA 
+FASI = Σ VSDI = Σ ASDT = Σ ASDA 
+FVAT = Σ VVAT = Σ TVAT = Σ VATA 
+FPSE = Σ VPSE = Σ TPSE = Σ APSE 
+FPSI = Σ VPSI = Σ TPSI = Σ APSI 
+FPSI - FPSE = FASI - FASE 
+ 
+ 
+8 Example of Credit Note transmission 
+Note that for clarity each TRADACOMS segment in this example is shown as starting a new line. In 
+reality there are no carriage returns or line feeds within or at the end of a segment. Blocking of 
+TRADACOMS messages depends on the carrier medium and protocols adopted between trading 
+partners. 
+ 
+The example shows the use of the TRADACOMS Reconciliation Message to ensure the integrity of a 
+transmission. 
+ 
+This example shows an Original Credit Note: Publisher to Bookseller. It contains 1 credit line. 
+ 
+STX=ANAA:1+5023456789541:XYZ 
+PUBLISHER+5098765432156:ABC 
+BOOKSELLERS+070430:104133+9++INV 
+FIL' 
+Start of transmission: the sender’s EAN/GLN 
+number is the same as that of the supplier, in 
+SDT 
+MHD=1+CREHDR:9' 
+Message 1: credit note file header 
+TYP=0740' 
+Transaction code ‘original credit note’ 
+SDT=5023456789541' 
+Publisher’s EAN/GLN number – code explicitly 
+agreed with HMRC 
+CDT=5098765432156+ABC 
+BOOKSELLERS+STREET HOUSE:HIGH 
+STREET:NEWTOWN:NT3 4TS' 
+Bookseller’s EAN/GLN number + name and 
+address (required by HMRC) 
+DNA=1+206:T02' 
+BIC message version number T02 
+DNA=2+207:005' 
+BIC Code version number 005 
+FIL=43+1+070131' 
+File generation 43, file version 1, 31 Jan 2007 
+MTR=8' 
+End of message 1: 8 segments 
+MHD=2+CREDIT:9' 
+Message 2: 1st credit note message 
+CLO=::009188X' 
+Supplier’s reference for customer’s location 
+CRF=42079+070131+070131+658706' 
+Credit note number; credit note date, tax-point 
+date 31 January 2007; customer’s claim for 
+credit number 
+
+--- PAGE 10 ---
+CREDIT format for book trade credit notes 
+© Copyright BIC 2007 
+9 
+December 2022 
+ 
+ 
+ 
+CLD=1+9780711744509++++5+39780+ 
+198900+Z+0+22++++198900' 
+Credit note line 1: identified by ISBN-13; 5 
+copies; unit credit value £3.978; total credit 
+value £19.89; 
+zero-rated for VAT; reason for credit ‘22’; unit 
+credit value (before discount) £5.99 
+CST=1+Z+0+1+198900+++198900++198900 
++0++198900' 
+VAT rate credit sub-trailer: VAT at zero rate;1 
+item line; sub-total (before VAT) £19.89; 
+extended sub-total (before VAT) £19.89; VAT 
+amount £0; credit sub-total £19.89 
+CTR=1+198900+++198900++198900+0++19 
+8900' 
+Credit line trailer: No. of CST segments 1; lines 
+total (before VAT) £19.89; extended sub-total 
+(before VAT) £19.89; total VAT £0; total credit 
+£19.89 
+MTR=7' 
+End of message 2: 7 segments 
+MHD=3+VATTLR:9' 
+Message 3: VAT trailer 
+VRS=1+Z+0+198900+198900+0++ 
+198900' 
+VAT rate summary: VAT at zero rate; file sub- 
+total £19.89; VAT sub-total £0; file sub-total 
+payable £19.89 
+MTR=3' 
+End of message 3: 3 segments 
+MHD=4+CRETLR:9' 
+Message 4: credit note file trailer 
+TOT=198900+198900+0++198900+1' 
+File totals: file total amount £19.89; VAT total 
+amount £0; file total amount £19.89; 1 credit 
+note message 
+MTR=3' 
+End of message 4: 3 segments 
+MHD=5+RSGRSG:2' 
+Message 5: reconciliation message 
+RSG=9+5098765432156' 
+MTR=3' 
+End of message 5: 3 segments 
+END=5' 
+End of transmission: 5 messages 
+
+--- PAGE 11 ---
+CREDIT format for book trade credit notes 
+Credit Note file header 
+© Copyright BIC 2007 
+10 
+December 2022 
+ 
+ 
+ 
+PLEASE NOTE: the final column in the table in this version of the format contains an amalgamation of BIC ‘comments’ and TRADACOMS 
+‘remarks’. 
+ 
+ 
+9 Credit Note file header 
+Each Credit Note file begins with a file header CREHDR. The expected content of the Credit Note file header is as follows: 
+ 
+ 
+MHD 
+MESSAGE HEADER 
+M 
+One mandatory occurrence per credit note file header 
+= 
+MSRF 
+Message reference 
+M 
+V 
+9(12) 
+Consecutive count of messages within the file: start at 1 and increment by 1 for each 
+new message header. 
+TYPE 
+Type of message 
+M 
++ 
+Type 
+M 
+F 
+(X)6 
+Always 'CREHDR' 
+: 
+Version no 
+M 
+F 
+9(1) 
+Always '9' for this version 
+ 
+Example: 
+MHD=1+CREHDR:9' 
+Message number 1 in this file 
+ 
+ 
+TYP 
+TRANSACTION TYPE DETAILS 
+M 
+One mandatory occurrence per credit note file header, to specify the type of 
+credit note. Credit note types must not be mixed within a single credit note file. 
+= 
+TCDE 
+Transaction code 
+M 
+F 
+9(4) 
+Code List 2: the only BIC authorised value is: 
+0740 Original credit note – VAT credit note 
+If HMRC have authorised the parties to continue to treat a paper credit note as the 
+VAT document, and to send an electronic copy, the following value may be used: 
+0749  Copy credit note – not for VAT purposes 
++ 
+TTYP 
+Transaction type 
+C 
+V 
+X(12) 
+Do not use: this field is redundant. 
+ 
+Example: 
+TYP=0740' 
+Message containing original credit notes 
+
+--- PAGE 12 ---
+CREDIT format for book trade credit notes 
+Credit Note file header 
+© Copyright BIC 2007 
+11 
+December 2022 
+ 
+ 
+ 
+ 
+ 
+ 
+SDT 
+SUPPLIER DETAILS 
+M 
+One mandatory occurrence per credit note file header, to identify the supplier 
+who is the sender of the credit note file. 
+SIDN 
+Supplier's identity 
+M 
+One mandatory occurrence per SDT segment, to give the coded identity of the supplier, 
+preferably as an EAN location number (GLN). Either a GLN or an alternative supplier 
+code (or both) must be sent. 
+= 
+Supplier's EAN location number 
+C 
+F 
+9(13) 
+EAN location number (GLN) identifying the supplier. 
+: 
+Supplier's identity allocated by 
+customer 
+C 
+V 
+X(17) 
+An alternative supplier code as agreed between the trading partners if an EAN location 
+number cannot be used. 
++ 
+SNAM 
+Supplier's name 
+C 
+V 
+X(40) 
+Supplier's legal name as printed on invoices. Required by HMRC unless a code + 
+method by which it is used has been explicitly approved. 
+SADD 
+Supplier's address 
+C 
+A maximum of five lines to give the supplier's address. Required by HMRC unless a code 
++ method by which it is used has been explicitly approved. 
++ 
+Supplier's address line 1 
+C 
+V 
+X(35) 
+: 
+Supplier's address line 2 
+C 
+V 
+X(35) 
+: 
+Supplier's address line 3 
+C 
+V 
+X(35) 
+: 
+Supplier's address line 4 
+C 
+V 
+X(35) 
+: 
+Supplier's post code 
+C 
+V 
+X(8) 
+VATN 
+Supplier's VAT registration no 
+C 
+Supplier’s VAT registration number is mandatory even if the whole credit note is zero- 
+rated. 
++ 
+VAT number – numeric 
+C 
+F 
+9(9) 
+Trader's VAT number allocated by HM Revenue & Customs. 
+: 
+VAT number – alphanumeric 
+C 
+V 
+X(17) 
+Government department or non-UK VAT number. 
+ 
+Example: 
+SDT=5012345678987+ABC Book Services 
+Ltd+ABC Trading Estate:ABC:::TW25 
+0XY+987654321' 
+Supplier’s EAN/GLN location number, name, address and VAT number. 
+
+--- PAGE 13 ---
+CREDIT format for book trade credit notes 
+Credit Note file header 
+© Copyright BIC 2007 
+12 
+December 2022 
+ 
+ 
+ 
+ 
+CDT 
+CUSTOMER DETAILS 
+M 
+One mandatory occurrence per credit note file header, to identify the customer to 
+whom the credit note file is addressed. 
+CIDN 
+Customer's identity 
+M 
+= 
+Customer's EAN location no 
+C 
+F 
+9(13) 
+EAN location number (GLN) identifying the customer. Use of the EAN number is 
+strongly recommended. 
+: 
+Customer's identity allocated by 
+supplier 
+C 
+V 
+X(17) 
+An alternative customer code as agreed between the trading partners if an EAN 
+location number cannot be used. This may be the customer’s SAN. 
++ 
+CNAM 
+Customer's name 
+C 
+V 
+X(40) 
+Customer's registered legal name. Required by HMRC unless a code + method by which 
+it is used has been explicitly approved. 
+CADD 
+Customer's address 
+C 
+A maximum of five lines to give the customer's address. Required by HMRC unless a 
+code + method by which it is used has been explicitly approved. 
++ 
+Customer's address line 1 
+C 
+V 
+X(35) 
+: 
+Customer's address line 2 
+C 
+V 
+X(35) 
+: 
+Customer's address line 3 
+C 
+V 
+X(35) 
+: 
+Customer's address line 4 
+C 
+V 
+X(35) 
+: 
+Customer's post code 
+C 
+V 
+X(8) 
+VATR 
+Customer's VAT registration no 
+C 
+Required only in credit notes that cover supply to a customer in a different EU country 
+(for which TRADACOMS may not normally be used). 
++ 
+VAT registration no – numeric 
+C 
+F 
+9(9) 
+UK VAT number allocated by HM Revenue & Customs. 
+: 
+VAT registration no – 
+alphanumeric 
+C 
+V 
+X(17) 
+Government department or non-UK VAT number. 
+ 
+Example: 
+CDT=5098765432123+XYZ Bookshop+234 High 
+Street:XYZ:::XY1 5AB' 
+Customer’s EAN/GLN location number, name and address. 
+
+--- PAGE 14 ---
+CREDIT format for book trade credit notes 
+Credit Note file header 
+© Copyright BIC 2007 
+13 
+December 2022 
+ 
+ 
+ 
+ 
+DNA 
+DATA NARRATIVE 
+C 
+Two occurrences are recommended, but not mandatory, to show the BIC 
+message and code list versions used in the credit note file. May also be used to 
+specify a currency code as indicated. 
+= 
+SEQA 
+First level sequence number 
+M 
+V 
+9(10) 
+Starts at 1 and incremented by 1 for each repeat of this segment in this message. 
+DNAC 
+Data narrative code 
+C 
+Use only for BIC message and code list version number. 
++ 
+Code table number 
+C 
+V 
+9(4) 
+Number of relevant code list: 
+206 
+BIC message version number: T02 for this issue 
+207 
+BIC code list version number 
+: 
+Code value 
+C 
+V 
+X(3) 
+Code value from code list 
+RTEX 
+Registered text 
+C 
+The only RTEX code which may be used in this segment is: 
+073 Currency code, format X(3) (see ANA list 31). Used here to specify a default 
+currency for the message, mandatory when the currency is not £ sterling 
++ 
+1st registered application code 
+C 
+V 
+X(3) 
+: 
+Application text 
+C 
+V 
+X(40) 
+: 
+2nd registered application code 
+C 
+V 
+X(3) 
+: 
+Application text 
+C 
+V 
+X(40) 
+: 
+3rd registered application code 
+C 
+V 
+X(3) 
+: 
+Application text 
+C 
+V 
+X(40) 
+: 
+4th registered application code 
+C 
+V 
+X(3) 
+: 
+Application text 
+C 
+V 
+X(40) 
+GNAR 
+General narrative 
+C 
+Do not use 
++ 
+General narrative line 1 
+C 
+V 
+X(40) 
+: 
+General narrative line 2 
+C 
+V 
+X(40) 
+: 
+General narrative line 3 
+C 
+V 
+X(40) 
+: 
+General narrative line 4 
+C 
+V 
+X(40) 
+ 
+Example: 
+DNA=1+206:T02' 
+Credit Note version T02 
+DNA=2+207:005' 
+BIC code lists issue 005 
+
+--- PAGE 15 ---
+CREDIT format for book trade credit notes 
+Credit Note file header 
+© Copyright BIC 2007 
+14 
+December 2022 
+ 
+ 
+ 
+ 
+FIL 
+FILE DETAILS 
+M 
+One occurrence is mandatory in each credit note file header to specify the file 
+sequence number, version number and date 
+= 
+FLGN 
+File generation number 
+M 
+V 
+9(4) 
+This number must be sequential for each successive Credit Note file exchanged 
+between trading partners, regardless of the route by which it is sent, to enable the 
+receiver to check if a file has been missed. 
++ 
+FLVN 
+File version number 
+M 
+V 
+9(4) 
+Indicates when more than one attempt has been made to send the same file: for each 
+retransmission, FLVN is increased by 1, while FLGN remains the same; the original 
+transmission is always '1'. 
++ 
+FLDT 
+File creation date 
+M 
+F 
+9(6) 
+Date the file is created. Format: YYMMDD 
++ 
+FLID 
+File (reel) identification 
+C 
+V 
+X(6) 
+Reference on the outside of the reel containing the file: do not use. This field is 
+applicable only if TRADACOMS files are exchanged on optical or magnetic media. 
+ 
+Example: 
+FIL=1207+1+070302' 
+File sequence number 1207, original transmission, created 2 March 2007 
+
+--- PAGE 16 ---
+CREDIT format for book trade credit notes 
+Credit Note file header 
+© Copyright BIC 2007 
+15 
+December 2022 
+ 
+ 
+ 
+ 
+MTR 
+MESSAGE TRAILER 
+M 
+One mandatory occurrence per credit note file header 
+= 
+NOSG 
+Number of segments in message 
+M 
+V 
+9(10) 
+Control count of the number of segments comprising the CREHDR credit note file 
+header. The count includes the MHD and MTR segments surrounding the header. 
+ 
+Example: 
+MTR=8' 
+Eight segments, including two occurrences of DNA 
+ 
+ 
+ 
+Example of a complete Credit Note file header: 
+MHD=1+CREHDR:9' 
+Message header 
+TYP=0740' 
+Transaction code: “original credit note” 
+SDT=5012345678987+ABC Book Services 
+Ltd+ABC Trading Estate:ABC:::TW25 
+0XY+987654321' 
+Supplier EAN/GLN location code, name, address and VAT number 
+CDT=5098765432123+XYZ Bookshop+234 High 
+Street:XYZ:::XY1 5AB' 
+Customer EAN/GLN location code, name and address 
+DNA=1+206:T02' 
+BIC message version number T02 
+DNA=2+207:005' 
+BIC code list version number 005 
+FIL=4125+1+070302' 
+File sequence number 4125, original transmission, 2 March 2007 
+MTR=8' 
+Message trailer: eight segments 
+
+--- PAGE 17 ---
+CREDIT format for book trade credit notes 
+Credit Note message 
+© Copyright BIC 2007 
+16 
+December 2022 
+ 
+ 
+ 
+ 
+ 
+10 Credit Note “message level” content 
+A Credit Note file must carry one or more credit note messages, identified as "CREDIT". Each credit note message begins with a group of 
+“message level” segments MHD to DNA, whose content is as follows: 
+ 
+ 
+MHD 
+MESSAGE HEADER 
+M 
+One mandatory occurrence per credit note message 
+= 
+MSRF 
+Message reference 
+M 
+V 
+9(12) 
+Consecutive count of messages within the file 
+TYPE 
+Type of message 
+M 
++ 
+Type 
+M 
+F 
+X(6) 
+Always 'CREDIT' 
+: 
+Version number 
+M 
+F 
+9(1) 
+Always '9' for this version 
+ 
+Example: 
+MHD=2+CREDIT:9' 
+Message number 2 in this file 
+ 
+ 
+CLO 
+CUSTOMER'S LOCATION 
+M 
+One occurrence is mandatory in each credit note message to identify the delivery 
+location for the items credited, preferably expressed as an EAN location number 
+or as an alternative agreed code. Must be included even if it is the same as CDT 
+in the file header. 
+CLOC 
+Customer's location 
+M 
+One of the following three customer references must be present: 
+= 
+Customer's EAN location 
+number 
+C 
+F 
+9(13) 
+EAN location number (GLN) identifying the customer's location. 
+: 
+Customer's own location code 
+C 
+V 
+X(17) 
+Customer's own identity for the location: eg branch or department code. 
+: 
+Supplier's identification of 
+customer's location 
+C 
+V 
+X(17) 
+Supplier's reference for the customer's location: SAN of customer's delivery location. 
++ 
+CNAM 
+Customer's name 
+C 
+V 
+X(40) 
+Customer's registered legal name. The CNAM element is not recommended – the 
+coded ID in CLOC is sufficient. 
+ 
+(continued) 
+
+--- PAGE 18 ---
+CREDIT format for book trade credit notes 
+Credit Note message 
+© Copyright BIC 2007 
+17 
+December 2022 
+ 
+ 
+ 
+ 
+CLO 
+CUSTOMER’S LOCATION (continued) 
+CADD 
+Customer's address 
+C 
+A maximum of five lines to give the customer's address. The CADD element is not 
+recommended – the coded ID in CLOC is sufficient. 
++ 
+Customer's address line 1 
+C 
+V 
+X(35) 
+: 
+Customer's address line 2 
+C 
+V 
+X(35) 
+: 
+Customer's address line 3 
+C 
+V 
+X(35) 
+: 
+Customer's address line 4 
+C 
+V 
+X(35) 
+: 
+Customer's post code 
+C 
+V 
+X(8) 
+ 
+ 
+CRF 
+CREDIT NOTE REFERENCES 
+M 
+One mandatory occurrence per credit note message to specify the Credit note 
+date and the Tax-point Date. 
+= 
+CRNR 
+Credit note number 
+M 
+V 
+X(17) 
+Credit note number as allocated by the supplier. 
++ 
+CRDT 
+Credit note date 
+M 
+F 
+9(6) 
+Format: YYMMDD 
++ 
+TXDT 
+Tax-point date 
+M 
+F 
+9(6) 
+Format: YYMMDD 
++ 
+DNNR 
+Debit note number 
+C 
+V 
+X(17) 
+Number of debit note/claim for credit raised by customer. 
+Mandatory if customer supplied a reference 
++ 
+DNDT 
+Debit note date 
+C 
+F 
+9(6) 
+Do not use 
++ 
+CNNR 
+Collection note number 
+C 
+V 
+X(17) 
+Number of supplier’s collection note. 
+Mandatory to show the supplier’s authorisation number when credit has been given 
+under the BIC returns authorisation process. Any RAN (Returns Authorisation Number) 
+should be quoted here. 
+Otherwise, not used. 
++ 
+CNDT 
+Collection note date 
+C 
+F 
+9(6) 
+Do not use 
+
+--- PAGE 19 ---
+CREDIT format for book trade credit notes 
+Credit Note message 
+© Copyright BIC 2007 
+18 
+December 2022 
+ 
+ 
+ 
+PYT 
+SETTLEMENT TERMS 
+C 
+This segment is used to specify the settlement terms which apply to the original 
+invoice. The most favourable must be used for VAT calculation. 
+BIC recommends either of the following 2 options: 
+Payment terms expressed as the number of days from date of invoice, using 
+PAYY. e.g.: PYT=1+++30′ 
+Payment terms expressed as a fixed date, using PAYD. e.g.: PYT=1++060930:0′ 
+Free text in PAYT should never be used. Where standard payment terms are 
+established by trading partner agreement outside EDI. The PYT segment may be 
+omitted. Where non-standard payment terms are stated in PYT, they should be 
+accompanied by a special deal reference in SCRF. 
+= 
+SEQA 
+First level sequence number 
+M 
+V 
+9(10) 
+Starts at 1 and incremented by 1 for each repeat of this segment in this message. 
+(continued) 
+
+--- PAGE 20 ---
+CREDIT format for book trade credit notes 
+Credit Note message 
+© Copyright BIC 2007 
+19 
+December 2022 
+ 
+ 
+ 
+ 
+PYT 
+SETTLEMENT TERMS (continued) 
++ 
+PAYT 
+Terms of payment 
+C 
+V 
+X(40) 
+Text description of settlement terms: do not use. 
+PAYD 
+Payment date and terms 
+C 
+Settlement terms agreed between buyer and seller, expressed in terms of payment due 
+date and percentage. 
+The sub-element Settlement Discount Percentage is mandatory (while it is optional in 
+PAYY). If the due date is expressed as a fixed date in PAYD, and there is no 
+settlement discount, the sub-element should carry a single zero. 
++ 
+Payment date 
+M 
+F 
+9(6) 
+Date that payment should be made available to the payee to obtain the specified 
+discount. 
+: 
+Settlement discount percentage 
+M 
+V 
+9(3)V9(3) 
+Percentage discount applicable. 
+PAYY 
+Settlement terms 
+C 
++ 
+Number of days 
+M 
+V 
+9(3) 
+Days until payment is due is defined as the number of calendar days after a reference 
+date that the payment is to be made available to the payee. The ‘reference date’ is the 
+date of invoice unless otherwise specified in the parties’ trading agreement. 
+: 
+Settlement discount percentage 
+C 
+V 
+9(3)V9(3) 
+Percentage discount applicable. 
+: 
+Settlement code 
+C 
+V 
+X(3) 
+User defined code for settlement terms. 
+ 
+Example: 
+CLO=5012345678907' 
+EAN/GLN location number only 
+CRF=517539+070123+070123' 
+Credit note number 517539; date of credit note 23rd Jan 2007; tax-point date 23rd Jan 
+2007 
+PYT=++30' 
+Payment terms 30 days from date of invoice 
+
+--- PAGE 21 ---
+CREDIT format for book trade credit notes 
+Credit Note message 
+© Copyright BIC 2007 
+20 
+December 2022 
+ 
+ 
+ 
+ 
+OIR 
+ORIGINAL INVOICE 
+REFERENCES 
+C 
+This segment is used to give the invoice number, invoice date and tax-point date 
+of the invoice(s) to which a credit note refers. 
+OIR is repeatable 
+= 
+SEQA 
+First level sequence number 
+M 
+V 
+9(10) 
+Starts at 1 and incremented by 1 for each repeat of this segment in this message. 
++ 
+INVN 
+Invoice number 
+C 
+V 
+X(17) 
+As allocated by the supplier. The invoice to which the credit refers 
++ 
+IVDT 
+Date of invoice 
+C 
+F 
+9(6) 
+Format: YYMMDD 
++ 
+TXDT 
+Tax-point date 
+C 
+F 
+9(6) 
+Format: YYMMDD 
+ORNO 
+Order number and date 
+C 
++ 
+Customer’s order number 
+C 
+V 
+X(17) 
+Do not use 
+: 
+Supplier’s order number 
+C 
+V 
+X(17) 
+Do not use 
+: 
+Date order placed by customer 
+C 
+F 
+9(6) 
+Do not use 
+: 
+Date order received by supplier 
+C 
+F 
+9(6) 
+Do not use 
+SCRF 
+Specification/Contract references 
+C 
+Do not use the Specification number sub-element. The Contract number sub-element 
+may be used to carry a reference number identifying a special deal whose terms have 
+been applied to the order, and/or a promotion number where a publisher and bookseller 
+have agreed special terms for a promotion 
++ 
+Specification number 
+C 
+V 
+X(17) 
+Do not use 
+: 
+Contract number 
+C 
+V 
+X(17) 
+Contract number to which order relates. 
+Use to identify a special deal or publisher’s promotion 
+ 
+Example: 
+CLO=5012345678907' 
+EAN/GLN location number only 
+CRF=517539+070123+070123+H123675++A172098' 
+Credit note number 517539; credit note date 23rd Jan 2007; tax-point date 23rd Jan 
+2007; customer reference no. H123675; authorisation no. A172098 
+OIR=1+IN8765+061220+061220' 
+Original invoice number IN8765; invoice date/tax-point date 20th December 2006 
+
+--- PAGE 22 ---
+CREDIT format for book trade credit notes 
+Credit Note message 
+© Copyright BIC 2007 
+21 
+December 2022 
+ 
+ 
+ 
+ 
+DNA 
+DATA NARRATIVE 
+C 
+One or more occurrences are optional to carry coded or free text elements as 
+specified below. This segment carries information which qualifies the credit note 
+message as a whole. 
+= 
+SEQA 
+First level sequence number 
+M 
+V 
+9(10) 
+Starts at 1 and incremented by 1 for each first level repeat 
+DNAC 
+Data narrative code 
+C 
+Coded data identified by a code list number. No DNAC codes have so far been 
+allocated to be used in this segment 
++ 
+Code table number 
+C 
+V 
+9(4) 
+: 
+Code value 
+C 
+V 
+X(3) 
+A value from the specified code list 
+RTEX 
+Registered text 
+C 
+Data elements identified by RTEX codes from Code List 24. 
+The same RTEX element may be repeated up to four times, or up to four different 
+RTEX elements may be sent in one Data Narrative segment. The only valid RTEX 
+code in this context is: 
+979 Supplier’s internal code for invoice or credit note type. 
++ 
+1st registered application code 
+C 
+V 
+X(3) 
+: 
+Application text 
+C 
+V 
+X(40) 
+: 
+2nd registered application code 
+C 
+V 
+X(3) 
+: 
+Application text 
+C 
+V 
+X(40) 
+: 
+3rd registered application code 
+C 
+V 
+X(3) 
+: 
+Application text 
+C 
+V 
+X(40) 
+: 
+4th registered application code 
+C 
+V 
+X(3) 
+: 
+Application text 
+C 
+V 
+X(40) 
+GNAR 
+General narrative 
+C 
+Do not use 
++ 
+General narrative line 1 
+C 
+V 
+X(40) 
+: 
+General narrative line 2 
+C 
+V 
+X(40) 
+: 
+General narrative line 3 
+C 
+V 
+X(40) 
+: 
+General narrative line 4 
+C 
+V 
+X(40) 
+
+--- PAGE 23 ---
+CREDIT format for book trade credit notes 
+Credit Note message 
+© Copyright BIC 2007 
+22 
+December 2022 
+ 
+ 
+ 
+ 
+11 Credit Note “line level” content 
+A Credit Note message may carry one or more credit note lines. Each credit note line consists of a group of “line level” segments CLD to DNB, 
+whose content is as follows: 
+ 
+ 
+CLD 
+CREDIT NOTE LINE DETAILS 
+M 
+One occurrence is mandatory in each credit note line 
+For details on handling items on which credit has been refused see section 7.4 
+= 
+SEQA 
+First level sequence number 
+M 
+V 
+9(10) 
+Starts at 1 and is incremented by 1 for each segment of this type in the message. 
+SPRO 
+Supplier's product number 
+M 
+Must be identical to ILD/SPRO in the corresponding Invoice line. 
+Where possible the EAN-13 article number should be included. 
++ 
+EAN-13 article number for the 
+traded unit 
+C 
+F 
+9(13) 
+EAN-13 article number or ISBN-13, except when the credit relates to an invoice line for 
+a sundry charge (see below), when this sub-element is not used. 
+: 
+Supplier's code for the traded 
+unit 
+C 
+V 
+X(30) 
+(a) ISBN-10, without hyphens or spaces. If no EAN-13, ISBN-13 or ISBN-10 is 
+available, insert a single zero in this subfield and send description in TDES 
+segment. This will almost inevitably mean that the credit note line will be placed 
+into an exception routine for manual processing. 
+Note: from January 2007 an ISBN-10 should no longer be transmitted. However, 
+trading partners should be prepared to accept them on incoming messages. 
+(b) When the credit relates to an invoice line for a sundry charge, the applicable 
+charge code from Code List 205 is carried here 
+: 
+DUN-14 code for the traded unit 
+C 
+F 
+9(14) 
+Do not use 
+ 
+(continued ) 
+
+--- PAGE 24 ---
+CREDIT format for book trade credit notes 
+Credit Note message 
+© Copyright BIC 2007 
+23 
+December 2022 
+ 
+ 
+ 
+ 
+CLD 
+CREDIT NOTE LINE DETAILS (continued) 
++ 
+SACU 
+Supplier's EAN Code for the 
+designated consumer unit 
+C 
+F 
+9(13) 
+Do not use 
+CPRO 
+Customer's product number 
+C 
+Do not use 
++ 
+Customer's own brand EAN 
+number 
+C 
+F 
+9(15) 
+: 
+Customer's item code 
+C 
+V 
+X(30) 
+UNOR 
+Unit of ordering 
+C 
++ 
+Consumer units in traded unit 
+C 
+V 
+9(15) 
+Number of consumer units making up the supplier's traded unit. Mandatory if UNOR is 
+used: always 1 in book supply. 
+: 
+Ordering measure 
+C 
+V 
+9(10)V9(3) 
+Do not use 
+: 
+Measure indicator 
+C 
+V 
+X(6) 
+Do not use 
+QTYC 
+Quantity credited 
+M 
+See section 7.5 for details when credit has been refused on some or all items 
++ 
+Number of traded units credited 
+C 
+V 
+9(15) 
+Mandatory: number of copies credited. The number must be the credited quantity of the 
+product given in the corresponding CLD/SPRO. If that item is a dumpbin or similar, it 
+represents the number of complete units, not the total number of copies which they 
+carry. 
+: 
+Total measure ordered 
+C 
+V 
+9(10)V9(3) 
+Do not use 
+: 
+Measure indicator 
+C 
+V 
+X(6) 
+Do not use 
+UCRV 
+Unit credit value (excluding VAT) 
+M 
+Credit value of each unit being credited, after line discount and excluding VAT. 
+EXLV is the credit value of the line after line discount. 
+EXLV = UCRV x QTYC 
+Note: if credit has been refused on some or all items this amount may be zero – see 
+section 7.5 for details 
++ 
+Credit value (excluding VAT) 
+M 
+V 
+9(10)V9(4) 
+Credit value of each unit being credited in pounds, ie after deducting line discounts, etc, 
+but before the application of VAT. See above for method of calculation. 
+: 
+Measure indicator 
+C 
+V 
+X(6) 
+Do not use 
++ 
+EXLV 
+Nett credit value (excluding VAT) 
+M 
+V 
+9(10)V9(4) 
+Total credit value of line after deducting line discounts, etc, but before the application of 
+VAT. 
+Note: if credit has been refused on some or all items this amount may be zero – see 
+section 7.5 for details 
+See above for method of calculation. 
+ 
+(continued) 
+
+--- PAGE 25 ---
+CREDIT format for book trade credit notes 
+Credit Note message 
+© Copyright BIC 2007 
+24 
+December 2022 
+ 
+ 
+ 
+CLD 
+CREDIT NOTE LINE DETAILS (continued) 
++ 
+VATC 
+VAT Rate category code 
+M 
+F 
+X(1) 
+Use Code values from Code List 12. 
++ 
+VATP 
+Vat Rate percentage 
+M 
+V 
+9(3)V9(3) 
+Percentage rate for VAT Category code. 
+CRRE 
+Reason for credit 
+M 
+Sub-element ANA credit reason code is mandatory. 
+Do not use any other sub-elements 
++ 
+ANA credit reason code 
+C 
+F 
+X(2) 
+Use value from Code List 13. 
+When credit has been given under the BIC returns authorisation process it is sufficient 
+to use the single code value 49 irrespective of the original reason for claiming credit 
+: 
+Trading partner’s own code 
+C 
+V 
+X(2) 
+Do not use 
+: 
+Credit reason description 
+C 
+V 
+X(40) 
+Do not use 
++ 
+MIXI 
+Mixed VAT Rate product indicator 
+C 
+F 
+9(1) 
+Only use for line with mixed-rate VAT. 
+Value 0 (zero) for the invoice item line for a composite product with component groups 
+with different VAT rate codes. Starts at 1 and is incremented by 1 for each following 
+credit note item line for the component groups. 
++ 
+DRLI 
+Debitit Line indicator 
+C 
+V 
+X(4) 
+Do not use 
+TDES 
+Traded unit description 
+C 
+This element should only be used when the original order line had no product code and 
+the item was therefore ordered by description. 
+In all other cases TDES need not, and preferably should not, be sent. 
++ 
+Traded unit description line 1 
+C 
+V 
+X(40) 
+Author 
+: 
+Traded unit description line 2 
+C 
+V 
+X(40) 
+Title 
++ 
+UCRB 
+Unit credit value (excluding 
+discount and VAT) 
+C 
+V 
+9(10)V9(4) 
+Unit credit value before line discount and excluding VAT. 
+For books, effectively the recommended retail price 
++ 
+CDSV 
+Credit discount value 
+C 
+V 
+9(10)V9(4) 
+Do not use 
+ 
+(continued) 
+
+--- PAGE 26 ---
+CREDIT format for book trade credit notes 
+Credit Note message 
+© Copyright BIC 2007 
+25 
+December 2022 
+ 
+ 
+ 
+ 
+CLD 
+CREDIT NOTE LINE DETAILS (continued) 
++ 
+IGPI 
+Item Group identifier 
+C 
+V 
+X(4) 
+Use code values from Code List 10. 
+Use only in credit note lines for charges which are specified by a code from BIC Code 
+List 205. 
+I = charge applied at line level, relating to the preceding main line item. 
+G = charge applied independently of any individual line item. 
+SCRF 
+Specification/ Contract references 
+C 
+Do not use the Specification Number sub-element. The Contract Number sub-element 
+may be used to carry a reference number identifying a special deal whose terms have 
+been applied to the individual credit note line, and/or a promotion number where a 
+publisher and bookseller have agreed special terms for a promotion. 
++ 
+Specification number 
+C 
+V 
+X(17) 
+Do not use 
+: 
+Contract number 
+C 
+V 
+X(17) 
+Contract number to which the order line being credited relates. 
+Use to identify a special deal or publisher’s promotion 
+ 
+ 
+Example showing credit note line for a zero-rated product 
+CLD=6+9780713639040++++2+99687+199375+Z+0+ 
+23++++159500' 
+2 copies of EAN-13 9780713639040 invoiced 
+Unit credit value £9.9687, extended line value £19.9375 
+VAT rate code ‘Z’ to signify zero-rate item 
+Unit credit value £15.9500 (optional) 
+(Discount percentage 37.5%) 
+
+--- PAGE 27 ---
+CREDIT format for book trade credit notes 
+Credit Note message 
+© Copyright BIC 2007 
+26 
+December 2022 
+ 
+ 
+ 
+ 
+Example showing credit note line with standard rate VAT 
+CLD=7+978012345678X++++2+51000+102000+S+17 
+500+23++++85000' 
+2 copies of EAN-13 978012345678X invoiced (videos) 
+Unit credit value £5.1000, extended line value: 2 x £5.10 (£10.2000) 
+VAT rate code ‘S’ to signify standard-rate item, percentage 17.5% 
+Unit credit value excluding discount and VAT £8.5000 (optional) 
+ 
+ 
+ 
+Example showing credit note line with mixed-rate VAT (eg: book and cassette pack). 
+A mixed-rate product requires 3 or more credit note lines for each transaction. The first line carries details which apply to the product and 
+transaction as a whole, while 2nd and subsequent lines detail the components (see section 6) 
+CLD=32+9780563399104++++1+201312+201312+A+ 
+0+23+0+++335520' 
+Line 32. 1 copy of EAN-13 9780563399104 credited (book + cassette pack) 
+Unit credit value £20.1312, extended line value £20.1312 
+VAT rate code ‘A’ to signify mixed-rate item (no VAT applied), mixed-rate VAT item 
+code 0 
+Unit credit value before discount and excluding VAT £33.5520 (optional) 
+CLD=33+9780563399104++++1+65940+65940+Z+0+ 
+Line 33. 1 copy of EAN-13 9780563399104 invoiced (book) 
+23+1+++109900' 
+Unit credit value £6.5940, extended line value £6.5940 
+VAT rate code ‘Z’ to signify zero-rate item, mixed-rate VAT item code 1 
+Unit credit value before discount and excluding VAT £10.9900 (optional) 
+CLD=34+9780563399104++++1+135372+135372+S+ 
+Line 34. 1 copy of EAN-13 9780563399104 invoiced (cassette) 
+17500+23+2+++225620' 
+Unit credit value £13.5372, extended line value £13.5372 
+VAT rate code ‘S’ to signify standard-rate item (at 17.5%), mixed-rate VAT item code 2 
+Unit credit value before discount and excluding VAT £22.5620 (optional) 
+
+--- PAGE 28 ---
+CREDIT format for book trade credit notes 
+Credit Note message 
+© Copyright BIC 2007 
+27 
+December 2022 
+ 
+ 
+ 
+ 
+ 
+DNB 
+DATA NARRATIVE 
+C 
+This segment carries information which qualifies the credit note line. 
+= 
+SEQA 
+First level sequence number 
+M 
+V 
+9(10) 
+Must match CLD/SEQA in the line to which the DNB segment belongs. 
++ 
+SEQB 
+Third level sequence number 
+M 
+V 
+9(10) 
+Starts at 1 and incremented by 1 for each repeat of this segment in the CLD-DNB 
+group. 
+DNAC 
+Data narrative code 
+C 
+Coded data identified by a code list number 
++ 
+Code table number 
+C 
+V 
+9(4) 
+No DNAC codes have so far been allocated to be used in this segment 
+: 
+Code value 
+C 
+V 
+X(3) 
+A value from the specified code list 
+RTEX 
+Registered text 
+C 
+Data elements identified by RTEX codes from Code List 24. The same RTEX element 
+may be repeated up to four times, or up to four different RTEX elements may be sent in 
+one Data Narrative segment. The only valid RTEX codes which may be used in this 
+segment are: 
+73 
+Currency code, format X(3). Any currency specified here will overrule that 
+specified at file level (or “sterling” if none specified at file level) 
+74 
+Suggested retail price (inc VAT): 9(10)V9(2) (for the current retail price of the 
+item credited 
+981 
+Free text field of 40 characters – to explain the reason why credit was refused 
++ 
+1st registered application code 
+C 
+V 
+X(3) 
+: 
+Application text 
+C 
+V 
+X(40) 
+: 
+2nd registered application code 
+C 
+V 
+X(3) 
+: 
+Application text 
+C 
+V 
+X(40) 
+: 
+3rd registered application code 
+C 
+V 
+X(3) 
+: 
+Application text 
+C 
+V 
+X(40) 
+: 
+4th registered application code 
+C 
+V 
+X(3) 
+: 
+Application text 
+C 
+V 
+(X40) 
+ 
+(continued) 
+
+--- PAGE 29 ---
+CREDIT format for book trade credit notes 
+Credit Note message 
+© Copyright BIC 2007 
+28 
+December 2022 
+ 
+ 
+ 
+ 
+DNB 
+DATA NARRATIVE (continued) 
+GNAR 
+General narrative 
+C 
+Do not use 
++ 
+General narrative line 1 
+C 
+V 
+X(40) 
+: 
+General narrative line 2 
+C 
+V 
+X(40) 
+: 
+General narrative line 3 
+C 
+V 
+X(40) 
+: 
+General narrative line 4 
+C 
+V 
+X(40) 
+ 
+ 
+ 
+Example: 
+DNB=1+1++74:699' 
+Segment 1.1. Suggested retail price (inc VAT) £6.99 
+
+--- PAGE 30 ---
+CREDIT format for book trade credit notes 
+Credit Note message 
+© Copyright BIC 2007 
+29 
+December 2022 
+ 
+ 
+ 
+ 
+ 
+ 
+12 Credit Note message trailer 
+ 
+ 
+CST 
+VAT RATE CREDIT SUB- 
+TRAILER 
+M 
+Mandatory: repeated for each ‘real’ VAT rate appearing in the credit note 
+message. 
+For the purposes of deciding the number of times the CST segment must be 
+repeated, the potentially relevant VAT rate category codes are: S, Z, E but not A 
+(mixed rate) - since mixed rate items are covered under each of the component 
+rates concerned, nor X, H, L - do not occur in UK book trade practice 
+All values are in pounds 
+= 
+SEQA 
+First level sequence number 
+M 
+V 
+9(10) 
+Starts at 1 and incremented by 1 for each repeat of this segment 
++ 
+VATC 
+VAT Rate category code 
+M 
+F 
+X(1) 
+Use code values from Code List 12 
+In current book trade conditions, the only code values which may in practice occur here 
+are: 
+S 
+Standard rate 
+Z 
+Zero-rated or Export item (if VAT exemption can be claimed for this reason 
+O 
+ Outside scope of VAT (if publisher is below VAT threshold) 
+Each credit note message must carry one and only one CST segment for each code 
+value which occurs in the message. 
++ 
+VATP 
+VAT Rate percentage 
+M 
+V 
+9(3)V9(3) 
+Percentage rate for the VAT rate category code. Corresponds to the code in CST/VATC 
++ 
+NRIL 
+Number of item lines 
+M 
+V 
+9(10) 
+The number of CLD segments which carry the same code value as the current 
+CST/VATC, including CLD segments which describe components of a mixed rate item 
++ 
+LVLA 
+Line sub-total amount (before 
+VAT) 
+M 
+V 
+9(10)V9(2) 
+The sum of the EXLV values from all CLD segments which carry the same code value 
+as the corresponding CST/VATC 
++ 
+QYCA 
+Discount reclaimed for Credit 
+quantity 
+C 
+V 
+9(10)V9(2) 
+Value of discount for total quantity in all CLD segments which carry the same code 
+value as the current CST/VATC 
+Not expected to be used in book trade practice, since discounts are applied as part of 
+the calculation of line values 
+ 
+(continued) 
+
+--- PAGE 31 ---
+CREDIT format for book trade credit notes 
+Credit Note message 
+© Copyright BIC 2007 
+30 
+December 2022 
+ 
+ 
+ 
+ 
+CST 
+VAT RATE CREDIT NOTE SUB-TRAILER (continued) 
++ 
+VLCA 
+Discount reclaimed for Credit 
+value 
+C 
+V 
+9(10)V9(2) 
+Value of discount for total value in all CLD segments which carry the same code value 
+as the current CST/VATC 
+Not expected to be used in book trade practice, since discounts are applied as part of 
+the calculation of line values 
++ 
+EVLA 
+Extended sub-total amount 
+(before settlement discount has 
+been applied) 
+M 
+V 
+9(10V9(2) 
+Before VAT. Mandatory: equals LVLA if preceding segments are not used: 
+Otherwise: EVLA = LVLA – QYCA – VLCA 
++ 
+SEDA 
+Sub-total settlement discount 
+amount 
+C 
+V 
+9(10)V9(2) 
+For the code value in the corresponding CST/VATC 
+Used only if payment terms include a discount for prompt settlement 
++ 
+ASDA 
+Extended sub-total amount (after 
+settlement discount has been 
+applied) 
+M 
+V 
+9(10)V9(2) 
+Before VAT has been applied 
+Mandatory: equals EVLA if there is no settlement discount 
+Otherwise: ASDA = EVLA - SEDA 
++ 
+VATA 
+VAT amount payable 
+M 
+V 
+9(10)V9(2) 
+VAT amount payable in respect of this VAT rate, calculated by applying VATP to ASDA 
++ 
+APSE 
+Payable sub-total amount (before 
+settlement discount has been 
+applied) 
+C 
+V 
+9(10)V9(2) 
+After VAT has been applied. APSE = EVLA + VATA 
+Used only if payment terms include a discount for prompt settlement 
++ 
+APSI 
+Payment sub-total amount (after 
+settlement discount has been 
+applied) 
+M 
+V 
+9(10V9(2) 
+After VAT has been applied 
+Mandatory: amount credited in respect of items attracting this VAT rate, including VAT, 
+calculated as ASDA + VATA 
+
+--- PAGE 32 ---
+CREDIT format for book trade credit notes 
+Credit Note message 
+© Copyright BIC 2007 
+31 
+December 2022 
+ 
+ 
+ 
+ 
+CTR 
+CREDIT NOTE TRAILER 
+M 
+One occurrence is mandatory at the end of each credit note message 
+Carries totals for the credit note message as a whole 
+= 
+NCST 
+Number of total segments 
+M 
+V 
+9(10) 
+Mandatory: number of CST segments in the message 
++ 
+LVLT 
+Lines total amount (before 
+settlement discount has been 
+applied) 
+M 
+V 
+9(10)V9(2) 
+Mandatory: sum of the LVLA elements in the preceding CST segments, ie the total 
+value of the credit note excluding VAT and any further discounts or charges 
++ 
+QYCT 
+Total discount reclaimed for credit 
+quantity 
+C 
+V 
+9(10)V9(2) 
+Sum of the QYCA elements in the preceding CST segments. 
+Not expected to be used in book trade practice 
++ 
+VLCT 
+Total discount reclaimed for credit 
+value 
+C 
+V 
+9(10)V9(2) 
+Sum of the VLCA elements in the preceding CST segments. 
+Not expected to be used in book trade practice 
++ 
+EVLT 
+Total extended amount (before 
+settlement discount has been 
+applied) 
+M 
+V 
+9(10)V9(2) 
+Mandatory: sum of the EVLA elements in the preceding CST segments, ie the total 
+value of the credit note excluding VAT be with further discounts and charges 
++ 
+SEDT 
+Total settlement discount amount 
+C 
+V 
+9(10)V9(2) 
+Sum of the SEDA elements in the preceding CST segments 
+Used only if payment terms include a discount for prompt payment 
++ 
+ASDT 
+Total amount (after settlement 
+discount has been applied) 
+M 
+V 
+9(10)V9(2) 
+Mandatory: sum of the ASDA elements in the preceding CST segments, ie the total 
+value of the credit note excluding VAT but with settlement discount 
++ 
+TVAT 
+Total VAT amount payable 
+M 
+V 
+9(10)V9(2) 
+Mandatory: sum of the VATA elements in the preceding CST segments, ie the total VAT 
+charged on the credit note after all applicable discounts and charges 
++ 
+TPSE 
+Total payable (before settlement 
+discount has been applied) 
+C 
+V 
+9(10)V9(2) 
+Sum of the APSE elements in the preceding CST segments; ie the total credited 
+including VAT but without settlement discount 
+Used only if payment terms include a discount for prompt settlement 
++ 
+TPSI 
+Total payable (after settlement 
+discount has been applied) 
+M 
+V 
+9(10)V9(2) 
+Mandatory: sum of the APSI elements in the preceding CST segments, ie the final total 
+credited including VAT 
+ 
+(example follows) 
+
+--- PAGE 33 ---
+CREDIT format for book trade credit notes 
+Credit Note message 
+© Copyright BIC 2007 
+32 
+December 2022 
+ 
+ 
+ 
+ 
+Example showing Credit Note message trailer segments CST and CTR: 
+CST=1+S+17500+3+4325+++4325++4325+757++508 
+2' 
+1st CST segment: VAT at Standard rate (17.5%); 3 item lines; sub-total (before VAT) 
+£43.25; extended sub-total (before VAT) £43.25; VAT amount £7.57; credit sub-total 
+£50.82 
+CST=2+Z+0+9+34567+++34567++34567+0++34567' 
+2nd CST segment: VAT at zero rate; 9 item lines; sub-total (before VAT) £345.67; 
+extended sub-total (before VAT) £345.67; VAT amount £0; credit sub-total £345.67 
+CTR=2+38892+++38892++38892+757++39649' 
+No. of CST segments 2; lines total (before VAT) £388.92; extended sub-total (before 
+VAT) £388.92; total VAT £7.57; total credit £396.49 
+ 
+ 
+MTR 
+MESSAGE TRAILER 
+M 
+One occurrence is mandatory at the end of each credit note message 
+= 
+NOSG 
+Number of segments in message 
+M 
+V 
+9(10) 
+Control count of the number of segments comprising message. The count includes the 
+MHD and MTR segments surrounding the message 
+ 
+Example: 
+MTR=54' 
+54 segments in this credit note message 
+
+--- PAGE 34 ---
+CREDIT format for book trade credit notes 
+Credit Note file trailer 
+© Copyright BIC 2007 
+33 
+December 2022 
+ 
+ 
+ 
+ 
+ 
+ 
+13 
+Credit Note file VAT trailer 
+ 
+ 
+MHD 
+MESSAGE HEADER 
+M 
+One occurrence is mandatory following the last credit note message in the file 
+= 
+MSRF 
+Message reference 
+M 
+V 
+9(12) 
+Consecutive count of messages within the file 
+TYPE 
+Type of message 
+M 
++ 
+Type 
+M 
+F 
+X(6) 
+Always 'VATTLR' 
+: 
+Version number 
+M 
+F 
+9(1) 
+Always '9' for this version 
+ 
+Example: 
+MHD=5+VATTLR:9' 
+Message number 5 in this file 
+ 
+ 
+VRS 
+VAT RATE SUMMARY 
+M 
+Mandatory: repeated for each different ‘real’ VAT rate which occurs anywhere in 
+the file. 
+For these purposes, mixed rate A is not a ‘real’ VAT rate, since it is no more than 
+a combination of the component rates S and Z. 
+The contents of each successive VRS segment are calculated by summing the 
+corresponding data elements in the corresponding VAT rate sub-trailers (STL) in 
+each credit note message in the file 
+= 
+SEQA 
+First level sequence number 
+M 
+V 
+9(10) 
+Starts at 1 and incremented by 1 for each repeat of this segment 
++ 
+VATC 
+VAT Rate category code 
+M 
+F 
+X(1) 
+Use code values from Code List 12 
+In current book trade conditions, the only code values which may in practice occur here 
+are: 
+S 
+Standard rate 
+Z 
+Zero-rated or Export item (if VAT exemption can be claimed for this reason) 
+O 
+ Outside scope of VAT (if publisher is below VAT threshold) 
+Each credit note file must carry one and only one VRS segment for each code value 
+(other than A mixed rate) which occurs in the file. If mixed-rate items are present, their 
+standard and zero-rated components will be covered in the VRS segments for code 
+values S and Z 
+(continued) 
+
+--- PAGE 35 ---
+CREDIT format for book trade credit notes 
+Credit Note file trailer 
+© Copyright BIC 2007 
+34 
+December 2022 
+ 
+ 
+ 
+VRS 
+VAT RATE SUMMARY (continued) 
++ 
+VATP 
+VAT Rate percentage 
+M 
+V 
+9(3)V9(3) 
+Percentage rate for the VAT rate category code. Corresponds to the code in VRS/VATC 
++ 
+VSDE 
+File sub-total amount (before 
+settlement discount has been 
+applied) 
+M 
+V 
+9(10)V9(2) 
+Sum of the EVLA elements in all CST segments in the file which carry the same VAT 
+code as the current VRS/VATC; i.e. the total amount for the whole credit note file on 
+which VAT is payable at the designated rate, before any settlement discount, and 
+excluding the applicable VAT 
++ 
+VSDI 
+File sub-total amount (after 
+settlement discount has been 
+applied) 
+M 
+V 
+9(10)V9(2) 
+Sum of the ASDA elements in all CST segments in the file which carry the same VAT 
+code as the current VRS/VATC; i.e. the total amount for the whole credit note file on 
+which VAT is payable at the designated rate, after any settlement discount, and 
+excluding the applicable VAT 
++ 
+VVAT 
+File VAT sub-total 
+M 
+V 
+9(10)V9(2) 
+Sum of the VATA elements in all CST segments in the file which carry the same VAT 
+code as the current VRS/VATC; i.e. the total VAT payable on the whole credit note file at 
+the designated rate 
++ 
+VPSE 
+File sub-total payable (before 
+settlement discount has been 
+applied) 
+C 
+V 
+9(10)V9(2) 
+Sum of the APSE elements in all CST segments in the file which carry the same VAT 
+code as the current VRS/VATC; i.e. the total amount for the whole credit note file on 
+which VAT is payable at the designated rate, before any settlement discount, and 
+including the applicable VAT 
+Used only if payment terms include a discount for prompt settlement 
++ 
+VPSI 
+File sub-total payable (after 
+settlement discount has been 
+applied) 
+M 
+V 
+9(10)V9(2) 
+Sum of the APSI elements in all CST segments in the file which carry the same VAT 
+code as the current VRS/VATC; i.e. the total amount for the whole credit note file on 
+which VAT is payable at the designated rate, after any settlement discount, and 
+including the applicable VAT 
+ 
+Example: 
+VRS=1+S+17500+4325+4325+757++5082' 
+1st VRS segment: VAT at standard rate (17.5%); file sub-total £43.25; file VAT sub-total 
+£7.57; file sub-total payable £50.82 
+VRS=2+Z+0+34567+34567+0++34567' 
+2nd VRS segment: VAT at zero rate; file sub-total £345.67; file VAT sub-total £0; file 
+sub-total payable £345.67 
+ 
+MTR 
+MESSAGE TRAILER 
+M 
+One mandatory occurrence per file VAT trailer 
+= 
+NOSG 
+Number of segments in message 
+M 
+V 
+9(10) 
+Control count of the number of segments comprising VATTLR credit note VAT trailer. 
+The count Includes the MHD and MTR segments surrounding the header 
+ 
+Example: 
+MTR=3' 
+Three segments in file VAT trailer 
+
+--- PAGE 36 ---
+CREDIT format for book trade credit notes 
+Credit Note file trailer 
+© Copyright BIC 2007 
+35 
+December 2022 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+14 
+Credit Note file trailer 
+ 
+ 
+MHD 
+MESSAGE HEADER 
+M 
+One occurrence is mandatory following the last file VAT trailer in the file 
+= 
+MSRF 
+Message reference 
+M 
+V 
+9(12) 
+Consecutive count of messages within the file 
+TYPE 
+Type of message 
+M 
++ 
+Type 
+M 
+F 
+X(6) 
+Always 'CRETLR' 
+: 
+Version number 
+M 
+F 
+9(1) 
+Always '9' for this version 
+ 
+Example: 
+MHD=5+CRETLR:9' 
+Message number 5 in this file 
+ 
+ 
+TOT 
+FILE TOTALS 
+M 
+Mandatory: carries number of mandatory control totals 
+= 
+FASE 
+File total amount (before VAT and 
+settlement discount have been 
+applied) 
+M 
+V 
+9(10)V9(2) 
+Sum of the VSDE elements in all VRS segments in the file 
++ 
+FASI 
+File total amount (before VAT but 
+after settlement discount has been 
+applied) 
+M 
+V 
+9(10)V9(2) 
+Sum of the VSDI elements in all VRS segments in the file 
++ 
+FVAT 
+File total VAT amount 
+M 
+V 
+9(10)V9(2) 
+Sum of the VVAT elements in all VRS segments in the file 
++ 
+FPSE 
+File total payable (after VAT but 
+before settlement discount has 
+been applied) 
+C 
+V 
+9(10)V9(2) 
+Sum of the VPSE elements in all VRS segments in the file 
+Used only if payment terms include a discount for prompt settlement 
++ 
+FPSI 
+File total payable (after VAT and 
+after settlement discount has been 
+applied) 
+M 
+V 
+9(10)V9(2) 
+Sum of the VSDE elements in all VRS segments in the file 
++ 
+FTNI 
+File total number of credit note 
+messages 
+M 
+V 
+9(10) 
+Total number of Credit Note messages in the file 
+ 
+(example follows) 
+
+--- PAGE 37 ---
+CREDIT format for book trade credit notes 
+Credit Note file trailer 
+© Copyright BIC 2007 
+36 
+December 2022 
+ 
+ 
+ 
+Example: 
+TOT=38892+38892+757++39649+15' 
+File total amount £388.92; file VAT total amount £7.57; file total payable £396.49; 15 
+credit note messages in file 
+ 
+ 
+ 
+MTR 
+MESSAGE TRAILER 
+M 
+One occurrence is mandatory at the end of each credit note file 
+= 
+NOSG 
+Number of segments in message 
+M 
+V 
+9(10) 
+Control count of the number of segments comprising message. Includes the MHD and 
+MTR segments 
+ 
+Example: 
+MTR=3' 
+Three segments in credit note file trailer 
+ 
+

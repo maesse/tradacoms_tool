@@ -137,7 +137,10 @@ export function tokenizeElements(body: string, bodyStartOffset: number): RawElem
 /**
  * Split an element value into sub-element tokens by ':' separator.
  */
-export function tokenizeSubElements(elementRaw: string, elementStartOffset: number): RawSubElementToken[] {
+export function tokenizeSubElements(
+  elementRaw: string,
+  elementStartOffset: number,
+): RawSubElementToken[] {
   if (elementRaw === '') {
     return [{ raw: '', span: { start: elementStartOffset, end: elementStartOffset } }]
   }

@@ -104,9 +104,9 @@ function parseMessage(
   rawSegments: ReturnType<typeof tokenizeSegments>,
   msgDef: ReturnType<typeof getMessageDef>,
 ): ParsedMessage {
-  const segments = rawSegments.map(rawSeg => {
+  const segments = rawSegments.map((rawSeg) => {
     const segDef = msgDef
-      ? msgDef.segments.find(s => s.tag === rawSeg.tag) ?? getSegmentDefStandalone(rawSeg.tag)
+      ? (msgDef.segments.find((s) => s.tag === rawSeg.tag) ?? getSegmentDefStandalone(rawSeg.tag))
       : getSegmentDefStandalone(rawSeg.tag)
     return parseSegment(rawSeg, segDef)
   })

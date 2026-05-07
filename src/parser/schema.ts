@@ -3,6 +3,7 @@ import type {
   MessageDef,
   ElementDef,
   SubElementDef,
+  CodeListEntry,
   Requirement,
   LengthType,
 } from './types'
@@ -17,6 +18,7 @@ function sub(
   lengthType: LengthType | null,
   notation: string | null,
   formatDesc?: string,
+  codeList?: CodeListEntry[],
 ): SubElementDef {
   return {
     index,
@@ -25,6 +27,7 @@ function sub(
     requirement,
     lengthType,
     format: notation ? { notation, description: formatDesc ?? '' } : null,
+    codeList: codeList ?? null,
   }
 }
 
@@ -49,6 +52,211 @@ function seg(
 ): SegmentDef {
   return { tag, name, description, requirement, repeat, elements }
 }
+
+// ─── Code List Data ─────────────────────────────────────────────────────────
+
+/** Code List 2: Transaction codes (TCDE) — invoice subset */
+const CL02_TCDE_INVOICE: CodeListEntry[] = [
+  { code: '0700', name: 'Invoices only' },
+  { code: '0709', name: 'Copy invoice — not for VAT purposes' },
+  { code: '0711', name: 'Provisional invoice — not for VAT purposes' },
+]
+
+/** Code List 2: Transaction codes (TCDE) — credit note subset */
+const CL02_TCDE_CREDIT: CodeListEntry[] = [
+  { code: '0740', name: 'Credit notes only' },
+  { code: '0749', name: 'Copy credit note — not for VAT purposes' },
+]
+
+/** Code List 5: Price indicator (PIND) */
+const CL05_PIND: CodeListEntry[] = [
+  { code: 'E', name: 'Export price' },
+  { code: 'F', name: 'Free of charge' },
+  { code: 'P', name: 'Promotional price' },
+]
+
+/** Code List 10: Item Group identifier (IGPI) */
+const CL10_IGPI: CodeListEntry[] = [
+  { code: 'G', name: 'Group (invoice/credit-level charge)' },
+  { code: 'I', name: 'Item (line-level charge)' },
+]
+
+/** Code List 12: VAT category codes — full set for line-level fields (ILD/CLD) */
+const CL12_VATC_LINE: CodeListEntry[] = [
+  { code: 'S', name: 'Standard rate' },
+  { code: 'T', name: 'Standard rated free goods, VAT charged' },
+  { code: 'V', name: 'Standard rated free goods, VAT not charged' },
+  { code: 'Z', name: 'Zero rate' },
+  { code: 'X', name: 'Exemption from VAT' },
+  { code: 'H', name: 'Higher rate' },
+  { code: 'J', name: 'Higher rated free goods, VAT charged' },
+  { code: 'K', name: 'Higher rated free goods, VAT not charged' },
+  { code: 'E', name: 'Export item' },
+  { code: 'F', name: 'Free export item, VAT charged' },
+  { code: 'G', name: 'Free export item, VAT not charged' },
+  { code: 'O', name: 'Services outside the scope of VAT' },
+  { code: 'A', name: 'Mixed VAT rate item' },
+  { code: 'R', name: 'Reconciliation — invoice raised for VAT only' },
+  { code: 'N', name: 'Input tax paid but not reclaimable' },
+  { code: 'L', name: 'Lower rate' },
+]
+
+/** Code List 12: VAT category codes — trailer subset (STL/CST/VRS — no mixed/A) */
+const CL12_VATC_TRAILER: CodeListEntry[] = [
+  { code: 'S', name: 'Standard rate' },
+  { code: 'Z', name: 'Zero rate' },
+  { code: 'O', name: 'Services outside the scope of VAT' },
+  { code: 'E', name: 'Export item' },
+  { code: 'H', name: 'Higher rate' },
+  { code: 'L', name: 'Lower rate' },
+]
+
+/** Code List 13: Reason for credit (CRRE) */
+const CL13_CRRE: CodeListEntry[] = [
+  { code: '01', name: 'Excess quantity ordered' },
+  { code: '02', name: 'Order duplicated' },
+  { code: '03', name: 'Product ordered in error' },
+  { code: '04', name: 'Product not approved' },
+  { code: '05', name: 'Substitute product not accepted' },
+  { code: '06', name: 'Delivery instruction error' },
+  { code: '07', name: 'Delivery address error' },
+  { code: '08', name: 'Damage in transit' },
+  { code: '09', name: 'Loss in transit' },
+  { code: '11', name: 'Delivery refused — late' },
+  { code: '12', name: 'Delivery refused — other reasons' },
+  { code: '13', name: 'Split order deliveries not accepted' },
+  { code: '14', name: 'Promotional discount error' },
+  { code: '15', name: 'Settlement discount error' },
+  { code: '16', name: 'Trade discount error / discount adjustment' },
+  { code: '17', name: 'Trade price error / price adjustment' },
+  { code: '18', name: 'VAT rate error' },
+  { code: '19', name: 'Extension error' },
+  { code: '20', name: 'Damage on premises' },
+  { code: '21', name: 'Out of date' },
+  { code: '22', name: 'Surplus to requirements / general overstock returns' },
+  { code: '23', name: 'Sale or return / see safe' },
+  { code: '24', name: 'Superseded product' },
+  { code: '25', name: 'Deteriorated product' },
+  { code: '26', name: 'Advertising allowance' },
+  { code: '27', name: 'Promotion allowance' },
+  { code: '28', name: 'Rebate' },
+  { code: '29', name: 'Retrospective discount' },
+  { code: '30', name: 'Coupon redemption' },
+  { code: '31', name: 'Returnable containers' },
+  { code: '32', name: 'Goods used for demonstrations' },
+  { code: '33', name: 'Free goods charged in error' },
+  { code: '34', name: 'Agreed settlement' },
+  { code: '35', name: 'Equipment rental' },
+  { code: '36', name: 'Concession' },
+  { code: '37', name: 'Third party delivery' },
+  { code: '38', name: 'Short delivery' },
+  { code: '39', name: 'Incorrect product delivered' },
+  { code: '40', name: 'Non-delivery' },
+  { code: '41', name: 'Wrong account' },
+  { code: '42', name: 'Order cancellation' },
+  { code: '43', name: 'Postage/packing wrongly charged' },
+  { code: '44', name: 'Defect in manufacture of a product' },
+  { code: '45', name: 'Defect in service or customisation' },
+  { code: '46', name: 'Recalled by supplier' },
+  { code: '47', name: 'Credit card incorrect/declined' },
+  { code: '48', name: 'Out of stock at packing time' },
+  { code: '49', name: 'BIC returns authorisation credit' },
+  { code: '50', name: 'Goods found (debit note adjustments only)' },
+  { code: '51', name: 'Debit incorrectly raised' },
+  { code: '52', name: 'Credit refused' },
+  { code: '53', name: 'Distributor processing error' },
+]
+
+/** Code List 14: Type of supply (TSUP) */
+const CL14_TSUP: CodeListEntry[] = [
+  { code: 'A', name: 'Ordinary sale' },
+  { code: 'B', name: 'Hire purchase, conditional/credit sale' },
+  { code: 'C', name: 'Loan' },
+  { code: 'D', name: 'Exchange' },
+  { code: 'E', name: 'Hire, lease or rental' },
+  { code: 'F', name: 'Process (making goods from materials)' },
+  { code: 'G', name: 'Sales on commission' },
+  { code: 'H', name: 'Sale or return' },
+]
+
+/** Mixed VAT Rate indicator (not a numbered code list, but fixed values) */
+const MIXI_CODES: CodeListEntry[] = [
+  { code: '0', name: 'Product as a whole (mixed-rate parent)' },
+  { code: '1', name: 'Zero-rated component' },
+  { code: '2', name: 'Standard-rated component' },
+]
+
+/** Code List 205: Sundry charge codes (SPRO) */
+const CL205_SPRO: CodeListEntry[] = [
+  { code: 'Z01', name: 'Sleeving (jackets, sleeves, wallets)' },
+  { code: 'Z02', name: 'Binding (binding, reinforcing, laminating)' },
+  { code: 'Z03', name: 'Barcode labelling' },
+  { code: 'Z04', name: 'General servicing (cards, pockets, stamps)' },
+  { code: 'Z05', name: 'Security fitting (triggers, Knogo labels etc)' },
+  { code: 'Z06', name: 'Handling (small order surcharge)' },
+  { code: 'Z07', name: 'Bibliographic record supply (MARC, bespoke)' },
+  { code: 'Z08', name: 'Classification' },
+  { code: 'Z09', name: 'Data communications media (tapes, disks, email)' },
+  { code: 'Z10', name: 'Audio/CD-ROM packaging (special pouches)' },
+  { code: 'Z11', name: 'Provision of approvals/book collections' },
+  { code: 'Z12', name: 'Small/minimum order adjustment' },
+  { code: 'Z13', name: 'Postage & packing (single inclusive charge)' },
+  { code: 'Z14', name: 'Packaging (packaging costs only)' },
+  { code: 'Z15', name: 'Postage/carriage/freight (carriage costs only)' },
+  { code: 'Z98', name: 'Miscellaneous credit adjustment' },
+  { code: 'Z99', name: 'Miscellaneous charge' },
+]
+
+/** Code List 203: Order qualifier (DNAC in line-level DNC) */
+const CL203_DNAC: CodeListEntry[] = [
+  { code: 'CRR', name: 'Customer or reader request (library supply)' },
+  { code: 'PRE', name: 'Advance (pre-publication) order (library supply)' },
+  { code: 'STK', name: 'Stock order (library supply)' },
+  { code: 'PTN', name: 'Part order not acceptable' },
+  { code: 'PTY', name: 'Part order acceptable' },
+  { code: 'RPN', name: 'Do not round to pack quantity' },
+  { code: 'RPY', name: 'Round to pack quantity' },
+  { code: 'BIC', name: 'BIC standard returns conditions' },
+  { code: 'FMS', name: 'Firm sale' },
+  { code: 'SHC', name: 'Ship combined' },
+  { code: 'SHS', name: 'Ship separately' },
+  { code: 'SLR', name: 'Sale or return' },
+  { code: 'SSF', name: 'See safe (normal returns conditions)' },
+]
+
+/** Code List 24 subset: RTEX codes valid in DNA file header */
+const CL24_RTEX_FILE_HEADER: CodeListEntry[] = [
+  { code: '073', name: 'Currency code (ANA List 31)' },
+]
+
+/** Code List 24 subset: RTEX codes valid in DNA invoice/credit level */
+const CL24_RTEX_INVOICE_LEVEL: CodeListEntry[] = [
+  { code: '978', name: 'Cancelled/replaced invoice number' },
+  { code: '979', name: "Supplier's internal code for invoice/credit type" },
+  { code: '984', name: 'Cancelled credit note number' },
+]
+
+/** Code List 24 subset: RTEX codes valid in DNC invoice line level */
+const CL24_RTEX_INVOICE_LINE: CodeListEntry[] = [
+  { code: '073', name: 'Currency code (ANA List 31)' },
+  { code: '082', name: 'Customer order number (line level)' },
+  { code: '314', name: "Binder's pack quantity" },
+  { code: '971', name: 'Component items of dumpbin/pack' },
+  { code: '980', name: 'SOR number (sale-or-return reference)' },
+  { code: '982', name: 'HMRC commodity code' },
+]
+
+/** Code List 24 subset: RTEX codes valid in DNB credit line level */
+const CL24_RTEX_CREDIT_LINE: CodeListEntry[] = [
+  { code: '074', name: "Producer's recommended selling price" },
+  { code: '981', name: 'Reason for credit being refused (free text)' },
+]
+
+/** DNAC code table numbers valid in DNA file header */
+const DNAC_FILE_HEADER: CodeListEntry[] = [
+  { code: '206', name: 'BIC message version number' },
+  { code: '207', name: 'BIC code list version number' },
+]
 
 // ─── MHD (common) ───────────────────────────────────────────────────────────
 
@@ -101,17 +309,19 @@ const typSegment: SegmentDef = seg(
     elem(
       'TCDE',
       'Transaction code',
-      'Code List 2: 0700 = Original invoice (VAT invoice), 0709 = Copy invoice (not for VAT purposes)',
+      'Code List 2: Transaction type for this file.',
       'M',
       '=',
       [
         sub(
           0,
           'Transaction code',
-          '0700 = Original invoice, 0709 = Copy invoice',
+          'Code List 2',
           'M',
           'F',
           '9(4)',
+          '',
+          [...CL02_TCDE_INVOICE, ...CL02_TCDE_CREDIT],
         ),
       ],
     ),
@@ -287,18 +497,20 @@ const dnaFileHeaderSegment: SegmentDef = seg(
           'C',
           'V',
           '9(4)',
+          '',
+          DNAC_FILE_HEADER,
         ),
         sub(1, 'Code value', 'Value from specified code list', 'C', 'V', 'X(3)'),
       ],
     ),
     elem('RTEX', 'Registered text', 'Only RTEX 073 (Currency code) may be used here.', 'C', '+', [
-      sub(0, '1st registered application code', '', 'C', 'V', 'X(3)'),
+      sub(0, '1st registered application code', '', 'C', 'V', 'X(3)', '', CL24_RTEX_FILE_HEADER),
       sub(1, 'Application text', '', 'C', 'V', 'X(40)'),
-      sub(2, '2nd registered application code', '', 'C', 'V', 'X(3)'),
+      sub(2, '2nd registered application code', '', 'C', 'V', 'X(3)', '', CL24_RTEX_FILE_HEADER),
       sub(3, 'Application text', '', 'C', 'V', 'X(40)'),
-      sub(4, '3rd registered application code', '', 'C', 'V', 'X(3)'),
+      sub(4, '3rd registered application code', '', 'C', 'V', 'X(3)', '', CL24_RTEX_FILE_HEADER),
       sub(5, 'Application text', '', 'C', 'V', 'X(40)'),
-      sub(6, '4th registered application code', '', 'C', 'V', 'X(3)'),
+      sub(6, '4th registered application code', '', 'C', 'V', 'X(3)', '', CL24_RTEX_FILE_HEADER),
       sub(7, 'Application text', '', 'C', 'V', 'X(40)'),
     ]),
     elem('GNAR', 'General narrative', 'Do not use.', 'C', '+', [
@@ -457,13 +669,13 @@ const dnaInvoiceSegment: SegmentDef = seg(
       sub(1, 'Code value', '', 'C', 'V', 'X(3)'),
     ]),
     elem('RTEX', 'Registered text', 'Valid codes: 978, 979, 984', 'C', '+', [
-      sub(0, '1st registered application code', '', 'C', 'V', 'X(3)'),
+      sub(0, '1st registered application code', '', 'C', 'V', 'X(3)', '', CL24_RTEX_INVOICE_LEVEL),
       sub(1, 'Application text', '', 'C', 'V', 'X(40)'),
-      sub(2, '2nd registered application code', '', 'C', 'V', 'X(3)'),
+      sub(2, '2nd registered application code', '', 'C', 'V', 'X(3)', '', CL24_RTEX_INVOICE_LEVEL),
       sub(3, 'Application text', '', 'C', 'V', 'X(40)'),
-      sub(4, '3rd registered application code', '', 'C', 'V', 'X(3)'),
+      sub(4, '3rd registered application code', '', 'C', 'V', 'X(3)', '', CL24_RTEX_INVOICE_LEVEL),
       sub(5, 'Application text', '', 'C', 'V', 'X(40)'),
-      sub(6, '4th registered application code', '', 'C', 'V', 'X(3)'),
+      sub(6, '4th registered application code', '', 'C', 'V', 'X(3)', '', CL24_RTEX_INVOICE_LEVEL),
       sub(7, 'Application text', '', 'C', 'V', 'X(40)'),
     ]),
     elem('GNAR', 'General narrative', 'Do not use.', 'C', '+', [
@@ -599,6 +811,8 @@ const ildSegment: SegmentDef = seg(
           'C',
           'V',
           'X(30)',
+          '',
+          CL205_SPRO,
         ),
         sub(2, 'DUN-14 code', 'Do not use', 'C', 'F', '9(14)'),
       ],
@@ -649,10 +863,10 @@ const ildSegment: SegmentDef = seg(
     elem(
       'VATC',
       'VAT Rate category code',
-      'Code List 12: S=Standard, Z=Zero-rated, A=Mixed, O=Outside scope',
+      'Code List 12.',
       'M',
       '+',
-      [sub(0, 'VAT category code', 'S, Z, A, O, E, X, H, L', 'M', 'F', 'X(1)')],
+      [sub(0, 'VAT category code', 'Code List 12', 'M', 'F', 'X(1)', '', CL12_VATC_LINE)],
     ),
     elem('VATP', 'VAT Rate percentage', '', 'M', '+', [
       sub(0, 'VAT percentage', '3 integer + 3 decimal digits', 'M', 'V', '9(3)V9(3)'),
@@ -660,10 +874,10 @@ const ildSegment: SegmentDef = seg(
     elem(
       'MIXI',
       'Mixed VAT Rate product indicator',
-      'Only for mixed-rate items. 0=product as whole, 1=zero-rated component, 2=standard-rate component.',
+      'Only for mixed-rate items.',
       'C',
       '+',
-      [sub(0, 'Mixed-rate indicator', '0, 1, or 2', 'C', 'F', '9(1)')],
+      [sub(0, 'Mixed-rate indicator', '', 'C', 'F', '9(1)', '', MIXI_CODES)],
     ),
     elem('CRLI', 'Credit Line indicator', 'Do not use.', 'C', '+', [
       sub(0, 'Credit line indicator', '', 'C', 'V', 'X(4)'),
@@ -726,18 +940,18 @@ const ildSegment: SegmentDef = seg(
     elem(
       'PIND',
       'Special Price indicator',
-      'Code List 5. F = free of charge (all monetary values carry zeros).',
+      'Code List 5.',
       'C',
       '+',
-      [sub(0, 'Price indicator code', '', 'C', 'V', 'X(4)')],
+      [sub(0, 'Price indicator code', 'Code List 5', 'C', 'V', 'X(4)', '', CL05_PIND)],
     ),
     elem(
       'IGPI',
       'Item Group identifier',
-      'Code List 10. I = line-level charge, G = invoice-level charge.',
+      'Code List 10.',
       'C',
       '+',
-      [sub(0, 'Group identifier', 'I or G', 'C', 'V', 'X(4)')],
+      [sub(0, 'Group identifier', 'Code List 10', 'C', 'V', 'X(4)', '', CL10_IGPI)],
     ),
     elem('CSDI', 'Cash settlement discount identifier', 'Do not use.', 'C', '+', [
       sub(0, 'Identifier', '', 'C', 'F', 'X(1)'),
@@ -748,7 +962,7 @@ const ildSegment: SegmentDef = seg(
       'Code List 14. Omitted for normal sale (code A).',
       'C',
       '+',
-      [sub(0, 'Type of supply code', '', 'C', 'F', 'X(1)')],
+      [sub(0, 'Type of supply code', 'Code List 14', 'C', 'F', 'X(1)', '', CL14_TSUP)],
     ),
     elem(
       'SCRF',
@@ -795,7 +1009,7 @@ const dncSegment: SegmentDef = seg(
       '+',
       [
         sub(0, 'Code table number', '', 'C', 'V', '9(4)'),
-        sub(1, 'Code value', '', 'C', 'V', 'X(3)'),
+        sub(1, 'Code value', 'Value from BIC Code List 203', 'C', 'V', 'X(3)', '', CL203_DNAC),
       ],
     ),
     elem(
@@ -805,13 +1019,13 @@ const dncSegment: SegmentDef = seg(
       'C',
       '+',
       [
-        sub(0, '1st registered application code', '', 'C', 'V', 'X(3)'),
+        sub(0, '1st registered application code', '', 'C', 'V', 'X(3)', '', CL24_RTEX_INVOICE_LINE),
         sub(1, 'Application text', '', 'C', 'V', 'X(40)'),
-        sub(2, '2nd registered application code', '', 'C', 'V', 'X(3)'),
+        sub(2, '2nd registered application code', '', 'C', 'V', 'X(3)', '', CL24_RTEX_INVOICE_LINE),
         sub(3, 'Application text', '', 'C', 'V', 'X(40)'),
-        sub(4, '3rd registered application code', '', 'C', 'V', 'X(3)'),
+        sub(4, '3rd registered application code', '', 'C', 'V', 'X(3)', '', CL24_RTEX_INVOICE_LINE),
         sub(5, 'Application text', '', 'C', 'V', 'X(40)'),
-        sub(6, '4th registered application code', '', 'C', 'V', 'X(3)'),
+        sub(6, '4th registered application code', '', 'C', 'V', 'X(3)', '', CL24_RTEX_INVOICE_LINE),
         sub(7, 'Application text', '', 'C', 'V', 'X(40)'),
       ],
     ),
@@ -836,8 +1050,8 @@ const stlSegment: SegmentDef = seg(
     elem('SEQA', 'First level sequence number', 'Starts at 1.', 'M', '=', [
       sub(0, 'Sequence number', '', 'M', 'V', '9(10)'),
     ]),
-    elem('VATC', 'VAT Rate category code', 'S=Standard, Z=Zero-rated, O=Outside scope', 'M', '+', [
-      sub(0, 'VAT category code', '', 'M', 'F', 'X(1)'),
+    elem('VATC', 'VAT Rate category code', 'Code List 12 (trailer subset).', 'M', '+', [
+      sub(0, 'VAT category code', 'Code List 12', 'M', 'F', 'X(1)', '', CL12_VATC_TRAILER),
     ]),
     elem('VATP', 'VAT Rate percentage', '', 'M', '+', [
       sub(0, 'VAT percentage', '', 'M', 'V', '9(3)V9(3)'),
@@ -996,8 +1210,8 @@ const vrsSegment: SegmentDef = seg(
     elem('SEQA', 'First level sequence number', 'Starts at 1.', 'M', '=', [
       sub(0, 'Sequence number', '', 'M', 'V', '9(10)'),
     ]),
-    elem('VATC', 'VAT Rate category code', 'S, Z, or O', 'M', '+', [
-      sub(0, 'VAT category code', '', 'M', 'F', 'X(1)'),
+    elem('VATC', 'VAT Rate category code', 'Code List 12 (trailer subset).', 'M', '+', [
+      sub(0, 'VAT category code', 'Code List 12', 'M', 'F', 'X(1)', '', CL12_VATC_TRAILER),
     ]),
     elem('VATP', 'VAT Rate percentage', '', 'M', '+', [
       sub(0, 'VAT percentage', '', 'M', 'V', '9(3)V9(3)'),
@@ -1168,6 +1382,437 @@ export const endSegmentDef: SegmentDef = seg(
 
 // ─── Message Definitions ────────────────────────────────────────────────────
 
+// ─── Credit Note Segments ───────────────────────────────────────────────────
+
+const crfSegment: SegmentDef = seg(
+  'CRF',
+  'CREDIT NOTE REFERENCES',
+  'Credit note date and Tax-point Date.',
+  'M',
+  'Once',
+  [
+    elem('CRNR', 'Credit note number', 'Credit note number allocated by the supplier.', 'M', '=', [
+      sub(0, 'Credit note number', '', 'M', 'V', 'X(17)'),
+    ]),
+    elem('CRDT', 'Credit note date', 'Format: YYMMDD', 'M', '+', [
+      sub(0, 'Credit note date', 'YYMMDD', 'M', 'F', '9(6)'),
+    ]),
+    elem('TXDT', 'Tax-point date', 'Format: YYMMDD', 'M', '+', [
+      sub(0, 'Tax-point date', 'YYMMDD', 'M', 'F', '9(6)'),
+    ]),
+    elem('DNNR', 'Debit note number', 'Customer debit note/claim for credit reference.', 'C', '+', [
+      sub(0, 'Debit note number', '', 'C', 'V', 'X(17)'),
+    ]),
+    elem('DNDT', 'Debit note date', 'Do not use.', 'C', '+', [
+      sub(0, 'Debit note date', 'YYMMDD', 'C', 'F', '9(6)'),
+    ]),
+    elem(
+      'CNNR',
+      'Collection note number',
+      'Supplier collection note / Returns Authorisation Number (RAN).',
+      'C',
+      '+',
+      [sub(0, 'Collection note number', '', 'C', 'V', 'X(17)')],
+    ),
+    elem('CNDT', 'Collection note date', 'Do not use.', 'C', '+', [
+      sub(0, 'Collection note date', 'YYMMDD', 'C', 'F', '9(6)'),
+    ]),
+  ],
+)
+
+const oirSegment: SegmentDef = seg(
+  'OIR',
+  'ORIGINAL INVOICE REFERENCES',
+  'Invoice to which the credit note refers. Repeatable.',
+  'C',
+  'Repeat for each reference',
+  [
+    elem('SEQA', 'First level sequence number', 'Starts at 1, incremented by 1.', 'M', '=', [
+      sub(0, 'Sequence number', '', 'M', 'V', '9(10)'),
+    ]),
+    elem('INVN', 'Invoice number', 'As allocated by the supplier.', 'C', '+', [
+      sub(0, 'Invoice number', '', 'C', 'V', 'X(17)'),
+    ]),
+    elem('IVDT', 'Date of invoice', 'Format: YYMMDD', 'C', '+', [
+      sub(0, 'Date of invoice', 'YYMMDD', 'C', 'F', '9(6)'),
+    ]),
+    elem('TXDT', 'Tax-point date', 'Format: YYMMDD', 'C', '+', [
+      sub(0, 'Tax-point date', 'YYMMDD', 'C', 'F', '9(6)'),
+    ]),
+    elem('ORNO', 'Order number and date', 'Do not use.', 'C', '+', [
+      sub(0, "Customer's order number", '', 'C', 'V', 'X(17)'),
+      sub(1, "Supplier's order number", '', 'C', 'V', 'X(17)'),
+      sub(2, 'Date order placed', 'YYMMDD', 'C', 'F', '9(6)'),
+      sub(3, 'Date order received', 'YYMMDD', 'C', 'F', '9(6)'),
+    ]),
+    elem('SCRF', 'Specification/Contract references', 'Special deal or promotion.', 'C', '+', [
+      sub(0, 'Specification number', 'Do not use', 'C', 'V', 'X(17)'),
+      sub(1, 'Contract number', 'Special deal or promotion reference', 'C', 'V', 'X(17)'),
+    ]),
+  ],
+)
+
+const cldSegment: SegmentDef = seg(
+  'CLD',
+  'CREDIT NOTE LINE DETAILS',
+  'One occurrence per credit note line.',
+  'M',
+  'Repeat for each line item',
+  [
+    elem('SEQA', 'First level sequence number', 'Starts at 1, incremented by 1.', 'M', '=', [
+      sub(0, 'Sequence number', '', 'M', 'V', '9(10)'),
+    ]),
+    elem(
+      'SPRO',
+      "Supplier's product number",
+      'Product identification. EAN-13, or charge code from Code List 205 for sundry charges.',
+      'M',
+      '+',
+      [
+        sub(0, 'EAN-13 article number', 'EAN-13 product barcode', 'C', 'F', '9(13)'),
+        sub(1, "Supplier's code for traded unit", '', 'C', 'V', 'X(30)', '', CL205_SPRO),
+        sub(2, 'DUN-14 code', 'Do not use', 'C', 'F', '9(14)'),
+      ],
+    ),
+    elem('SACU', "Supplier's EAN for consumer unit", 'Do not use.', 'C', '+', [
+      sub(0, 'EAN code', '', 'C', 'F', '9(13)'),
+    ]),
+    elem('CPRO', "Customer's product number", 'Do not use.', 'C', '+', [
+      sub(0, "Customer's own brand EAN", '', 'C', 'F', '9(15)'),
+      sub(1, "Customer's item code", '', 'C', 'V', 'X(30)'),
+    ]),
+    elem('UNOR', 'Unit of ordering', '', 'C', '+', [
+      sub(0, 'Consumer units in traded unit', 'Number of consumer units per traded unit', 'C', 'V', '9(15)'),
+      sub(1, 'Ordering measure', 'Do not use', 'C', 'V', '9(10)V9(3)'),
+      sub(2, 'Measure indicator', 'Do not use', 'C', 'V', 'X(6)'),
+    ]),
+    elem('QTYC', 'Quantity credited', '', 'M', '+', [
+      sub(0, 'Number of traded units credited', 'Number of units credited', 'C', 'V', '9(15)'),
+      sub(1, 'Total measure', 'Do not use', 'C', 'V', '9(10)V9(3)'),
+      sub(2, 'Measure indicator', 'Do not use', 'C', 'V', 'X(6)'),
+    ]),
+    elem(
+      'UCRV',
+      'Unit credit value (excl. VAT)',
+      'Credit value per unit after discount, before VAT. EXLV = UCRV × QTYC.',
+      'M',
+      '+',
+      [
+        sub(0, 'Unit credit value', 'In pounds, 4 implied decimal places', 'M', 'V', '9(10)V9(4)'),
+        sub(1, 'Measure indicator', 'Do not use', 'C', 'V', 'X(6)'),
+      ],
+    ),
+    elem(
+      'EXLV',
+      'Nett credit value (excl. VAT)',
+      'Total line credit value after discount, before VAT.',
+      'M',
+      '+',
+      [sub(0, 'Extended line value', 'In pounds, 4 implied decimal places', 'M', 'V', '9(10)V9(4)')],
+    ),
+    elem(
+      'VATC',
+      'VAT Rate category code',
+      'Code List 12.',
+      'M',
+      '+',
+      [sub(0, 'VAT category code', 'Code List 12', 'M', 'F', 'X(1)', '', CL12_VATC_LINE)],
+    ),
+    elem('VATP', 'VAT Rate percentage', '', 'M', '+', [
+      sub(0, 'VAT percentage', '3 integer + 3 decimal digits', 'M', 'V', '9(3)V9(3)'),
+    ]),
+    elem(
+      'CRRE',
+      'Reason for credit',
+      'Code List 13.',
+      'M',
+      '+',
+      [
+        sub(0, 'ANA credit reason code', 'Code List 13', 'C', 'F', 'X(2)', '', CL13_CRRE),
+        sub(1, "Trading partner's code", 'Do not use', 'C', 'V', 'X(2)'),
+        sub(2, 'Credit reason description', 'Do not use', 'C', 'V', 'X(40)'),
+      ],
+    ),
+    elem(
+      'MIXI',
+      'Mixed VAT Rate product indicator',
+      'Only for mixed-rate items.',
+      'C',
+      '+',
+      [sub(0, 'Mixed-rate indicator', '', 'C', 'F', '9(1)', '', MIXI_CODES)],
+    ),
+    elem('DRLI', 'Debit Line indicator', 'Do not use.', 'C', '+', [
+      sub(0, 'Debit line indicator', '', 'C', 'V', 'X(4)'),
+    ]),
+    elem(
+      'TDES',
+      'Traded unit description',
+      'Use only when original order had no product code.',
+      'C',
+      '+',
+      [
+        sub(0, 'Description line 1', 'First line of product description', 'C', 'V', 'X(40)'),
+        sub(1, 'Description line 2', 'Second line of product description', 'C', 'V', 'X(40)'),
+      ],
+    ),
+    elem(
+      'UCRB',
+      'Unit credit value (excl. discount and VAT)',
+      'Unit credit value before line discount.',
+      'C',
+      '+',
+      [sub(0, 'Unit credit before discount', 'In pounds, 4 decimal places', 'C', 'V', '9(10)V9(4)')],
+    ),
+    elem('CDSV', 'Credit discount value', 'Do not use.', 'C', '+', [
+      sub(0, 'Credit discount value', '', 'C', 'V', '9(10)V9(4)'),
+    ]),
+    elem(
+      'IGPI',
+      'Item Group identifier',
+      'Code List 10.',
+      'C',
+      '+',
+      [sub(0, 'Group identifier', 'Code List 10', 'C', 'V', 'X(4)', '', CL10_IGPI)],
+    ),
+    elem(
+      'SCRF',
+      'Specification/Contract references',
+      'Special deal or promotion reference.',
+      'C',
+      '+',
+      [
+        sub(0, 'Specification number', 'Do not use', 'C', 'V', 'X(17)'),
+        sub(1, 'Contract number', 'Special deal or promotion reference', 'C', 'V', 'X(17)'),
+      ],
+    ),
+  ],
+)
+
+const dnbSegment: SegmentDef = seg(
+  'DNB',
+  'DATA NARRATIVE',
+  'Coded or free text qualifying the credit note line. RTEX codes: 74 (Suggested retail price), 981 (Free text for credit refused).',
+  'C',
+  'Repeat as necessary',
+  [
+    elem('SEQA', 'First level sequence number', 'Matches CLD/SEQA.', 'M', '=', [
+      sub(0, 'Sequence number', '', 'M', 'V', '9(10)'),
+    ]),
+    elem('SEQB', 'Third level sequence number', 'Starts at 1, incremented by 1.', 'M', '+', [
+      sub(0, 'Sequence number', '', 'M', 'V', '9(10)'),
+    ]),
+    elem('DNAC', 'Data narrative code', 'Code list number and value.', 'C', '+', [
+      sub(0, 'Code table number', '', 'C', 'V', '9(4)'),
+      sub(1, 'Code value', '', 'C', 'V', 'X(3)'),
+    ]),
+    elem('RTEX', 'Registered text', 'RTEX codes from Code List 24.', 'C', '+', [
+      sub(0, '1st registered application code', '', 'C', 'V', 'X(3)', '', CL24_RTEX_CREDIT_LINE),
+      sub(1, 'Application text', '', 'C', 'V', 'X(40)'),
+      sub(2, '2nd registered application code', '', 'C', 'V', 'X(3)', '', CL24_RTEX_CREDIT_LINE),
+      sub(3, 'Application text', '', 'C', 'V', 'X(40)'),
+      sub(4, '3rd registered application code', '', 'C', 'V', 'X(3)', '', CL24_RTEX_CREDIT_LINE),
+      sub(5, 'Application text', '', 'C', 'V', 'X(40)'),
+      sub(6, '4th registered application code', '', 'C', 'V', 'X(3)', '', CL24_RTEX_CREDIT_LINE),
+      sub(7, 'Application text', '', 'C', 'V', 'X(40)'),
+    ]),
+    elem('GNAR', 'General narrative', 'Do not use.', 'C', '+', [
+      sub(0, 'Narrative line 1', '', 'C', 'V', 'X(40)'),
+      sub(1, 'Narrative line 2', '', 'C', 'V', 'X(40)'),
+      sub(2, 'Narrative line 3', '', 'C', 'V', 'X(40)'),
+      sub(3, 'Narrative line 4', '', 'C', 'V', 'X(40)'),
+    ]),
+  ],
+)
+
+const cstSegment: SegmentDef = seg(
+  'CST',
+  'VAT RATE CREDIT SUB-TRAILER',
+  'Repeated for each real VAT rate in the credit note. Not for A (mixed rate).',
+  'M',
+  'Repeat for each VAT rate',
+  [
+    elem('SEQA', 'First level sequence number', 'Starts at 1.', 'M', '=', [
+      sub(0, 'Sequence number', '', 'M', 'V', '9(10)'),
+    ]),
+    elem('VATC', 'VAT Rate category code', 'Code List 12 (trailer subset).', 'M', '+', [
+      sub(0, 'VAT category code', 'Code List 12', 'M', 'F', 'X(1)', '', CL12_VATC_TRAILER),
+    ]),
+    elem('VATP', 'VAT Rate percentage', '', 'M', '+', [
+      sub(0, 'VAT percentage', '', 'M', 'V', '9(3)V9(3)'),
+    ]),
+    elem(
+      'NRIL',
+      'Number of item lines',
+      'Count of CLD segments with this VAT code (including mixed-rate components).',
+      'M',
+      '+',
+      [sub(0, 'Item line count', '', 'M', 'V', '9(10)')],
+    ),
+    elem('LVLA', 'Line sub-total amount (before VAT)', 'Σ EXLV for this VAT code', 'M', '+', [
+      sub(0, 'Line sub-total', 'In pounds, 2 decimal places', 'M', 'V', '9(10)V9(2)'),
+    ]),
+    elem(
+      'QYCA',
+      'Discount reclaimed for credit quantity',
+      'Discount amount for total quantity.',
+      'C',
+      '+',
+      [sub(0, 'Quantity discount', '', 'C', 'V', '9(10)V9(2)')],
+    ),
+    elem(
+      'VLCA',
+      'Discount reclaimed for credit value',
+      'Discount amount for total value.',
+      'C',
+      '+',
+      [sub(0, 'Value discount', '', 'C', 'V', '9(10)V9(2)')],
+    ),
+    elem(
+      'EVLA',
+      'Extended sub-total amount (before settlement discount)',
+      'EVLA = LVLA – QYCA – VLCA (or = LVLA if others unused)',
+      'M',
+      '+',
+      [sub(0, 'Extended sub-total', 'In pounds, 2 decimal places', 'M', 'V', '9(10)V9(2)')],
+    ),
+    elem(
+      'SEDA',
+      'Sub-total settlement discount amount',
+      'Only if payment terms include settlement discount.',
+      'C',
+      '+',
+      [sub(0, 'Settlement discount', '', 'C', 'V', '9(10)V9(2)')],
+    ),
+    elem(
+      'ASDA',
+      'Extended sub-total amount (after settlement discount)',
+      'ASDA = EVLA – SEDA (or = EVLA if no settlement discount)',
+      'M',
+      '+',
+      [sub(0, 'Amount after settlement', 'In pounds, 2 decimal places', 'M', 'V', '9(10)V9(2)')],
+    ),
+    elem('VATA', 'VAT amount payable', 'VAT = VATP applied to ASDA', 'M', '+', [
+      sub(0, 'VAT amount', 'In pounds, 2 decimal places', 'M', 'V', '9(10)V9(2)'),
+    ]),
+    elem(
+      'APSE',
+      'Payable sub-total (before settlement discount)',
+      'APSE = EVLA + VATA. Only if settlement discount applies.',
+      'C',
+      '+',
+      [sub(0, 'Payable before settlement', '', 'C', 'V', '9(10)V9(2)')],
+    ),
+    elem('APSI', 'Payment sub-total (after settlement discount)', 'APSI = ASDA + VATA', 'M', '+', [
+      sub(0, 'Payable after settlement', 'In pounds, 2 decimal places', 'M', 'V', '9(10)V9(2)'),
+    ]),
+  ],
+)
+
+const ctrSegment: SegmentDef = seg(
+  'CTR',
+  'CREDIT NOTE TRAILER',
+  'Totals for the credit note message as a whole.',
+  'M',
+  'Once',
+  [
+    elem('NCST', 'Number of CST segments', 'Number of CST segments in the message.', 'M', '=', [
+      sub(0, 'CST count', '', 'M', 'V', '9(10)'),
+    ]),
+    elem('LVLT', 'Lines total amount (before settlement discount)', 'Σ LVLA', 'M', '+', [
+      sub(0, 'Lines total', 'In pounds, 2 decimal places', 'M', 'V', '9(10)V9(2)'),
+    ]),
+    elem(
+      'QYCT',
+      'Total discount reclaimed for credit quantity',
+      'Σ QYCA across all CST segments.',
+      'C',
+      '+',
+      [sub(0, 'Quantity discount total', '', 'C', 'V', '9(10)V9(2)')],
+    ),
+    elem(
+      'VLCT',
+      'Total discount reclaimed for credit value',
+      'Σ VLCA across all CST segments.',
+      'C',
+      '+',
+      [sub(0, 'Value discount total', '', 'C', 'V', '9(10)V9(2)')],
+    ),
+    elem('EVLT', 'Total extended amount (before settlement discount)', 'Σ EVLA', 'M', '+', [
+      sub(0, 'Extended total', 'In pounds, 2 decimal places', 'M', 'V', '9(10)V9(2)'),
+    ]),
+    elem('SEDT', 'Total settlement discount amount', 'Σ SEDA', 'C', '+', [
+      sub(0, 'Settlement discount total', '', 'C', 'V', '9(10)V9(2)'),
+    ]),
+    elem('ASDT', 'Total amount (after settlement discount)', 'Σ ASDA', 'M', '+', [
+      sub(0, 'Total after settlement', 'In pounds, 2 decimal places', 'M', 'V', '9(10)V9(2)'),
+    ]),
+    elem('TVAT', 'Total VAT amount payable', 'Σ VATA', 'M', '+', [
+      sub(0, 'Total VAT', 'In pounds, 2 decimal places', 'M', 'V', '9(10)V9(2)'),
+    ]),
+    elem(
+      'TPSE',
+      'Total payable (before settlement discount)',
+      'Σ APSE. Only if settlement discount applies.',
+      'C',
+      '+',
+      [sub(0, 'Total payable before settlement', '', 'C', 'V', '9(10)V9(2)')],
+    ),
+    elem(
+      'TPSI',
+      'Total payable (after settlement discount)',
+      'Σ APSI. Final total credited including VAT.',
+      'M',
+      '+',
+      [sub(0, 'Total payable', 'In pounds, 2 decimal places', 'M', 'V', '9(10)V9(2)')],
+    ),
+  ],
+)
+
+// ─── Credit Note Message Definitions ────────────────────────────────────────
+
+export const crehdrMessageDef: MessageDef = {
+  type: 'CREHDR',
+  name: 'Credit Note File Header',
+  description:
+    'One occurrence at the start of the file. Contains supplier/customer details and file metadata.',
+  segments: [
+    mhdSegment('CREHDR', 'Credit note file header'),
+    typSegment,
+    sdtSegment,
+    cdtSegment,
+    dnaFileHeaderSegment,
+    filSegment,
+    mtrSegment,
+  ],
+}
+
+export const creditMessageDef: MessageDef = {
+  type: 'CREDIT',
+  name: 'Credit Note Details',
+  description: 'One occurrence per credit note. Contains line items, references, and totals.',
+  segments: [
+    mhdSegment('CREDIT', 'Credit note details'),
+    cloSegment,
+    crfSegment,
+    pytSegment,
+    oirSegment,
+    dnaInvoiceSegment,
+    cldSegment,
+    dnbSegment,
+    cstSegment,
+    ctrSegment,
+    mtrSegment,
+  ],
+}
+
+export const cretlrMessageDef: MessageDef = {
+  type: 'CRETLR',
+  name: 'Credit Note File Trailer',
+  description: 'One occurrence at the end of the file. File-level control totals.',
+  segments: [mhdSegment('CRETLR', 'Credit note file trailer'), totSegment, mtrSegment],
+}
+
+
 export const invfilMessageDef: MessageDef = {
   type: 'INVFIL',
   name: 'Invoice File Header',
@@ -1225,6 +1870,9 @@ const messageDefsByType: Record<string, MessageDef> = {
   INVOIC: invoicMessageDef,
   VATTLR: vattlrMessageDef,
   INVTLR: invtlrMessageDef,
+  CREHDR: crehdrMessageDef,
+  CREDIT: creditMessageDef,
+  CRETLR: cretlrMessageDef,
 }
 
 export function getMessageDef(type: string): MessageDef | null {

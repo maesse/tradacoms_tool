@@ -38,6 +38,11 @@ export interface DataFormat {
   description: string
 }
 
+export interface CodeListEntry {
+  code: string
+  name: string
+}
+
 export interface SubElementDef {
   /** Position index within the element (0-based) */
   index: number
@@ -48,6 +53,8 @@ export interface SubElementDef {
   requirement: Requirement
   lengthType: LengthType | null
   format: DataFormat | null
+  /** Optional code list: valid code values with descriptions */
+  codeList: CodeListEntry[] | null
 }
 
 export interface ElementDef {

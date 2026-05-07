@@ -36,9 +36,9 @@ const allIssues = computed(() => {
   return issues
 })
 
-const errorCount = computed(() => allIssues.value.filter(i => i.severity === 'error').length)
-const warningCount = computed(() => allIssues.value.filter(i => i.severity === 'warning').length)
-const infoCount = computed(() => allIssues.value.filter(i => i.severity === 'info').length)
+const errorCount = computed(() => allIssues.value.filter((i) => i.severity === 'error').length)
+const warningCount = computed(() => allIssues.value.filter((i) => i.severity === 'warning').length)
+const infoCount = computed(() => allIssues.value.filter((i) => i.severity === 'info').length)
 </script>
 
 <template>
@@ -50,24 +50,42 @@ const infoCount = computed(() => allIssues.value.filter(i => i.severity === 'inf
         class="select-none rounded-lg border px-4 py-2.5 text-sm flex items-center gap-4"
         :class="{
           'border-red-200 bg-red-50/50 dark:border-red-900/50 dark:bg-red-950/20': errorCount > 0,
-          'border-amber-200 bg-amber-50/50 dark:border-amber-900/50 dark:bg-amber-950/20': errorCount === 0 && warningCount > 0,
-          'border-sky-200 bg-sky-50/50 dark:border-sky-900/50 dark:bg-sky-950/20': errorCount === 0 && warningCount === 0,
+          'border-amber-200 bg-amber-50/50 dark:border-amber-900/50 dark:bg-amber-950/20':
+            errorCount === 0 && warningCount > 0,
+          'border-sky-200 bg-sky-50/50 dark:border-sky-900/50 dark:bg-sky-950/20':
+            errorCount === 0 && warningCount === 0,
         }"
       >
         <span class="font-medium">Validation</span>
-        <span v-if="errorCount > 0" class="text-red-600 dark:text-red-400 font-medium">{{ errorCount }} error{{ errorCount > 1 ? 's' : '' }}</span>
-        <span v-if="warningCount > 0" class="text-amber-600 dark:text-amber-400 font-medium">{{ warningCount }} warning{{ warningCount > 1 ? 's' : '' }}</span>
-        <span v-if="infoCount > 0" class="text-sky-600 dark:text-sky-400">{{ infoCount }} info</span>
+        <span v-if="errorCount > 0" class="text-red-600 dark:text-red-400 font-medium"
+          >{{ errorCount }} error{{ errorCount > 1 ? 's' : '' }}</span
+        >
+        <span v-if="warningCount > 0" class="text-amber-600 dark:text-amber-400 font-medium"
+          >{{ warningCount }} warning{{ warningCount > 1 ? 's' : '' }}</span
+        >
+        <span v-if="infoCount > 0" class="text-sky-600 dark:text-sky-400"
+          >{{ infoCount }} info</span
+        >
       </div>
-      <div v-else class="select-none rounded-lg border border-emerald-200 bg-emerald-50/50 dark:border-emerald-900/50 dark:bg-emerald-950/20 px-4 py-2.5 text-sm flex items-center gap-2">
+      <div
+        v-else
+        class="select-none rounded-lg border border-emerald-200 bg-emerald-50/50 dark:border-emerald-900/50 dark:bg-emerald-950/20 px-4 py-2.5 text-sm flex items-center gap-2"
+      >
         <span class="text-emerald-600 dark:text-emerald-400">✓</span>
         <span class="font-medium text-emerald-700 dark:text-emerald-400">No issues found</span>
       </div>
 
       <!-- Document-level issues -->
-      <div v-if="store.parsed.issues.length > 0" class="select-none rounded-lg border border-red-200 bg-red-50/50 dark:border-red-900/50 dark:bg-red-950/20 px-4 py-2 text-xs space-y-1">
+      <div
+        v-if="store.parsed.issues.length > 0"
+        class="select-none rounded-lg border border-red-200 bg-red-50/50 dark:border-red-900/50 dark:bg-red-950/20 px-4 py-2 text-xs space-y-1"
+      >
         <div class="font-medium text-red-700 dark:text-red-400 mb-1">Document Issues</div>
-        <div v-for="(iss, idx) in store.parsed.issues" :key="idx" class="flex items-start gap-1.5 text-muted-foreground">
+        <div
+          v-for="(iss, idx) in store.parsed.issues"
+          :key="idx"
+          class="flex items-start gap-1.5 text-muted-foreground"
+        >
           <span class="text-red-500 shrink-0">●</span>
           <span>{{ iss.message }}</span>
         </div>

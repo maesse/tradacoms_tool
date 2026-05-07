@@ -1,0 +1,474 @@
+**TRADACOMS CODE LISTS Issue 8 - File edited 03-04-2018 - Data from Dec 2017 - includes Version Number see code list 207**
+**Field Names: Format|Codelist Number|Codelist Name|Blank|Blank|Code Number|Code Name|Blank|Codelist Issue Number|**
+Tradacoms|01|PRCD|||A|urgent||8|
+Tradacoms|01|PRCD|||B|normal||8|
+Tradacoms|01|PRCD|||C|low||8|
+Tradacoms|02|TCDE|||0400|cancelled orders||8|
+Tradacoms|02|TCDE|||0430|new orders||8|
+Tradacoms|02|TCDE|||0445|order chasers||8|
+Tradacoms|02|TCDE|||0350|provisional order||8|
+Tradacoms|02|TCDE|||0355|orders for goods on approval/inspection||8|
+Tradacoms|02|TCDE|||0420|standing orders||8|
+Tradacoms|02|TCDE|||0435|orders for retained approval goods||8|
+Tradacoms|02|TCDE|||0460|order confirmation (responding to a quotation message) in which quantities may be reduced or items deleted||9|
+Tradacoms|02|TCDE|||0465|order confirmation (responding to a quotation message) in which order items and quantities must not be changed||9|
+Tradacoms|02|TCDE|||3120|acknowledgement including of availability for all lines||8|
+Tradacoms|02|TCDE|||3145|acknowledgement of order which cannot be supplied because of a query on the customers account||8|
+Tradacoms|02|TCDE|||3150|message referring to outstanding orders and changing details which have previously been advised, eg price, availability date. All details, including those which have not changed, must be shown for each changed line.||8|
+Tradacoms|02|TCDE|||3170|confirmation of acceptance of an order cancellation.||8|
+Tradacoms|02|TCDE|||0600|delivery  notification of delivery against an order, containing (in normal TRADACOMS practice) details of all the lines on the order. In book trade practice, code 600 is used for all delivery notifications, regardless of whether they carry all lines from the order(s) concerned.||8|
+Tradacoms|02|TCDE|||0650|balance  used to notify details of a part delivery. Not recommended for book trade use, but may be used by suppliers in other industries.||8|
+Tradacoms|02|TCDE|||0700|invoices only||8|
+Tradacoms|02|TCDE|||0709|copy invoice  not for VAT purposes||8|
+Tradacoms|02|TCDE|||0711|provisional invoice  not for VAT purposes||8|
+Tradacoms|02|TCDE|||0720|debit notes only  customer to supplier||8|
+Tradacoms|02|TCDE|||0740|credit notes only  supplier to customer||8|
+Tradacoms|02|TCDE|||0749|copy credit note  not for VAT purposes||8|
+Tradacoms|02|TCDE|||0820|statement details only||8|
+Tradacoms|02|TCDE|||0830|remittance details only||8|
+Tradacoms|02|TCDE|||9020|complete replacement price/availability file||8|
+Tradacoms|02|TCDE|||9021|price/availability updates only||8|
+Tradacoms|04|DELQ|||G|grams||8|
+Tradacoms|04|DELQ|||KG|kilograms||8|
+Tradacoms|05|PIND|||E|export price||8|
+Tradacoms|05|PIND|||F|free of charge||8|
+Tradacoms|05|PIND|||P|promotional price. Used in Orders to indicate that the price quoted by the customer is a promotional price, eg a pre-publication or other limited period price. This usage should not be confused with specific promotional deals agreed between trading partners and identified in the order by a promotion reference in SCRF.||8|
+Tradacoms|06|CLAS|||C|campaign||8|
+Tradacoms|06|CLAS|||E|easter||8|
+Tradacoms|06|CLAS|||N|new release||8|
+Tradacoms|06|CLAS|||R|request (special customer order for item not usually stocked)||8|
+Tradacoms|06|CLAS|||S|stock replenishment||8|
+Tradacoms|06|CLAS|||X|christmas||8|
+Tradacoms|08|TFIN|||T|to follow (record dues)||8|
+Tradacoms|08|TFIN|||N|not to follow (do not record dues)||8|
+Tradacoms|10|IGPI|||G|group||8|
+Tradacoms|10|IGPI|||I|item||8|
+Tradacoms|12|VATC|||S|standard rate||8|
+Tradacoms|12|VATC|||T|standard rated free goods, VAT charged||8|
+Tradacoms|12|VATC|||V|standard rated free goods, VAT not charged||8|
+Tradacoms|12|VATC|||Z|zero rate||8|
+Tradacoms|12|VATC|||X|exemption from VAT||8|
+Tradacoms|12|VATC|||H|higher rate||8|
+Tradacoms|12|VATC|||J|higher rated free goods, VAT charged||8|
+Tradacoms|12|VATC|||K|higher rated free goods, VAT not charged||8|
+Tradacoms|12|VATC|||E|export item||8|
+Tradacoms|12|VATC|||F|free export item, VAT charged||8|
+Tradacoms|12|VATC|||G|free export item, VAT not charged||8|
+Tradacoms|12|VATC|||O|services outside the scope of VAT||8|
+Tradacoms|12|VATC|||A|mixed VAT rate item||8|
+Tradacoms|12|VATC|||R|reconciliation  Invoice raised for VAT only||8|
+Tradacoms|12|VATC|||N|input tax paid but not reclaimable||8|
+Tradacoms|12|VATC|||L|lower rate||8|
+Tradacoms|13|CRRE|||01|excess quantity ordered||8|
+Tradacoms|13|CRRE|||02|order duplicated||8|
+Tradacoms|13|CRRE|||03|product ordered in error||8|
+Tradacoms|13|CRRE|||04|product not approved||8|
+Tradacoms|13|CRRE|||05|substitute product not accepted||8|
+Tradacoms|13|CRRE|||06|delivery instruction error||8|
+Tradacoms|13|CRRE|||07|delivery address error||8|
+Tradacoms|13|CRRE|||08|damage in transit||8|
+Tradacoms|13|CRRE|||09|loss in transit||8|
+Tradacoms|13|CRRE|||8|delivery refused  appointment||8|
+Tradacoms|13|CRRE|||11|delivery refused  late||8|
+Tradacoms|13|CRRE|||12|delivery refused  other reasons||8|
+Tradacoms|13|CRRE|||13|split order deliveries not accepted||8|
+Tradacoms|13|CRRE|||14|promotional discount error||8|
+Tradacoms|13|CRRE|||15|settlement discount error||8|
+Tradacoms|13|CRRE|||16|trade discount error Use for discount adjustment||8|
+Tradacoms|13|CRRE|||17|trade price error Use for price adjustment||8|
+Tradacoms|13|CRRE|||18|VAT rate error||8|
+Tradacoms|13|CRRE|||19|extension error||8|
+Tradacoms|13|CRRE|||20|damage on premises||8|
+Tradacoms|13|CRRE|||21|out of date||8|
+Tradacoms|13|CRRE|||22|surplus to requirements Use for general overstock returns, including collected by rep, and title page returns||8|
+Tradacoms|13|CRRE|||23|sale or return Use for see safe||8|
+Tradacoms|13|CRRE|||24|superseded product||8|
+Tradacoms|13|CRRE|||25|deteriorated product||8|
+Tradacoms|13|CRRE|||26|advertising allowance||8|
+Tradacoms|13|CRRE|||27|promotion allowance Use for book adopted  when an invoiced||8|
+Tradacoms|13|CRRE|||28|rebate||8|
+Tradacoms|13|CRRE|||29|retrospective discount Use for discount applied retrospectively, eg based on a specified total order value||8|
+Tradacoms|13|CRRE|||30|coupon redemption Use for credit raised at the end of a period for returned promotional coupons||8|
+Tradacoms|13|CRRE|||31|returnable containers||8|
+Tradacoms|13|CRRE|||32|goods used for demonstrations||8|
+Tradacoms|13|CRRE|||33|free goods charged in error||8|
+Tradacoms|13|CRRE|||34|agreed settlement||8|
+Tradacoms|13|CRRE|||35|equipment rental||8|
+Tradacoms|13|CRRE|||36|concession||8|
+Tradacoms|13|CRRE|||37|third party delivery||8|
+Tradacoms|13|CRRE|||38|short delivery||8|
+Tradacoms|13|CRRE|||39|incorrect product delivered Use for supplied in error||8|
+Tradacoms|13|CRRE|||40|non-delivery Use for returned not known; delivery error||8|
+Tradacoms|13|CRRE|||41|wrong account||8|
+Tradacoms|13|CRRE|||42|order cancellation Use for customer cancelled order||8|
+Tradacoms|13|CRRE|||43|postage/packing wrongly charged Use for credit for carriage; credit for freight; freight charge adjusted||8|
+Tradacoms|13|CRRE|||44|defect in manufacture of a product||8|
+Tradacoms|13|CRRE|||45|defect in a service or in customisation/modification of a product Use for wrong or defective servicing by library supplier||8|
+Tradacoms|13|CRRE|||46|recalled by supplier Use for recalled by publisher||8|
+Tradacoms|13|CRRE|||47|credit card incorrect/declined Use for invoice raised, but order cancelled following credit card checks||8|
+Tradacoms|13|CRRE|||48|out of stock at packing time Use for invoice raised, but stock found to be unavailable when order picked||8|
+Tradacoms|13|CRRE|||49|credit given under the BIC returns authorisation process No specific reason code required||8|
+Tradacoms|13|CRRE|||50|goods found Used in debit note adjustments only||8|
+Tradacoms|13|CRRE|||51|debit incorrectly raised Used in debit note adjustments||8|
+Tradacoms|13|CRRE|||52|credit refused||9|
+Tradacoms|13|CRRE|||53|distributor processing error||9|
+Tradacoms|14|TSUP|||A|ordinary sale||8|
+Tradacoms|14|TSUP|||B|hire purchase, conditional sale, credit sale or similar loan||8|
+Tradacoms|14|TSUP|||C|loan||8|
+Tradacoms|14|TSUP|||D|exchange||8|
+Tradacoms|14|TSUP|||E|hire, lease or rental||8|
+Tradacoms|14|TSUP|||F|process (making goods from someone elses materials)||8|
+Tradacoms|14|TSUP|||G|sales on commission (eg by an auctioneer)||8|
+Tradacoms|14|TSUP|||H|sale or return, or similar terms||8|
+Tradacoms|15|LINE|||01|credit balance brought forward||8|
+Tradacoms|15|LINE|||02|debit balance brought forward||8|
+Tradacoms|15|LINE|||03|credit balance carried forward||8|
+Tradacoms|15|LINE|||04|debit balance carried forward||8|
+Tradacoms|15|LINE|||05|invoice||8|
+Tradacoms|15|LINE|||06|credit note||8|
+Tradacoms|15|LINE|||07|debit note||8|
+Tradacoms|15|LINE|||08|on account payment||8|
+Tradacoms|15|LINE|||09|deposit||8|
+Tradacoms|15|LINE|||8|direct debit notification||8|
+Tradacoms|15|LINE|||11|payment||8|
+Tradacoms|15|LINE|||12|invoice cancellation||8|
+Tradacoms|15|LINE|||13|credit note cancellation||8|
+Tradacoms|15|LINE|||14|debit note cancellation||8|
+Tradacoms|15|LINE|||15|rebate||8|
+Tradacoms|15|LINE|||16|rebate cancellation||8|
+Tradacoms|15|LINE|||17|debit journal||8|
+Tradacoms|15|LINE|||18|credit journal||8|
+Tradacoms|15|LINE|||19|cash payment (debit)||8|
+Tradacoms|15|LINE|||20|cash payment (credit)||8|
+Tradacoms|15|LINE|||21|settlement discount payment (debit)||8|
+Tradacoms|15|LINE|||22|settlement discount payment (credit)||8|
+Tradacoms|16|APRF|||ACKHDR|order acknowledgements||8|
+Tradacoms|16|APRF|||BTOHDR|book trade orders||8|
+Tradacoms|16|APRF|||CREHDR|credit notes||8|
+Tradacoms|16|APRF|||DELHDR|delivery notifications||8|
+Tradacoms|16|APRF|||INVFIL|invoices||8|
+Tradacoms|16|APRF|||ORDHDR|orders||8|
+Tradacoms|16|APRF|||PVUHDR|book trade price and availability updates||8|
+Tradacoms|16|APRF|||SRMHDR|statement/remittance details||8|
+Tradacoms|24|RTEX|||003|product dimensions in mm. Format: HZ(7)9V9 WZ(7)9V9 TZ(7)9V9 where H = Page or case height, the height of the book when standing on a shelf W = Page or case width, the longer horizontal dimension of the book when standing on a shelf T1 =1 Spine thickness, the shorter horizontal dimension of the book when standing on a shelf. Each dimension is stated in millimetres as an integer of up to eight digits (nonsignificant zeros being omitted in the first seven positions) plus one decimal digit. Dimensions should be given in the order shown, with a space between each one. Examples: H2340 = spine height 234 mm, other dimensions not given H2340 W1500 T250 = spine height 234 mm, case width 150 mm, spine thickness 25 mm||8|
+Tradacoms|24|RTEX|||019|payment terms: if different from terms specified for the message as a whole. Free text up to 40 characters||9|
+Tradacoms|24|RTEX|||031|suppliers contact name: use in BTOERS library orders for the name of an individual contact at the publishers named in the PUB segment. (See also code 976.)||8|
+Tradacoms|24|RTEX|||036|identifies an order placed using Nielsens online service. May be used in ORDERS message. Must contain value ONLINE||8|
+Tradacoms|24|RTEX|||043|original order line sequence number. Must be used in association with order message number (see code 985)||8|
+Tradacoms|24|RTEX|||061|sellers order line number.||8|
+Tradacoms|24|RTEX|||067|accession number, or barcode number. (See also code 268.)||8|
+Tradacoms|24|RTEX|||068|Classification number. (See also 269 et seq.)  This RTEX code may be used in either of two ways: unstructured, or structured. The structured approach is to be preferred. An unstructured 068 field may carry any single classification code, as agreed between trading partners, and has the format X(40), provided that the first character position is not a $ symbol. A structured 068 field carries an identification of the classification scheme and one or more class codes from the scheme, up to a maximum overall length of 40 characters.  The field is laid out as follows: $ID$CLASS$CLASS$CLASS where ID is a code identifying the classification scheme (see BIC code list 208), and CLASS is a class code taken from the scheme.||10|
+Tradacoms|24|RTEX|||069|budget allocation code (fund number). If a library purchase is split across two or more funds, this RTEX field can be repeated, showing either or both of the percentage and the absolute amount allocated to each account, with comma delimiters. The first element, which is alphanumeric with a maximum of 17 characters, is the librarys fund number. The second element, which is numeric with up to 2 digits plus 2 decimal places, is the percentage allocated to the fund. The third element, which is numeric with up to 5 digits plus 2 decimal places, is the absolute amount allocated to the fund. Example: FUNDA,2500,3250 (25%, 32.50) Format: X(22),9(2)V9(2),9(5)V9(2)||8|
+Tradacoms|24|RTEX|||070|stock category.||8|
+Tradacoms|24|RTEX|||071|suppliers international location number (EAN-13 format). Used with availability status RF to identify the new or alternative supplier. Format: 9(13)F.||8|
+Tradacoms|24|RTEX|||073|currency code (see ANA List 31). Format: X(3)||8|
+Tradacoms|24|RTEX|||074|producers recommended selling price. Format: 9(10)V9(2)||8|
+Tradacoms|24|RTEX|||081|unit cost price (pre discount, ex-VAT). Format: 9(10)V9(4)||8|
+Tradacoms|24|RTEX|||082|customer order number (at line level)||8|
+Tradacoms|24|RTEX|||090|answer code, from BEDIS code list, now superseded by ANA List 54: do NOT use for availability codes from ANA List 54. RTEX code 090 should not be used in new implementations, but may still occur in some systems. 091 Date of answer code (date of last notification of availability status: may be used with availability status codes from ANA List 54). YYMMDD Format: 9(6)F||8|
+Tradacoms|24|RTEX|||091|date of answer code (date of last notification of availability status: may be used with availability status codes from ANA List 54). YYMMDD Format: 9(6)F||8|
+Tradacoms|24|RTEX|||092|answer code action date (expected pubdate, reprint date, date when placed out of print, etc: may be used with availability codes from ANA List 54). YYMMDD, with zeros if no day is specified, eg 960125, 960100. Format: 9(6)F||8|
+Tradacoms|24|RTEX|||093|short title.||8|
+Tradacoms|24|RTEX|||094|discount value. Format: 9(10)V9(2)||8|
+Tradacoms|24|RTEX|||095|discount percentage (3 decimal places implicit). Format: 9(2)V9(3).||8|
+Tradacoms|24|RTEX|||096|chaser sequence number (1, 2, 3 etc). Format: 9(1)||8|
+Tradacoms|24|RTEX|||128|country of origin. Use with standard code from Country Code list.||8|
+Tradacoms|24|RTEX|||170|invoicing instruction. May be used in Orders forwarded to a distributor to specify the amount of a postage and packing charge to be billed on an order line. In this case, the format is fixed-length, 7 characters, PPnnnnn, where nnnnn is the amount in pence, eg 00250 = 2.50. Format: X(40) (for general use)||8|
+Tradacoms|24|RTEX|||186|date when available. May be used in Delivery Notification for revised delivery date. Format: 9(6)F YYMMDD.||8|
+Tradacoms|24|RTEX|||230|additional order specifications, free text (use to give a more specific indication of the type of or reason for an order, or to detail a special order service such as Saturday delivery or Christmas hotline, where these aspects are not covered by DNAC code lists).||8|
+Tradacoms|24|RTEX|||231|special processing instruction (library to library supplier), defining a process to be applied to the book before despatch, where not covered by industry code lists: text to be agreed between trading partners.||8|
+Tradacoms|24|RTEX|||237|destination country. Use ISO country code list 3166 (see Appendix B). May be used in bookseller orders to a publisher to indicate the country to which the book will be supplied. Format: X(2)
+Tradacoms|24|RTEX|||268|unique copy ID. Assigned by a library acquisitions computer system to identify a single copy of a book or other publication: different from the accession or barcode number. (See also code 067.)
+Tradacoms|24|RTEX|||269|shelf mark, or spine label. The complete string of codes applied on the spine of a book or other publication to specify its shelf location within a library. Do not use if the individual components (eg 068, 271) are sent separately||8|
+Tradacoms|24|RTEX|||270|shelving sequence. A code or abbreviation which identifies the shelving sequence to which a book or other publication belongs in a library, eg localhistory collection or large print books. Hence normally the first element in the shelf mark.||8|
+Tradacoms|24|RTEX|||271|filing suffix. An extension to the classification (068) of an individual copy of a book or other publication in a library, used for shelving within a shelving sequence and classification.||8|
+Tradacoms|24|RTEX|||272|feature heading. An extension to the classification (068) of an individual copy of a book or other publication in a library, used to clarify the content or as an additional shelving element.||8|
+Tradacoms|24|RTEX|||273|size code. A code which specifies a size group or range for a specific application (eg quarto for books).||8|
+Tradacoms|24|RTEX|||274|branch or location code. A code indicating the location (eg a library branch) to which an item (eg a copy of a book or other publication) is allocated. NOT necessarily the delivery location.||8|
+Tradacoms|24|RTEX|||275|replacement value. A monetary amount reckoned to be the replacement value of an item (eg a copy of a book or other publication) and used to assess charges for loss or damage. Format: 9(10)V9(2)||8|
+Tradacoms|24|RTEX|||276|availability status of the item originally ordered. May be used in Order Acknowledgements when the item originally ordered has been substituted by an alternative product, to show the reason why the original item was unavailable. Use code values from ANA List 54. Format: X(2)||8|
+Tradacoms|24|RTEX|||279|consolidated invoice reference number. Used to allow reference forward from provisional invoices sent by EDI to a periodic consolidated tax invoice sent as a paper document (library supply only).||8|
+Tradacoms|24|RTEX|||288|sellers quotation line reference. Used to carry a reference at line level to a unique line reference in a suppliers quotation (eg when a TRADACOMS order refers back to an EDIFACT QUOTES message). Format: X(35)||8|
+Tradacoms|24|RTEX|||295|catalogue or price list reference. A reference to a suppliers catalogue or price list, from which the product information used in an order was derived. May be used, for example, in orders based on information downloaded from a library suppliers CD-ROM. Format: X(35)||8|
+Tradacoms|24|RTEX|||296|VAT breakdown of a mixed rate VAT item reference. Used to give advance information to a retailer or wholesaler on the exact VAT breakdown of a mixed-rate item. For products carrying mixed-rate VAT, this RTEX field specifies the part of the recommended retail price, excluding VAT, which carries VAT at a rate specified in an associated DNAC field using ANA Code List 12 values. Format: 9(10)V9(4)||8|
+Tradacoms|24|RTEX|||300|total number of pages. Used to give the total number of pages in a book or in a set of books sold as a single item. Format: 9(6) (Variable length)||8|
+Tradacoms|24|RTEX|||301|market restrictions. Used to indicate, in free form or in a format agreed between trading partners, geographical restrictions on the sale of a product.||8|
+Tradacoms|24|RTEX|||302|low stock indicator. Used to carry a code indicating that the supplier currently has low stocks of a product line item. Format: X(1)||8|
+Tradacoms|24|RTEX|||308|illustrations note. Free text statement of the number and/or type of illustrations in a book or other publication.||8|
+Tradacoms|24|RTEX|||312|co-publisher. The name of the co-publisher of a book or other publication which is jointly published by two or more organisations.||8|
+Tradacoms|24|RTEX|||313|estimated time to manufacture. For a book or other publication which is manufactured on demand, the estimated number of calendar days from receipt of an order to its despatch to a customer. Format: 9(2) (Variable length).||8|
+Tradacoms|24|RTEX|||314|number of items per pack. Used in book trade practice for a binders pack quantity. Format: 9(6) (Variable length).||8|
+Tradacoms|24|RTEX|||971|contained item ID and quantity. Used for dumpbins and counterpacks to carry details of the product(s) contained in the pack. Format: comma-delimited <EAN-13number>,<ISBN>,<Quantity>.||8|
+Tradacoms|24|RTEX|||972|reserved for credit card details, if and when implemented.||8|
+Tradacoms|24|RTEX|||976|publishers contact telephone number. Use in BTOERS library orders for the telephone number of a contact at the publisher named in the PUB segment. (See also code 031.)||8|
+Tradacoms|24|RTEX|||977|latest acceptable date for supply: cancel if not supplied by. Use at line level in BTOERS library orders to specify a date at which the order line should be cancelled if not yet supplied. Format: 9(6) YYMMDD||8|
+Tradacoms|24|RTEX|||978|replaced invoice number. Use in a recharge invoice (in the DNA segment after IRF) to carry a reference to the invoice which it replaces.||8|
+Tradacoms|24|RTEX|||979|suppliers internal code for invoice or credit note type. Use in an invoice (in the DNA segment after IRF) or credit note (in the DNA segment after CRF) to specify document type, by agreement between trading parties.||8|
+Tradacoms|24|RTEX|||980|sale-or-return number: supplier-assigned reference identifying a deal under which books are supplied on terms allowing unconditional sale-or-return, subject only to return in saleable condition.||8|
+Tradacoms|24|RTEX|||981|reason for credit being refused. Free text up to 40 characters. Use with code 52 from list 13 (Reason for credit).||9|
+Tradacoms|24|RTEX|||982|HMR&C commodity code: from BIC recommended list, available at www.bic.org.uk.||9|
+Tradacoms|24|RTEX|||983|EAN-13 (ISBN-13) of a successor product. Use in PVUINF when the availability status shows out of print: replaced by new edition.||9|
+Tradacoms|24|RTEX|||984|cancelled credit note number. Use (in the DNA segment after IRF) in a charge-only invoice that reverses a credit note issued in error, to carry a reference to the credit note in question.||9|
+Tradacoms|24|RTEX|||985|original order document number. For use in status reports at line level - together with original order line number (see code 043)||9|
+Tradacoms|24|RTEX|||986|embargo date||8|
+Tradacoms|31|CUIN|||BAM|Bosnia & Herzegovina, Convertible Marks||8|
+Tradacoms|31|CUIN|||CAD|Canada, Dollar||8|
+Tradacoms|31|CUIN|||CHF|Switzerland, Franc||8|
+Tradacoms|31|CUIN|||CSD|Serbia, Dinar||8|
+Tradacoms|31|CUIN|||CZK|Czech Republic, Koruna||8|
+Tradacoms|31|CUIN|||EUR|Euro||8|
+Tradacoms|31|CUIN|||FIM|Finland, Markka||8|
+Tradacoms|31|CUIN|||GBP|Great Britain, Pound||8|
+Tradacoms|31|CUIN|||JPY|Japan, Yen||8|
+Tradacoms|31|CUIN|||LUF|Luxembourg, Franc||8|
+Tradacoms|31|CUIN|||PLN|Poland, Zloty||8|
+Tradacoms|31|CUIN|||SEK|Sweden, Krona||8|
+Tradacoms|31|CUIN|||SKK|Slovakia, Koruna||8|
+Tradacoms|31|CUIN|||USD|United States, Dollar||8|
+**The BIC P&A T&FWG published List 54 in two sections. Section 1 Availability codes from P&A feeds from distributors and also Order Acknowledgements**
+Tradacoms|54|DNAC|||AB|publication abandoned||8|
+Tradacoms|54|DNAC|||AD|apply direct: item not available to trade||8|
+Tradacoms|54|DNAC|||AU|Publishers address unknown DEPRECATED||10|
+Tradacoms|54|DNAC|||CS|status uncertain: check with customer service||8|
+Tradacoms|54|DNAC|||HK|paperback out of print: hardback available||8|
+Tradacoms|54|DNAC|||IB|in stock||8|
+Tradacoms|54|DNAC|||IP|in print and in stock||8|
+Tradacoms|54|DNAC|||MD|manufactured on demand||8|
+Tradacoms|54|DNAC|||NK|item not known (cannot be traced)||8|
+Tradacoms|54|DNAC|||NN|we do not supply this item DEPRECATED||10|
+Tradacoms|54|DNAC|||NP|not yet published||8|
+Tradacoms|54|DNAC|||NS|not sold separately||8|
+Tradacoms|54|DNAC|||OA|on order from abroad||8|
+Tradacoms|54|DNAC|||OB|Normally stocked item that is temporarily out of stock DEPRECATED for use in P&A Feeds from Distributors||10|
+Tradacoms|54|DNAC|||OF|this format out of print: other manifestation available||8|
+Tradacoms|54|DNAC|||OO|On order from publisher DEPRECATED for use in P&A Feeds from Distributors||10|
+Tradacoms|54|DNAC|||OP|out of print||8|
+Tradacoms|54|DNAC|||OR|this format out of print: other manifestation pending||8|
+Tradacoms|54|DNAC|||PK|hardback out of print: paperback available DEPRECATED for use in Order Acknowledgements||10|
+Tradacoms|54|DNAC|||PN|publisher no longer in business DEPRECATED for use in Order Acknowledgements||10|
+Tradacoms|54|DNAC|||RE|awaiting reissue with new cover||8|
+Tradacoms|54|DNAC|||RF|refer to other publisher or distributor||8|
+Tradacoms|54|DNAC|||RM|remaindered||8|
+Tradacoms|54|DNAC|||RP|reprinting||8|
+Tradacoms|54|DNAC|||RR|rights restricted: cannot supply||8|
+Tradacoms|54|DNAC|||SO|Pack not available: available as single items only DEPRECATED for use in P&A Feeds from Distributors||10|
+Tradacoms|54|DNAC|||ST|Stocktaking: temporarily unavailable DEPRECATED||10|
+Tradacoms|54|DNAC|||TO|only available to order (non-stock item)||8|
+Tradacoms|54|DNAC|||TU|temporarily unavailable but expected to be available again soon||8|
+Tradacoms|54|DNAC|||UB|Item unobtainable from our sources DEPRECATED||10|
+Tradacoms|54|DNAC|||UC|unavailable, and may or may not become available again||8|
+Tradacoms|54|DNAC|||20|Item(s) currently out of stock DEPRECATED||10|
+Tradacoms|54|DNAC|||21|Discontinued item(s) DEPRECATED||10|
+Tradacoms|54|DNAC|||29|Item not valid - unrecognised by supplier DEPRECATED||10|
+**The next section for List 54 is for order acknowledgements only**
+Tradacoms|54|DNAC|||AS|already supplied||8|
+Tradacoms|54|DNAC|||DQ|discount query: available but discount claimed in order is unacceptable||8|
+Tradacoms|54|DNAC|||EX|digital product ordered NB EDIFACT code added to meet the need to respond to orders for eBooks and downloadable audiobooks||10|
+Tradacoms|54|DNAC|||FQ|only obtainable abroad, do you wish to order and accept cost?||8|
+Tradacoms|54|DNAC|||NQ|not stocked will try to fulfil as a special order||8|
+Tradacoms|54|DNAC|||PC|order in process at bookseller: awaiting customer action||8|
+Tradacoms|54|DNAC|||PQ|price query: available, but query whether price stated in order is acceptable||8|
+Tradacoms|54|DNAC|||PR|Order in process at bookseller DEPRECATED||10|
+Tradacoms|54|DNAC|||SD|Sold (for secondhand / antiquarian items) DEPRECATED||10|
+Tradacoms|54|DNAC|||TH|temporary hold (eg to investigate a query on terms)||8|
+Tradacoms|54|DNAC|||23|unable to comply with required delivery date||8|
+Tradacoms|54|DNAC|||30|delivery location not recognised||8|
+Tradacoms|54|DNAC|||31|Item substituted - discontinued line DEPRECATED||10|
+Tradacoms|54|DNAC|||32|item substituted - out of stock||8|
+Tradacoms|54|DNAC|||33|Price change DEPRECATED||10|
+Tradacoms|55|DNAC|||01|order line accepted Response to new order||8|
+Tradacoms|55|DNAC|||02|order line not accepted Response to new order||8|
+Tradacoms|55|DNAC|||03|order line passed to new supplier (Must be accompanied by the new suppliers EAN location code in RTEX code 071.) Response to new order||8|
+Tradacoms|55|DNAC|||04|order line accepted, substitute product will be supplied (Must be accompanied by an alternative ISBN.) Response to new order||8|
+Tradacoms|55|DNAC|||05|order line not accepted, substitute product is offered (Must be accompanied by an alternative ISBN.) Response to new order||8|
+Tradacoms|55|DNAC|||06|order out of time: outstanding order line cancelled, past expiry date; or new order line not accepted, promotion expired Response to new order, report on outstanding order line||8|
+Tradacoms|55|DNAC|||07|outstanding order line cancelled by customer request Response to order cancellation, report on outstanding order line||8|
+Tradacoms|55|DNAC|||08|order line already despatched or in process Response to order chaser or cancellation||8|
+Tradacoms|55|DNAC|||09|cannot trace order line Response to order chaser or cancellation||8|
+Tradacoms|55|DNAC|||8|order line not on backorder file Response to order chaser or cancellation, for suppliers whose systems check chasers or cancellations only against a backorder file. Where possible, the more informative responses provided by codes 08 and 09 are to be preferred.||8|
+Tradacoms|55|DNAC|||11|price query: order line will be held awaiting customer response Response to new order||8|
+Tradacoms|55|DNAC|||12|discount query: order line will be held awaiting customer response (if both price and discount are queried, use code 11) Response to new order||8|
+Tradacoms|55|DNAC|||13|minimum order value not reached: order line will be held until required value is reached Response to new order||8|
+Tradacoms|55|DNAC|||14|firm order required: order line will be held awaiting customer response Response to new order||8|
+Tradacoms|55|DNAC|||15|promotion or special deal query: order line will be held awaiting customer response Response to new order||8|
+Tradacoms|55|DNAC|||16|account stopped: order line will be held awaiting customer action Response to new order, or report on outstanding order line||8|
+Tradacoms|55|DNAC|||21|price query: order line not accepted Response to new order||8|
+Tradacoms|55|DNAC|||22|discount query: order line not accepted (if both price and discount are queried, use code 21) Response to new order||8|
+Tradacoms|55|DNAC|||23|minimum order value not reached: order line not accepted Response to new order||8|
+Tradacoms|55|DNAC|||24|outstanding order line cancelled - unable to supply Report on outstanding order line||8|
+Tradacoms|55|DNAC|||25|order line not accepted: query duplicate order Response to new order||9|
+Tradacoms|55|DNAC|||26|zero or short-pick on a line where a customer has specified not to record dues Response to new order||8|
+Tradacoms|55|DNAC|||31|order line passed to secondhand department Response to new order||8|
+Tradacoms|55|DNAC|||40|backordered - awaiting supply Report on outstanding order line||8|
+Tradacoms|55|DNAC|||41|on order from our supplier Report on outstanding order line||8|
+Tradacoms|55|DNAC|||42|on order from abroad Report on outstanding order line||8|
+Tradacoms|55|DNAC|||43|backordered, waiting to reach minimum order value Report on outstanding order line||8|
+Tradacoms|55|DNAC|||44|despatched from our supplier, awaiting delivery Report on outstanding order line||8|
+Tradacoms|55|DNAC|||45|our supplier sent wrong item(s), re-ordered Report on outstanding order line||8|
+Tradacoms|55|DNAC|||46|our supplier sent short, re-ordered Report on outstanding order line||8|
+Tradacoms|55|DNAC|||47|our supplier sent damaged item(s), re-ordered Report on outstanding order line||8|
+Tradacoms|55|DNAC|||48|our supplier sent imperfect item(s), re-ordered Report on outstanding order line||8|
+Tradacoms|55|DNAC|||49|our supplier cannot trace order, re-ordered Report on outstanding order line||8|
+Tradacoms|55|DNAC|||50|ordered item(s) being processed by bookseller Report on outstanding order line||8|
+Tradacoms|55|DNAC|||51|ordered item(s) being processed by bookseller, awaiting customer action Report on outstanding order line||8|
+Tradacoms|55|DNAC|||52|order line held awaiting customer instruction Report on outstanding order line||8|
+Tradacoms|55|DNAC|||53|order line held: has been chased to our suppliers Report on outstanding order line||8|
+Tradacoms|55|DNAC|||55|order line not accepted: query duplicate order Response to new order||8|
+Tradacoms|55|DNAC|||91|order line held: note title change Report on outstanding order line||8|
+Tradacoms|55|DNAC|||92|order line held: note pubdate or availability date delay (Must be accompanied by an availability date.) Report on outstanding order line||8|
+Tradacoms|55|DNAC|||93|order line held: note price change Report on outstanding order line||8|
+Tradacoms|55|DNAC|||99|temporary hold: order action not yet determined Response to new order||8|
+Tradacoms|201||||8|highest priority under standard service||8|
+Tradacoms|201||||3|normal priority||8|
+Tradacoms|201||||5|lowest priority under standard service||8|
+Tradacoms|201||||H|hotline order (use for Christmas or academic hotlines)||8|
+Tradacoms|201||||S|special service||8|
+Tradacoms|202||||BD|board book||8|
+Tradacoms|202||||BH|bath book||8|
+Tradacoms|202||||BK|book (irrespective of binding: use only when no binding detail is available)||8|
+Tradacoms|202||||BX|boxed (including slip-cases): use in combination with HB, PB etc||8|
+Tradacoms|202||||CL|carousel book||8|
+Tradacoms|202||||CO|concertina book||8|
+Tradacoms|202||||HB|hardback||8|
+Tradacoms|202||||JN|no dust jacket: use in combination with HB||8|
+Tradacoms|202||||JY|with dust jacket: use in combination with HB||8|
+Tradacoms|202||||LA|laminated (plastic-reinforced paper)||8|
+Tradacoms|202||||LB|leather binding||8|
+Tradacoms|202||||LG|large print||8|
+Tradacoms|202||||LI|limp cloth||8|
+Tradacoms|202||||LR|loose-leaf release (set of update pages)||8|
+Tradacoms|202||||LS|loose-leaf volume(s) (complete publication in binder)||8|
+Tradacoms|202||||MB|moving picture book||8|
+Tradacoms|202||||NB|novelty book (not classifiable under any more specific code)||8|
+Tradacoms|202||||PB|paperback||8|
+Tradacoms|202||||PC|postcard book or pack||8|
+Tradacoms|202||||PU|pop-up book||8|
+Tradacoms|202||||RG|rag book, cloth book||8|
+Tradacoms|202||||SD|stitched: use in combination with PB etc||8|
+Tradacoms|202||||SK|sticker book||8|
+Tradacoms|202||||SP|spiral binding||8|
+Tradacoms|202||||SS|sound story book||8|
+Tradacoms|202||||UB|unusual size book||8|
+Tradacoms|202||||UG|giant book||8|
+Tradacoms|202||||UM|miniature book||8|
+Tradacoms|202||||LE|library suppliers special bound edition: use where the supplier offers libraries a complete alternative to a publishers binding||8|
+Tradacoms|202||||AC|audio cassette||8|
+Tradacoms|202||||AD|address book||8|
+Tradacoms|202||||CA|calendar||8|
+Tradacoms|202||||CD|CD audio||8|
+Tradacoms|202||||CI|CD-I||8|
+Tradacoms|202||||CM|CD-ROM||8|
+Tradacoms|202||||CP|copymasters, photocopiable sheets||8|
+Tradacoms|202||||CR|computer-readable data or software (tape, diskette etc; for CD-ROM use CM)||8|
+Tradacoms|202||||CS|cards, flash cards (eg for teaching reading)||8|
+Tradacoms|202||||DA|diary||8|
+Tradacoms|202||||DD|DVD||8|
+Tradacoms|202||||DG|ebook||8|
+Tradacoms|202||||FI|film (including filmstrip)||8|
+Tradacoms|202||||FO|folded: use in combination with MP for a folded map||8|
+Tradacoms|202||||FS|flat sheet: use in combination with MP for a flat sheet map||8|
+Tradacoms|202||||FR|frieze||8|
+Tradacoms|202||||GA|game||8|
+Tradacoms|202||||KT|kit||8|
+Tradacoms|202||||LP|sound disc (excluding CD)||8|
+Tradacoms|202||||MI|mixed media (eg book and cassette)||8|
+Tradacoms|202||||ME|microfiche||8|
+Tradacoms|202||||MM|microfilm (ie roll film)||8|
+Tradacoms|202||||MP|map||8|
+Tradacoms|202||||MU|printed music (sheet or bound)||8|
+Tradacoms|202||||OH|OHP transparencies||8|
+Tradacoms|202||||PI|picture(s) or photograph(s)||8|
+Tradacoms|202||||PK|pack (containing multiple copies of the same product, eg dumpbin or shrink-wrapped pack, for supply wholesale to a bookseller)||8|
+Tradacoms|202||||PO|poster||8|
+Tradacoms|202||||PT|pamphlet or brochure||8|
+Tradacoms|202||||SL|slides (ie photographic transparencies)||8|
+Tradacoms|202||||ST|stationery, miscellaneous||8|
+Tradacoms|202||||TD|merchandise related to books or other publications, not specifically defined elsewhere||8|
+Tradacoms|202||||VC|video cassette||8|
+Tradacoms|202||||WT|wallet (containing loose sheets etc, eg a teaching resource pack)||8|
+Tradacoms|202||||XA|promotional or point-of sale material||8|
+Tradacoms|202||||OT|other||8|
+Tradacoms|202||||Z01|sleeving (jackets, sleeves, wallets)||8|
+Tradacoms|202||||Z02|binding (binding, reinforcing, laminating)||8|
+Tradacoms|202||||Z03|barcode labelling||8|
+Tradacoms|202||||Z04|general servicing (cards, pockets, stamps)||8|
+Tradacoms|202||||Z05|security fitting (triggers, Knogo labels etc)||8|
+Tradacoms|202||||Z06|handling (small order surcharge)||8|
+Tradacoms|202||||Z07|bibliographic record supply (MARC, bespoke)||8|
+Tradacoms|202||||Z08|classification||8|
+Tradacoms|202||||Z09|data communications media (tapes, disks, email)||8|
+Tradacoms|202||||Z10|audio/CD-ROM packaging (special pouches)||8|
+Tradacoms|202||||Z11|provision of approvals/book collections||8|
+Tradacoms|202||||Z12|small/minimum order adjustment||8|
+Tradacoms|202||||Z13|postage & packing: use for a single inclusive p&p charge||8|
+Tradacoms|202||||Z14|packaging: use for a charge which covers packaging costs only. If necessary, give detail as standard text (supplier-defined) in TDES||8|
+Tradacoms|202||||Z15|postage/carriage/freight: use for a charge which covers carriage-related costs only, including items such as insurance in transit. If necessary, give detail as standard text (supplier-defined) in TDES||8|
+Tradacoms|202||||Z98|miscellaneous credit adjustment||8|
+Tradacoms|202||||Z99|miscellaneous charge: use for any sundry or ancillary charge not covered by a more specific code. If necessary, give detail as standard text (supplier-defined) in TDES||8|
+Tradacoms|203||||CRR|customer or reader request (library supply only)||8|
+Tradacoms|203||||PRE|advance (pre-publication) order (library supply only)||8|
+Tradacoms|203||||STK|stock order (library supply only)||8|
+Tradacoms|203||||PTN|part order not acceptable||8|
+Tradacoms|203||||PTY|part order acceptable||8|
+Tradacoms|203||||RPN|Do not round to pack quantity (Codes RPN and RPY must be used with extreme caution. They should never be used unless trading partners have a clear agreement on rounding to packs. Given such an agreement, they may be used to flag an exception to the agreed practice.)||8|
+Tradacoms|203||||RPY|Round to pack quantity (Codes RPN and RPY must be used with extreme caution. They should never be used unless trading partners have a clear agreement on rounding to packs. Given such an agreement, they may be used to flag an exception to the agreed practice.)||8|
+Tradacoms|203||||BIC|supplied under BIC standard returns conditions||8|
+Tradacoms|203||||FMS|supplied on firm sale||8|
+Tradacoms|203||||SHC|ship combined (this order may be combined with others in a single shipment)||9|
+Tradacoms|203||||SHS|ship separately||9|
+Tradacoms|203||||SLR|supplied on sale or return (subject only to return in saleable condition)  may require a sale or return number to be quoted||8|
+Tradacoms|203||||SSF|see safe (publishers normal returns conditions apply)  to be used only by suppliers who have NOT adopted BIC standard returns conditions||8|
+Tradacoms|203||||SOR|value withdrawn: do not use||8|
+Tradacoms|204||||NS|no servicing||8|
+Tradacoms|204||||PF|binding as supplied by the publisher (cancels all normal servicing which affects binding, lamination, sleeving, wallets, reinforcement etc).||8|
+Tradacoms|204||||JK|plastic wallet on a paperback.||8|
+Tradacoms|204||||LA|thin laminate film on a paperback.||8|
+Tradacoms|204||||SF|sewn flexi: sewn single-section paperbacks with laminate film.||8|
+Tradacoms|204||||KA|kapco: proprietary thick laminate film on a paperback.||8|
+Tradacoms|204||||TR|traditional case binding of a paperback.||8|
+Tradacoms|204||||SL|plastic sleeve on a hardback.||8|
+Tradacoms|204||||RE|reinforcement of hardback (eg a child's picture book).||8|
+Tradacoms|204||||RP|reinforcement of paperback.||8|
+Tradacoms|204||||JKN|do not supply wallet.||8|
+Tradacoms|204||||LAN|do not laminate.||8|
+Tradacoms|204||||SFN|do not sew.||8|
+Tradacoms|204||||KAN|do not apply Kapco (additional codes to be assigned to other proprietary laminating methods).||8|
+Tradacoms|204||||TRN|do not case bind.||8|
+Tradacoms|204||||SLN|do not sleeve.||8|
+Tradacoms|204||||REN|do not reinforce hardback.||8|
+Tradacoms|204||||RPN|do not reinforce paperback.||8|
+Tradacoms|205||||Z01|sleeving (jackets, sleeves, wallets).||8|
+Tradacoms|205||||Z02|binding (binding, reinforcing, laminating).||8|
+Tradacoms|205||||Z03|barcode labelling.||8|
+Tradacoms|205||||Z04|general servicing (cards, pockets, stamps).||8|
+Tradacoms|205||||Z05|security fitting (triggers, Knogo labels etc).||8|
+Tradacoms|205||||Z06|handling (small order surcharge).||8|
+Tradacoms|205||||Z07|bibliographic record supply (MARC, bespoke).||8|
+Tradacoms|205||||Z08|classification.||8|
+Tradacoms|205||||Z09|data communications media (tapes, disks, email).||8|
+Tradacoms|205||||Z10|audio/CD-ROM packaging (special pouches).||8|
+Tradacoms|205||||Z11|provision of approvals/book collections.||8|
+Tradacoms|205||||Z12|small/minimum order adjustment.||8|
+Tradacoms|205||||Z13|postage & packing: use for a single inclusive p&p charge.||8|
+Tradacoms|205||||Z14|packaging: use for a charge which covers packaging costs only. If necessary, give detail as standard text (supplier-defined) in TDES.||8|
+Tradacoms|205||||Z15|postage/carriage/freight: use for a charge which covers carriage-related costs only, including items such as insurance in transit. If necessary, give detail as standard text (supplier-defined) in TDES.||8|
+Tradacoms|205||||Z98|miscellaneous credit adjustment.||8|
+Tradacoms|205||||Z99|miscellaneous charge: use for any sundry or ancillary charge not covered by a more specific code. If necessary, give detail as standard text (supplierdefined) in TDES.||8|
+Tradacoms|207||||10|version number of BIC Codelists published on BIC website Dec 2017||10|
+Tradacoms|208||||D|dewey, edition unspecified||10|
+Tradacoms|208||||D19|dewey 19th edition (1979)||10|
+Tradacoms|208||||D20|dewey 20th edition (1989)||10|
+Tradacoms|208||||D21|dewey 21st edition (1996)||10|
+Tradacoms|208||||D22|dewey 22nd edition (2003)||10|
+Tradacoms|208||||D23|dewey 23rd edition (2011)||10|
+Tradacoms|208||||BM|BIC main subject category||10|
+Tradacoms|208||||BS|BIC subsidiary subject category||10|
+Tradacoms|208||||BG|BIC geographical qualifier||10|
+Tradacoms|208||||BL|BIC languages qualifier||10|
+Tradacoms|208||||BT|BIC time periods qualifier||10|
+Tradacoms|208||||BE|BIC educational purpose qualifier||10|
+Tradacoms|208||||BV|BIC subject categories version number||10|
+Tradacoms|208||||LC|library of congress classification||10|
+Tradacoms|208||||LIB|librarys own classification||10|
+Tradacoms|208||||PC|publishers own internal classification||10|
+#

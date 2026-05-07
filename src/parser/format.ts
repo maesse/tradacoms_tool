@@ -1,4 +1,4 @@
-import type { DataFormat } from './types'
+import type { DataFormat, SubElementDef } from './types'
 
 /**
  * Parse a TRADACOMS format notation into a human-readable description.
@@ -6,9 +6,19 @@ import type { DataFormat } from './types'
  * e.g. "X(35)" → "Text: up to 35 characters"
  * e.g. "9(13)" → "Numeric: up to 13 digits"
  */
-export function describeFormat(format: DataFormat | null, lengthType: 'F' | 'V' | null): string {
+export function describeFormat(
+  format: DataFormat | null,
+  lengthType: 'F' | 'V' | null,
+  def?: SubElementDef | null,
+): string {
   if (!format) return ''
   const notation = format.notation
+
+  // Check for date/time fields before generic numeric handling
+  if (def && notation === '9(6)') {
+    if (isDateSubElement(def)) return 'Date (YYMMDD)'
+    if (isTimeSubElement(def)) return 'Time (HHMMSS)'
+  }
 
   // 9(n)V9(m) - numeric with implied decimal
   const decimalMatch = notation.match(/^9\((\d+)\)V9\((\d+)\)$/)
@@ -65,4 +75,59 @@ export function formatWithDecimal(raw: string, decimalPlaces: number): string | 
   const intPart = trimmed.slice(0, trimmed.length - decimalPlaces)
   const decPart = trimmed.slice(trimmed.length - decimalPlaces)
   return intPart + '.' + decPart
+}
+
+const DATE_KEYWORDS = ['date', 'yymmdd']
+const TIME_KEYWORDS = ['time', 'hhmmss']
+
+/**
+ * Determine if a sub-element definition represents a date field (YYMMDD).
+ */
+export function isDateSubElement(def: SubElementDef | null): boolean {
+  if (!def || def.format?.notation !== '9(6)') return false
+  const lower = (def.name + ' ' + def.description).toLowerCase()
+  return DATE_KEYWORDS.some((kw) => lower.includes(kw))
+}
+
+/**
+ * Determine if a sub-element definition represents a time field (HHMMSS).
+ */
+export function isTimeSubElement(def: SubElementDef | null): boolean {
+  if (!def || def.format?.notation !== '9(6)') return false
+  const lower = (def.name + ' ' + def.description).toLowerCase()
+  return TIME_KEYWORDS.some((kw) => lower.includes(kw))
+}
+
+const MONTH_NAMES = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+]
+
+/**
+ * Format a raw YYMMDD date string into a readable display.
+ * e.g. "260506" → "06 May 2026"
+ * Returns null if the value isn't a valid 6-digit date.
+ */
+export function formatDateDisplay(raw: string): string | null {
+  if (!raw || raw.length !== 6 || !/^\d{6}$/.test(raw)) return null
+  const yy = parseInt(raw.slice(0, 2), 10)
+  const mm = parseInt(raw.slice(2, 4), 10)
+  const dd = parseInt(raw.slice(4, 6), 10)
+  if (mm < 1 || mm > 12 || dd < 1 || dd > 31) return null
+  const year = yy >= 80 ? 1900 + yy : 2000 + yy
+  return `${String(dd).padStart(2, '0')} ${MONTH_NAMES[mm - 1]} ${year}`
+}
+
+/**
+ * Format a raw HHMMSS time string into a readable display.
+ * e.g. "143052" → "14:30:52"
+ * Returns null if the value isn't a valid 6-digit time.
+ */
+export function formatTimeDisplay(raw: string): string | null {
+  if (!raw || raw.length !== 6 || !/^\d{6}$/.test(raw)) return null
+  const hh = raw.slice(0, 2)
+  const mi = raw.slice(2, 4)
+  const ss = raw.slice(4, 6)
+  if (parseInt(hh) > 23 || parseInt(mi) > 59 || parseInt(ss) > 59) return null
+  return `${hh}:${mi}:${ss}`
 }

@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { ParsedSegment, ParsedElement, ParsedSubElement, ValidationIssue } from '@/parser'
-import { describeFormat, getImpliedDecimalPlaces, formatWithDecimal } from '@/parser'
+import {
+  describeFormat,
+  getImpliedDecimalPlaces,
+  formatWithDecimal,
+  isDateSubElement,
+  isTimeSubElement,
+  formatDateDisplay,
+  formatTimeDisplay,
+} from '@/parser'
 import { useFieldHighlight } from '@/composables/useFieldHighlight'
 import FieldTooltip from './FieldTooltip.vue'
 
@@ -66,6 +74,22 @@ function isDecimalFormatted(sub: ParsedSubElement): boolean {
     return formatWithDecimal(sub.raw, dp) !== null
   }
   return false
+}
+
+function isDateFormatted(sub: ParsedSubElement): boolean {
+  return isDateSubElement(sub.def) && formatDateDisplay(sub.raw) !== null
+}
+
+function isTimeFormatted(sub: ParsedSubElement): boolean {
+  return isTimeSubElement(sub.def) && formatTimeDisplay(sub.raw) !== null
+}
+
+function getDateDisplay(sub: ParsedSubElement): string {
+  return formatDateDisplay(sub.raw) ?? sub.raw
+}
+
+function getTimeDisplay(sub: ParsedSubElement): string {
+  return formatTimeDisplay(sub.raw) ?? sub.raw
 }
 
 /**
@@ -231,6 +255,20 @@ function getElementPreview(elIdx: number): string {
                 ><span class="tabular-nums">{{
                   getDisplayValue(sub).split('.')[1]
                 }}</span></template
+              ><template v-else-if="isDateFormatted(sub)"
+                ><span class="tabular-nums">{{ sub.raw.slice(0, 2) }}</span
+                ><span class="select-none text-blue-500 dark:text-blue-400 font-bold">.</span
+                ><span class="tabular-nums">{{ sub.raw.slice(2, 4) }}</span
+                ><span class="select-none text-blue-500 dark:text-blue-400 font-bold">.</span
+                ><span class="tabular-nums">{{ sub.raw.slice(4, 6) }}</span
+              ></template
+              ><template v-else-if="isTimeFormatted(sub)"
+                ><span class="tabular-nums">{{ sub.raw.slice(0, 2) }}</span
+                ><span class="select-none text-blue-500 dark:text-blue-400 font-bold">:</span
+                ><span class="tabular-nums">{{ sub.raw.slice(2, 4) }}</span
+                ><span class="select-none text-blue-500 dark:text-blue-400 font-bold">:</span
+                ><span class="tabular-nums">{{ sub.raw.slice(4, 6) }}</span
+              ></template
               ><template v-else-if="sub.raw">{{ sub.raw }}</template></span
             >
 
@@ -250,6 +288,17 @@ function getElementPreview(elIdx: number): string {
                 <!-- Element context -->
                 <div v-if="el.def" class="text-xs text-muted-foreground">
                   {{ el.def.code }} – {{ el.def.name }}
+                </div>
+
+                <!-- Element-level validation rule / calculation -->
+                <div
+                  v-if="
+                    el.def?.description &&
+                    el.def.description.replace(/\.\s*$/, '') !== el.def.name
+                  "
+                  class="text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded px-2 py-1 leading-relaxed"
+                >
+                  <span class="font-medium">Rule:</span> {{ el.def.description }}
                 </div>
 
                 <!-- Description -->
@@ -276,7 +325,7 @@ function getElementPreview(elIdx: number): string {
                     v-if="sub.def?.format"
                     class="inline-flex items-center rounded-full bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300 px-2 py-0.5 font-medium"
                   >
-                    {{ describeFormat(sub.def.format, sub.def.lengthType) }}
+                    {{ describeFormat(sub.def.format, sub.def.lengthType, sub.def) }}
                   </span>
                 </div>
 
@@ -289,7 +338,7 @@ function getElementPreview(elIdx: number): string {
                   }}{{ sub.def.lengthType === 'F' ? ' (fixed)' : '' }}
                 </div>
 
-                <!-- Current value display with decimal interpretation -->
+                <!-- Current value display with decimal / date / time interpretation -->
                 <div v-if="sub.raw" class="border-t pt-1.5 mt-1">
                   <div class="text-xs text-muted-foreground">Current value</div>
                   <div class="font-mono text-sm font-medium mt-0.5">
@@ -297,6 +346,16 @@ function getElementPreview(elIdx: number): string {
                       v-if="isDecimalFormatted(sub)"
                       class="text-emerald-700 dark:text-emerald-400"
                       >{{ getDisplayValue(sub) }}</span
+                    >
+                    <span
+                      v-else-if="isDateFormatted(sub)"
+                      class="text-blue-700 dark:text-blue-400"
+                      >{{ getDateDisplay(sub) }}</span
+                    >
+                    <span
+                      v-else-if="isTimeFormatted(sub)"
+                      class="text-blue-700 dark:text-blue-400"
+                      >{{ getTimeDisplay(sub) }}</span
                     >
                     <span v-else>{{ sub.raw }}</span>
                   </div>
@@ -306,6 +365,59 @@ function getElementPreview(elIdx: number): string {
                   >
                     Raw: {{ sub.raw }} ({{ getImpliedDecimalPlaces(sub.def!.format) }} implied
                     decimal places)
+                  </div>
+                  <div
+                    v-if="isDateFormatted(sub)"
+                    class="text-[10px] text-muted-foreground/70 mt-0.5"
+                  >
+                    Raw: {{ sub.raw }} (YYMMDD)
+                  </div>
+                  <div
+                    v-if="isTimeFormatted(sub)"
+                    class="text-[10px] text-muted-foreground/70 mt-0.5"
+                  >
+                    Raw: {{ sub.raw }} (HHMMSS)
+                  </div>
+                </div>
+
+                <!-- Code list: current value meaning -->
+                <div
+                  v-if="
+                    sub.def?.codeList &&
+                    sub.raw &&
+                    sub.def.codeList.find((c) => c.code === sub.raw)
+                  "
+                  class="border-t pt-1.5 mt-1"
+                >
+                  <div class="flex items-center gap-1.5 text-xs">
+                    <span
+                      class="inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 px-2 py-0.5 font-medium"
+                    >
+                      {{ sub.def.codeList.find((c) => c.code === sub.raw)!.name }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Code list: valid values -->
+                <div v-if="sub.def?.codeList" class="border-t pt-1.5 mt-1">
+                  <div class="text-xs text-muted-foreground mb-1">Valid codes</div>
+                  <div class="grid gap-0.5 max-h-50 overflow-y-auto">
+                    <div
+                      v-for="entry in sub.def.codeList"
+                      :key="entry.code"
+                      class="flex items-baseline gap-1.5 text-xs"
+                      :class="
+                        entry.code === sub.raw
+                          ? 'text-emerald-700 dark:text-emerald-400 font-medium'
+                          : 'text-muted-foreground'
+                      "
+                    >
+                      <span class="font-mono shrink-0 min-w-[2.5ch] text-right">{{
+                        entry.code
+                      }}</span>
+                      <span class="text-muted-foreground/50">–</span>
+                      <span>{{ entry.name }}</span>
+                    </div>
                   </div>
                 </div>
 

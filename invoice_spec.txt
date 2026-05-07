@@ -1,0 +1,2757 @@
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+B O O K  
+I N D U S T R  Y 
+C O MM U N I C A  T I O N  
+L TD  
+ 
+ 
+ 
+ 
+BIC EDI Standards 
+& Implementation 
+Guidelines for the 
+Book Trade 
+TRADACOMS 
+File Format Specifications: 
+The Invoice 
+January 2023 
+© Copyright BIC 2019 
+ 
+ 
+These guidelines are based on TRADACOMS file format 
+standards reproduced with kind permission of GS1 UK. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+4 Aztec Row, Berners Road, London N1 0PW | + 4 4  ( 0 ) 2 0  4 5 5 1  1 5 7 0  
+w w w . b i c . o r g . u k  | i n f o @ b i c . o r g . u k  | @ b i c 1 u k  
+Page 1 of 40 
+ 
+ 
+TRADACOMS File Format Specifications: The Invoice 
+Using the Invoice message 
+ 
+Table of Contents 
+ 
+ 
+Changes since August 2019……..……………………………………..…...……...…. 
+2 
+1. 
+The Invoice Message………..……………………………………………..…..……….. 
+4 
+2. 
+Invoice Message Version Number……………………………………………..…….. 
+5 
+3. 
+Use of the Invoice Message…………………………………………………..……….. 
+5 
+4. 
+VAT Procedures…………………………………………………………………..……... 
+5 
+5. 
+Function of the Invoice Message………………………………………………..…… 
+5 
+6. 
+VAT on Invoice Line Items…………………………………………………………..… 
+6 
+7. 
+Sundry Charges on Invoices……………………….………………………..……….. 
+8 
+8. 
+Additional Notes……………..………………………………………………..……...... 
+9 
+8.1 Multiple Order Deliveries 
+9 
+8.2 File Period Dates 
+9 
+8.3 Credit Lines on Invoices 
+9 
+8.4 Supplier and Customer Details (SDT and CDT) 
+9 
+8.5 VAT Numbers for Supplier and Customer 
+10 
+8.6 Use of ISBN and RTEX 971 in Packs 
+10 
+8.7 Use of Book Industry Commodity Codes in DNC/RTEX 
+10 
+8.8 Control Totals 
+10 
+9. 
+Example of Invoice Transmission...………………………………………………….. 
+11 
+10. Invoice File Header……………………………………………………………………… 
+13 
+Example of a Complete Invoice File Header 
+18 
+11. Invoice “Message Level” Content…………………………………………………..... 
+18 
+12. Invoice “Order and Delivery References” Content………………………………... 
+22 
+Examples Showing Invoice “Order and Delivery References” Segment ODD 
+23 
+13. Invoice “Line Level” Content………………………………………………………….. 
+24 
+Examples Showing Invoice Line for a Zero-Rated Product 
+29 
+Examples Showing Invoice Line with Standard Rate VAT 
+29 
+Examples Showing Invoice Line with Mixed-Rate VAT 
+30 
+Examples Showing Invoice Segments ILD to DNC 
+32 
+14. Invoice Message Trailer………………………………………………………………... 
+33 
+Examples Showing Invoice Message Trailer Segments STL and TLR 
+36 
+15. Invoice File VAT Trailer………………………………………………………………… 
+37 
+16. Invoice File Trailer…………..….……………………………………...……………….. 
+39 
+Page 2 of 40 
+ 
+ 
+ 
+Changes since August 2019 
+ 
+Minor changes to document formatting, terminology and references. 
+ 
+Page 3 of 40 
+ 
+ 
+ 
+1. The Invoice Message 
+The Invoice message is ANA TRADACOMS File Format 8, Version 9. 
+The structure of the Invoice message is outlined in the table below. 
+Message Consisting of Segments 
+Repeat as shown below 
+INVFIL 
+Invoice 
+File 
+Header 
+MHD 
+TYP 
+SDT 
+CDT 
+DNA 
+FIL 
+FDT 
+ACD 
+MTR 
+= Message Header 
+= Transaction Type Details 
+= Supplier Details 
+= Customer Details 
+= Data Narrative 
+= File Details 
+= File Period Dates 
+= Audit Control Details 
+= Message Trailer 
+One occurrence only, at the start of the file 
+Repeat as necessary at header level 
+INVOIC 
+Invoice 
+Details 
+MHD 
+CLO 
+IRF 
+PYT 
+DNA 
+= 
+= 
+= 
+= 
+= 
+Message Header 
+Customer's Location 
+Invoice References 
+Settlement Terms 
+Data Narrative 
+One occurrence for each invoice 
+Repeat as necessary at invoice level 
+Repeat as necessary at invoice level 
+ODD = Order and Delivery 
+References 
+Repeat for each order in a multiple 
+order invoice 
+ILD 
+= Invoice Line Details 
+Repeat for each line item 
+DNC = Data Narrative 
+Repeat if necessary at line level 
+STL 
+TLR 
+MTR 
+= 
+= 
+= 
+VAT Rate Invoice 
+Sub Trailer 
+Invoice Trailer 
+Message Trailer 
+Repeat for each VAT rate in the message 
+VATTLR 
+File VAT 
+Trailer 
+MHD 
+VRS 
+MTR 
+= 
+= 
+= 
+Message Header 
+VAT Rate Summary 
+Message Trailer 
+One occurrence only, after all INVOIC 
+messages in the file 
+Repeat for each VAT rate in the file 
+INVTLR 
+MHD = Message Header 
+One occurrence only, at the end of the file 
+Invoice 
+TOT = File Totals 
+File 
+MTR = Message Trailer 
+Trailer 
+Page 4 of 40 
+ 
+ 
+ 
+2. Invoice Message Version Number 
+The BIC Invoice message version number for implementations which comply with this issue is 
+T02. This version number should be sent as DNAC code 206 in the DNA segment in the 
+message file header (INVFIL). See section 10 below. 
+ 
+3. Use of the Invoice Message 
+A TRADACOMS Invoice message has four principal components: the file header message, 
+INVFIL; the invoice details message, INVOIC, which may be repeated as many times as are 
+desired; the file VAT trailer, VATTLR, which occurs once only in each file; and the file trailer, 
+INVTLR. 
+ 
+The Invoice details message has four sections; the invoice “message level” segments, MHD to 
+DNA; the invoice “order and delivery references” segment, ODD; the invoice “line level” 
+segments, ILD to DNC and the invoice “trailer” segments, STL, TLR and MTR. 
+ 
+Each of these sections of the Invoice file is detailed in sections 10 to 16. 
+ 
+In book trade practice an EDI Invoice must have at least one invoice line, i.e., at least one ILD 
+segment. An Invoice consisting only of a header and trailer is invalid. It is possible, however, to 
+send an EDI Invoice in which the only line items are “sundry charges”. 
+ 
+Where the despatch to which an Invoice message relates includes items supplied free-of-charge, 
+these should be listed in the Invoice. Trading partners should agree whether or not they wish to 
+exchange Invoices which list only free items. 
+ 
+It is acceptable for trading partners to agree to send EDI invoices at the date of despatch of 
+goods and ahead of the nominal date of invoicing. 
+ 
+4. VAT Procedures 
+The Invoice message must be used in accordance with the requirements of HM Revenue and 
+Customs. Guidance as to current requirements should be obtained from HMRC. BIC cannot 
+accept responsibility for any failure to comply with VAT procedures. 
+ 
+5. Function of the Invoice Message 
+The Invoice message enables a supplier to communicate to a customer a commercial invoice 
+(transaction code 0700 in TYP TCDE) which matches a single delivery and may in book trade 
+practice also serve as a delivery notification. The EDI document is the VAT invoice, unless 
+otherwise agreed with HMRC. 
+ 
+Note that, although the TRADACOMS format allows for negative or credit items to appear as 
+lines in the Invoice file format, this is not permitted in BIC practice. All such items must be sent 
+separately using the Credit Note format. 
+ 
+When an item is sent free-of-charge as a result of a shortage in a previous delivery, it should 
+always be credited and re-charged, and not shown as a “free” item on an invoice. 
+Page 5 of 40 
+ 
+ 
+ 
+6. VAT on Invoice Line Items 
+For book trade purposes it is necessary to be able to handle products which are zero-rated, 
+products which carry the standard rate of VAT on their full price, and products which are part 
+zero-rated and part VAT-able at standard rate. The first two of these cases are straightforward 
+and are illustrated by the following 2 examples. 
+ 
+Note: in the following examples elements AUCT and BUCT use all 4 decimal places, 
+LEXC and DSCV have been rounded to 2 decimal places. Rounding: ≤ 0.4p – rounded down, 
+>0.4p – rounded up 
+ 
+Invoice line for a zero-rated product: 2 books supplied @ £9.99 each with 40% discount. 
+ 
+QTYI 
+2 
+Quantity 
+AUCT 
+£5.995 
+Unit cost price after discount and excluding VAT 
+LEXC 
+£11.99 
+Extended line cost (rounded up from £11.988) 
+VATC 
+Z 
+Zero-rated 
+VATP 
+0 
+VAT percentage rate 
+MSPR 
+£9.99 
+Manufacturer’s recommended selling price 
+BUCT 
+£9.99 
+Unit price before discount and excluding VAT 
+DSCV 
+£7.99 
+Line discount value excluding VAT 
+DSCP 
+40% 
+Discount percentage 
+ 
+ILD=1+6+9780713639040+++1+2+59950+119900+Z+0++++99900++99900+79900+40000′ 
+ 
+Invoice line with standard rate VAT: 2 videos supplied @ £10.20 (£8.50 + VAT) each with 
+40% discount 
+ 
+QTYI 
+2 
+Quantity 
+AUCT 
+£5.10 
+Unit cost price after discount and excluding VAT 
+LEXC 
+£10.20 
+Extended line cost: 2 x £5.10 
+VATC 
+S 
+Standard rate VAT 
+VATP 
+20 
+VAT percentage rate 
+MSPR 
+£10.20 
+Manufacturer’s recommended selling price 
+BUCT 
+£8.50 
+Unit price before discount and excluding VAT 
+DSCV 
+£6.80 
+Line discount value excluding VAT 
+DSCP 
+40% 
+Discount percentage 
+ 
+ILD=1+7+9780713639040+++1+2+51000+102000+S+20000++++102000++85000+68000+40000′ 
+ 
+Note that BIC has a VAT Calculator Model which may be useful in testing and to better 
+understand how VAT should be treated in EDI; it can be downloaded as an Excel spreadsheet 
+from bic.org.uk  
+Page 6 of 40 
+ 
+ 
+ 
+Invoice line with mixed-rate VAT (e.g., book & cassette pack) 
+The correct approach to handling a mixed-rate product is to use three invoice lines for the 
+transaction. The first line carries details which apply to the product and transaction as a whole, 
+while the second and third detail the component which is zero-rated and the component which 
+is VATable (or vice versa – the order of the second and third lines is immaterial). 
+ 
+If invoice lines carry a reference to a buyer’s order number in RTEX 082, this reference must 
+appear on the first line of a group of three specifying a mixed-rate VAT. It may optionally also 
+appear on the other two lines, but this is not a requirement. 
+ 
+If invoice lines carry a reference to an HMRC commodity code in RTEX 982, there should be no 
+commodity code attached to the first line, but the appropriate commodity codes should be 
+attached to each of the second and third lines. 
+ 
+Note that the first line of each group of three is sent purely in order to provide information about 
+the product item as a whole. The monetary amount in the first line must not be included in 
+invoice totals, only the amounts in the two component lines. 
+ 
+ 
+Example: 1 copy of book and cassette pack supplied, retail £37.99 with 40% discount: book 
+£10.99, cassette £27.00 (£22.50 + VAT): 
+ 
+Line 32 
+Pack 
+Line 33 
+Book 
+Line 34 
+Cassette 
+QTYI 
+1 
+1 
+1 
+Quantity 
+AUCT 
+£20.09 
+£6.59 
+£13.50 
+Unit cost price 
+LEXC 
+£20.09 
+£6.59 
+£13.50 
+Extended line cost 
+VATC 
+A 
+Z 
+S 
+VAT rate code 
+VATP 
+0 
+0 
+20 
+VAT rate percentage 
+MIXI 
+0 
+1 
+2 
+Mixed-rate VAT item code 
+MSPR 
+£37.99 
+Manufacturer’s recommended selling price 
+BUCT 
+£33.49 
+£10.99 
+£22.50 
+Unit price before discount 
+DSCV 
+£13.40 
+£4.40 
+£9.00 
+Line discount value 
+DSCP 
+40% 
+40% 
+40% 
+Discount percentage 
+0 
+0 
+£2.70 
+VAT chargeable on each line 
+ 
+ILD=1+32+9780563399104+++1+1+200900+200900+A+0+0+++379900++334900+134000+40000′ 
+ILD=1+33+9780563399104+++1+1+65900+65900+Z+0+1+++++109900+44000+40000′ 
+ILD=1+34+9780563399104+++1+1+135000+135000+S+20000+2+++++225000+90000+40000′ 
+Page 7 of 40 
+ 
+ 
+ 
+7. Sundry charges on Invoices 
+There are two ways in which sundry charges may be shown on an EDI invoice: 
+ 
+a) As additional lines at the end of the invoice detail section each carrying an appropriate 
+charge code from Code List 205 in place of the product code (ISBN) in ILD/SPRO. This 
+approach is recommended for sundry charges which apply to the invoice as a whole 
+rather than to a specific line item (see example below). A sundry charge line of this type 
+should be coded G in ILD/IGPI to indicate that it refers to a charge applied at invoice 
+level. 
+ 
+b) As additional lines immediately following the invoice line to which they relate. This 
+approach is recommended for sundry charges which refer specifically to a line item. Such 
+lines should be coded I in ILD/IGPI to indicate that they refer to the preceding line item. 
+ 
+(The TRADACOMS Invoice format also allows sundry charges to be sent as a single unspecified 
+“below the line” surcharge in STL/SURA. This approach is deprecated and should not be used. 
+Among its disadvantages is the fact that there is no corresponding element in a TRADACOMS 
+Credit Note message, so that it is impossible to specify a credit against a sundry charge originally 
+sent in STL/SURA.) 
+ 
+ 
+Using an ILD segment for Sundry Charges at Invoice Level 
+Use these guidance notes together with the segment details in 13. 
+ 
+ILD SPRO 
+Must carry a charge code taken from Code List 205 in the sub-element 
+Supplier’s Code for the Traded Unit (formerly used for an ISBN-10) 
+e.g., postage and packing = Z13 
+ILD SACU 
+ILD CPRO 
+ILD UNOR 
+Do not use (UNOR is mandatory in TRADACOMS Orders, but NOT in 
+Invoices) 
+ILD QTYI 
+The sub-element Number of traded units invoiced is mandatory and 
+should always have the value 1 for a charge which is stated simply as a 
+single monetary amount rather than as a unit rate applied to a number of 
+units. No other sub-element should be used 
+ILD AUCT 
+Mandatory: must carry the unit cost for a charge which is stated as a unit 
+rate applied to a number of units; or the whole amount of the charge if the 
+charge is stated simply as a single monetary amount 
+ILD LEXC 
+Mandatory: calculate LEXC as AUCT x QTYI 
+ILD VATC 
+ILD VATP 
+ILD MIXI 
+If the charge is subject to VAT, follow the same rules as for any other 
+invoice line 
+ILD CRLI 
+Do not use 
+ILD TDES 
+May carry a text description of the type of charge; but this is in practice 
+redundant, and it is recommended that this element be omitted 
+ 
+/continued 
+Page 8 of 40 
+ 
+ 
+ 
+ILD MSPR 
+ILD SRSP 
+ILD BUCT 
+ILD DSCV 
+ILD DSCP 
+ILD SUBA 
+ILD PIND 
+Do not use 
+ILD IGPI 
+Must carry the code value G = charge applied at invoice level 
+ILD CSDI 
+ILD TSUP 
+ILD SCRF 
+Do not use 
+ 
+Example: 
+ILD=1+1+:Z13++++1+75000+75000+Z+0++++++++++G′ 
+Postage and packing £7.50 
+ 
+ 
+8. Additional Notes 
+ 
+8.1 Multiple Order Deliveries 
+It is a TRADACOMS standard that one delivery note should result in one invoice. 
+ 
+One order may result in more than one delivery in which case each delivery must have a 
+separate delivery note and one invoice message must relate to only one delivery note. The 
+order reference will be quoted in every invoice message relating to the one order. The file has 
+also been designed to allow multiple order deliveries, i.e., two or more orders leading to one 
+delivery and hence to one delivery note and one invoice. In this case one order and delivery 
+reference segment is used for each order, and the item line details are linked to the order on 
+which they appeared by the use of a sequence number. The item line details are “nested” within 
+the relevant order references. 
+ 
+8.2 File Period Dates 
+There is no fixed rule about the period to which the invoices in a particular file should relate. This 
+should be agreed between the exchange partners. 
+ 
+8.3 Credit Lines on Invoices 
+Credit lines in Invoices are not used in book trade practice. 
+ 
+8.4 Supplier and Customer Details (SDT and CDT) 
+The supplier and customer details reported in the INVFIL message must be those relating to the 
+VAT identity of the invoicer (SDT) and the invoicee (CDT). These may not be the physical 
+locations of the supply or receipt of the goods or service. They will be the identity of the part of 
+the organisation responsible for the VAT accounting and the invoicing of the transaction. 
+Page 9 of 40 
+ 
+ 
+ 
+8.5 VAT numbers for Supplier and Customer 
+Each invoice file must be between the two VAT entities. It therefore follows that if a supplier or 
+customer has more than one VAT number, he will have to create or receive invoice files for each 
+identity. It is expected that each VAT identity would have a unique EAN (GLN) location number. 
+ 
+Therefore, VATN in SDT (Supplier’s VAT Number) has an additional sub-element to identify a 
+non-UK numeric VAT number. CDT has an additional data element, VATR, which identifies the 
+customer’s VAT number either as 9(9) or X(17) as for VATN. In 2017, to accommodate the 
+requirement to include the 2-digit alpha country code in UK VAT numbers the X (17) element is 
+used to contain the country code and VAT number. 
+ 
+8.6 Use of ISBN and RTEX 971 in packs 
+For invoice lines relating to composite packs whose components all carry the same rate of VAT 
+(i.e., the pack is invoiced as a single line) the invoice line should quote the ISBN for the pack 
+and, if identification of the component items is required, it should be handled by using RTEX 
+971, as with a dumpbin or counter-pack. 
+ 
+8.7 Use of Book Industry Commodity Codes in DNC/RTEX 
+BIC recommends that Commodity Codes should be added in DNC/RTEX and that the HMRC 
+commodity codes list should be used. 
+ 
+8.8 Control Totals 
+The following checklist summarises the calculations which are used in the Invoice file, where 
+applicable: 
+ 
+STL Segment (one per VAT rate) 
+LVLA = Σ LEXC 
+EVLA = LVLA - QYDA - VLDA + SURA - SSUB 
+SEDA is calculated from the sum of those lines (EVLA) which attract settlement discount 
+ASDA = EVLA - SEDA 
+VATA is calculated from VATP applied to ASDA 
+APSE = EVLA + VATA 
+APSI = ASDA + VATA 
+ 
+TLR Segment 
+LVLT = Σ LVLA = S LEXC 
+EVLT = Σ EVLA 
+SEDT = Σ SEDA 
+ASDT = Σ ASDA 
+TVAT = Σ VATA 
+TPSE = Σ APSE 
+TPSI = Σ APSI 
+TPSI - TPSE = ASDT - EVLT = SEDT 
+Page 10 of 40 
+ 
+ 
+ 
+VRS Segment (one per VAT rate) 
+VSDE = Σ EVLA 
+VSDI = Σ ASDA 
+VVAT = Σ VATA 
+VPSE = Σ APSE 
+VPSI = Σ APSI 
+VPSI - VPSE = VSDI - VSDE 
+ 
+TOT Segment 
+FASE = Σ VSDE = Σ EVLT = Σ EVLA 
+FASI = Σ VSDI = Σ ASDT = Σ ASDA 
+FVAT = Σ VVAT = Σ TVAT = Σ VATA 
+FPSE = Σ VPSE = Σ TPSE = Σ APSE 
+FPSI = Σ VPSI = Σ TPSI = Σ APSI 
+FPSI - FPSE = FASI – FASE 
+ 
+ 
+9. Example of Invoice transmission 
+Note that for clarity each TRADACOMS segment in this example is shown as starting a new line. 
+In reality there are no carriage returns or line feeds within or at the end of a segment. Blocking 
+of TRADACOMS messages depends on the carrier medium and protocols adopted between 
+trading partners. 
+ 
+The example shows the use of the TRADACOMS Reconciliation Message to ensure the integrity 
+of a transmission. 
+ 
+This example shows an Original Invoice: Publisher to Bookseller. It contains 1 invoice line. 
+ 
+STX=ANAA:1+5023456789541:XYZ 
+PUBLISHER+5098765432156:ABC 
+BOOKSELLERS+070430:104133+9++ 
+INVFIL' 
+Start of transmission: the sender’s EAN/GLN 
+number is the same as that of the supplier, in 
+SDT 
+MHD=1+INVFIL:9' 
+Message 1: invoice file header 
+TYP=0700' 
+Transaction code ‘original invoice’ 
+SDT=5023456789541' 
+Publisher’s EAN/GLN number – code 
+explicitly agreed with HMRC 
+CDT=5098765432156+ABC 
+BOOKSELLERS+STREET HOUSE:HIGH 
+STREET:NEWTOWN:NT3 4TS' 
+Bookseller’s EAN/GLN number + name and 
+address (required by HMRC) 
+DNA=1+206:T02' 
+BIC message version number T02 
+DNA=2+207:005' 
+BIC Code version number 005 
+FIL=25+1+070430' 
+File generation 25, file version 1, 30 April 
+2007 
+MTR=8' 
+End of message 1: 8 segments 
+Page 11 of 40 
+ 
+ 
+ 
+MHD=2+INVOIC:9' 
+Message 2: Invoice message 
+CLO=5012345678954' 
+Delivery location, EAN/GLN number 
+IRF=847077+070331+070331' 
+Invoice number, date of invoice, tax-point 
+date (both 31 March 2007) 
+PYT=1+070430+30' 
+Payment date 30 April 2007, payment terms 
+30 days from date of invoice 
+ODD=1+454546:0023036011:070331:0 
+70331+0001447930:070331' 
+Order & Delivery reference 1: 
+Customer’s order number, supplier’s order 
+number, order date, order receipt date (both 
+31 March 2007) 
+Delivery note number, date of despatch 31 
+March 2007 
+ILD=1+1+9780091888972+++1+15+801 
+97+1202900+Z+0++++149900++149 
+900+1045600+46500' 
+Invoice line 1: identified by ISBN-13, 15 
+copies, unit cost price (after discount) 
+£8.0197, extended line cost (after discount) 
+£120.29, zero-rated for VAT 
+Manufacturer’s selling price £14.99, unit cost 
+price £14.99 
+Discount value £104.56, discount 46.5% 
+DNC=1+1+1++082:XYZ009988' 
+STL=1+Z+0+1+12029+++++12029++120 
+29+0++12029' 
+STL segment 1: VAT at zero rate; 1 item line; 
+sub-total (before VAT) £120.29; extended 
+sub-total (before VAT) £120.29; VAT amount 
+£0; payable sub-total £120.29 
+TLR=1+12029+++++12029++12029+0++ 
+12029' 
+Invoice trailer: 1 STL segment; lines total 
+amount £120.29; total extended amount 
+£120.29; total extended amount £120.29; 
+total amount (after settlement discount) 
+£120.29; VAT amount £0; total payable 
+£120.29 
+MTR=10' 
+End of message 2: 10 segments 
+MHD=3+INVTLR:9' 
+Message 3: invoice file trailer 
+TOT=12029+12029+0++12029+1' 
+File total amount £120.29; file VAT total 
+amount £0; file total payable £120.29; 1 
+invoice message in file 
+MTR=3' 
+End of message 3: 3 segments 
+MHD=4+RSGRSG:2' 
+Message 4: reconciliation message 
+RSG=9+5098765432156' 
+MTR=3' 
+End of message 4: 3 segments 
+END=4' 
+End of transmission: 4 messages 
+Page 13 of 42 
+ 
+ 
+ 
+PLEASE NOTE: the final column in the table in this version of the format contains an amalgamation of BIC ‘comments’ and TRADACOMS ‘remarks’. 
+ 
+ 
+10. Invoice file header 
+Each Invoice file begins with a file header INVFIL. The expected content of the Invoice file header is as follows: 
+ 
+MHD 
+MESSAGE HEADER 
+M 
+One mandatory occurrence per invoice file header 
+= 
+MSRF 
+Message reference 
+M V 
+9(12) 
+Consecutive count of messages within the file: start at 1 and increment by 1 for 
+each new message header. 
+TYPE 
+Type of message 
+M 
++ 
+Type 
+M F 
+(X)6 
+Always 'INVFIL' 
+: 
+Version no 
+M F 
+9(1) 
+Always '9' for this version 
+ 
+Example: 
+MHD=1+INVFIL:9' 
+Message number 1 in this file 
+ 
+ 
+TYP 
+TRANSACTION TYPE 
+DETAILS 
+M 
+One mandatory occurrence per invoice file header, to specify the type of 
+invoice. Invoice types must not be mixed within a single invoice file. 
+= TCDE 
+Transaction code 
+M F 
+9(4) 
+Code List 2: the only BIC authorised value is: 
+0700 Original invoice – VAT invoice 
+If HMRC have authorised the parties to continue to treat a paper invoice as the 
+VAT document, and to send an electronic copy, the following value may be used: 
+0709 
+Copy invoice – not for VAT purposes 
++ 
+TTYP 
+Transaction type 
+C V 
+X(12) 
+Do not use: this field is redundant. 
+ 
+Example: 
+TYP=0700' 
+Message containing original invoices 
+ 
+Page 14 of 40 
+ 
+ 
+ 
+SDT 
+SUPPLIER DETAILS 
+M 
+One mandatory occurrence per invoice file header, to identify the supplier 
+who is the sender of the invoice file. 
+SIDN 
+Supplier's identity 
+M 
+One mandatory occurrence per SDT segment, to give the coded identity of the 
+supplier, preferably as an EAN location number (GLN). Either a GLN or an 
+alternative supplier code (or both) must be sent. 
+= 
+Supplier's EAN location 
+number 
+C F 
+9(13) 
+EAN location number (GLN) identifying the supplier. 
+: 
+Supplier's identity allocated 
+by customer 
+C V 
+X(17) 
+An alternative supplier code as agreed between the trading partners if an EAN 
+location number cannot be used. 
++ 
+SNAM 
+Supplier's name 
+C V 
+X(40) 
+Supplier's legal name as printed on invoices. Required by HMRC unless a code 
++ method by which it is used has been explicitly approved. 
+SADD 
+Supplier's address 
+C 
+A maximum of five lines to give the supplier's address. Required by HMRC 
+unless a code + method by which it is used has been explicitly approved. 
++ 
+Supplier's address line 1 
+C V 
+X(35) 
+: 
+Supplier's address line 2 
+C V 
+X(35) 
+: 
+Supplier's address line 3 
+C V 
+X(35) 
+: 
+Supplier's address line 4 
+C V 
+X(35) 
+: 
+Supplier's post code 
+C V 
+X(8) 
+VATN 
+Supplier's VAT registration 
+no 
+C 
+Supplier’s VAT registration number is mandatory even if the whole invoice is 
+zero-rated. 
++ 
+VAT number – numeric 
+C F 
+9(9) 
+Trader's VAT number allocated by HM Revenue & Customs. 
+: 
+VAT number – 
+alphanumeric 
+C V 
+X(17) 
+Government department or non-UK VAT number. Should contain the suppliers 
+UK VAT Number with country code (GB). 
+ 
+ 
+Example: 
+SDT=5012345678987+ABC Book Services 
+Ltd+ABC Trading Estate:ABC:::TW25 
+0XY+987654321+GB987654321' 
+Supplier’s EAN location number, name, address and VAT number. 
+Page 15 of 40 
+ 
+ 
+ 
+CDT 
+CUSTOMER DETAILS 
+M 
+One mandatory occurrence per invoice file header, to identify the customer 
+to whom the invoice file is addressed. 
+CIDN 
+Customer's identity 
+M 
+= 
+Customer's EAN location 
+no 
+C F 
+9(13) 
+EAN location number (GLN) identifying the customer. Use of the EAN number is 
+strongly recommended. 
+: 
+Customer's identity 
+allocated by supplier 
+C V 
+X(17) 
+An alternative customer code as agreed between the trading partners if an EAN 
+location number cannot be used. This may be the customer’s SAN. 
++ 
+CNAM 
+Customer's name 
+C V 
+X(40) 
+Customer's registered legal name. Required by HMRC unless a code + method 
+by which it is used has been explicitly approved. 
+CADD 
+Customer's address 
+C 
+A maximum of five lines to give the customer's address. Required by HMRC 
+unless a code + method by which it is used has been explicitly approved. 
++ 
+Customer's address line 1 
+C V 
+X(35) 
+: 
+Customer's address line 2 
+C V 
+X(35) 
+: 
+Customer's address line 3 
+C V 
+X(35) 
+: 
+Customer's address line 4 
+C V 
+X(35) 
+: 
+Customer's post code 
+C V 
+X(8) 
+VATR 
+Customer's VAT registration 
+no 
+C 
+Required only in invoices that cover supply to a customer in a different EU 
+country (for which TRADACOMS may not normally be used). 
++ 
+VAT registration no – 
+numeric 
+C F 
+9(9) 
+UK VAT number allocated by HM Revenue & Customs. 
+: 
+VAT registration no – 
+alphanumeric 
+C V 
+X(17) 
+Government department or non-UK VAT number. May contain UK VAT number 
+with country code (GB). 
+ 
+ 
+Example: 
+CDT=5098765432123+XYZ 
+Bookshop+234 High 
+Street:XYZ:::XY1 5AB' 
+Customer’s EAN location number, name and address. 
+Page 16 of 40 
+ 
+ 
+ 
+DNA 
+DATA NARRATIVE 
+C 
+Two occurrences are recommended, but not mandatory, to show the BIC 
+message and code list versions used in the invoice file. May also be used 
+to specify a currency code as indicated. 
+= 
+SEQA 
+First level sequence number 
+M V 
+9(10) 
+Starts at 1 and incremented by 1 for each repeat of this segment in this message. 
+DNAC 
+Data narrative code 
+C 
+Use only for BIC message and code list version number. 
++ 
+Code table number 
+C V 
+9(4) 
+Number of relevant code list: 
+206 
+BIC message version number: T02 for this issue 
+207 
+BIC code list version number 
+: 
+Code value 
+C V 
+X(3) 
+Code value from code list 
+RTEX 
+Registered text 
+C 
+The only RTEX code which may be used in this segment is: 
+073 Currency code, format X(3) (see ANA list 31). Used here to specify a default 
+Currency for the message, mandatory when the currency is not £ sterling 
++ 
+1st registered application code C V 
+X(3) 
+: 
+Application text 
+C V 
+X(40) 
+: 
+2nd registered application code C V 
+X(3) 
+: 
+Application text 
+C V 
+X(40) 
+: 
+3rd registered application code 
+C V 
+X(3) 
+: 
+Application text 
+C V 
+X(40) 
+: 
+4th registered application code 
+C V 
+X(3) 
+: 
+Application text 
+C V 
+X(40) 
+GNAR 
+General narrative 
+C 
+Do not use 
++ 
+General narrative line 1 
+C V 
+X(40) 
+: 
+General narrative line 2 
+C V 
+X(40) 
+: 
+General narrative line 3 
+C V 
+X(40) 
+: 
+General narrative line 4 
+C V 
+X(40) 
+ 
+Example: 
+DNA=1+206:T02' 
+INVOIC version T02 
+DNA=2+207:005' 
+BIC code lists issue 005 
+Page 17 of 40 
+ 
+ 
+ 
+ 
+FIL 
+FILE DETAILS 
+M 
+One occurrence is mandatory in each invoice file header to specify the file 
+sequence number, version number and date 
+= 
+FLGN 
+File generation number 
+M V 
+9(4) 
+This number must be sequential for each successive Invoice file exchanged 
+between trading partners, regardless of the route by which it is sent, to enable 
+the receiver to check if a file has been missed. 
++ 
+FLVN 
+File version number 
+M V 
+9(4) 
+Indicates when more than one attempt has been made to send the same file: for 
+each retransmission, FLVN is increased by 1, while FLGN remains the same; 
+the original transmission is always '1'. 
++ 
+FLDT 
+File creation date 
+M F 
+9(6) 
+Date the file is created. Format: YYMMDD 
++ 
+FLID 
+File (reel) identification 
+C V 
+X(6) 
+Reference on the outside of the reel containing the file: do not use. This field is 
+applicable only if TRADACOMS files are exchanged on optical or magnetic 
+media. 
+ 
+Example: 
+FIL=1207+1+070302' 
+File sequence number 1207, original transmission, created 2 March 2007 
+ 
+ 
+ 
+MTR 
+MESSAGE TRAILER 
+M 
+One mandatory occurrence per invoice file header 
+= 
+NOSG 
+Number of segments in 
+message 
+M V 
+9(10) 
+Control count of the number of segments comprising the INVFIL invoice file 
+header. The count includes the MHD and MTR segments surrounding the 
+header. 
+ 
+Example: 
+MTR=8' 
+Eight segments, including two occurrences of DNA 
+Page 18 of 40 
+ 
+ 
+ 
+Example of a Complete Invoice File Header 
+ 
+MHD=1+INVFIL:9' 
+Message header 
+TYP=0700' 
+Transaction code: “invoice” 
+SDT=5012345678987+ABC Book Services 
+Ltd+ABC Trading Estate:ABC:::TW25 
+0XY+987654321' 
+Supplier EAN location code, name, address and VAT number 
+CDT=5098765432123+XYZ Bookshop+234 
+High Street:XYZ:::XY1 5AB' 
+Customer EAN location code, name and address 
+DNA=1+206:T02' 
+BIC message version number T02 
+DNA=2+207:005' 
+BIC code list version number 005 
+FIL=4125+1+070302' 
+File sequence number 4125, original transmission, 2 March 2007 
+MTR=8' 
+Message trailer: eight segments 
+ 
+11. Invoice “Message Level” Content 
+An Invoice file must carry one or more invoice messages, identified as "INVOIC". Each invoice message begins with a group of “message level” 
+segments MHD to DNA, whose content is as follows: 
+ 
+MHD 
+MESSAGE HEADER 
+M 
+One mandatory occurrence per invoice message 
+= 
+MSRF 
+Message reference 
+M V 
+9(12) 
+Consecutive count of messages within the file 
+TYPE 
+Type of message 
+M 
++ 
+Type 
+M F 
+X(6) 
+Always 'INVOIC' 
+: 
+Version number 
+M F 
+9(1) 
+Always '9' for this version 
+ 
+Example: 
+MHD=2+INVOIC:9' 
+Message number 2 in this file 
+Page 19 of 40 
+ 
+ 
+ 
+CLO 
+CUSTOMER'S LOCATION 
+M 
+One occurrence is mandatory in each invoice message to identify the delivery 
+location for the items invoiced, preferably expressed as an EAN location 
+number (GLN) or as an alternative agreed code. Must be included even if it is 
+the same as CDT in the file header. 
+CLOC 
+Customer's location 
+M 
+One of the following three customer references must be present: 
+= 
+Customer's EAN location 
+number 
+C F 
+9(13) 
+EAN location number (GLN) identifying the customer's location. 
+: 
+Customer's own location 
+code 
+C V 
+X(17) 
+Customer's own identity for the location: e.g., branch or department code. 
+: 
+Supplier's identification of 
+customer's location 
+C V 
+X(17) 
+Supplier's reference for the customer's location: SAN of customer's delivery 
+location. 
++ 
+CNAM 
+Customer's name 
+C V 
+X(40) 
+Customer's registered legal name. The CNAM element is not recommended – 
+the coded ID in CLOC is sufficient. 
+CADD 
+Customer's address 
+C 
+A maximum of five lines to give the customer's address. The CADD element is 
+not recommended – the coded ID in CLOC is sufficient. 
++ 
+Customer's address line 1 
+C V 
+X(35) 
+: 
+Customer's address line 2 
+C V 
+X(35) 
+: 
+Customer's address line 3 
+C V 
+X(35) 
+: 
+Customer's address line 4 
+C V 
+X(35) 
+: 
+Customer's post code 
+C V 
+X(8) 
+ 
+ 
+IRF 
+INVOICE REFERENCES 
+M 
+One mandatory occurrence per invoice message to specify the Date of 
+Invoice and the Tax-point Date. 
+= 
+INVN 
+Invoice number 
+M V 
+X(17) 
+Invoice number as allocated by the supplier. 
++ 
+IVDT 
+Date of invoice 
+M F 
+9(6) 
+Format: YYMMDD 
++ 
+TXDT 
+Tax-point date 
+M F 
+9(6) 
+Format: YYMMDD 
+Page 20 of 40 
+ 
+ 
+PYT 
+SETTLEMENT TERMS 
+C 
+This segment is used to specify the settlement terms which apply to the 
+invoice. The most favourable must be used for VAT calculation. 
+BIC recommends either of the following 2 options: 
+a) Payment terms expressed as the number of days from date of 
+invoice, using PAYY e.g.: PYT=1+++30′ 
+b) Payment terms expressed as a fixed date, using PAYD e.g.: 
+PYT=1++060930:0′ 
+Free text in PAYT should never be used. Where standard payment terms 
+are established by trading partner agreement outside EDI, the PYT 
+segment may be omitted. Where non-standard payment terms are stated 
+in PYT, they should be accompanied by a special deal reference in SCRF. 
+= 
+SEQA 
+First level sequence number 
+M V 
+9(10) 
+Starts at 1 and incremented by 1 for each repeat of this segment in this message. 
++ 
+PAYT 
+Terms of payment 
+C V 
+X(40) 
+Text description of settlement terms: do not use. 
+PAYD 
+Payment date and terms 
+C 
+Settlement terms agreed between buyer and seller, expressed in terms of 
+payment due date and percentage. 
+The sub-element Settlement Discount Percentage is mandatory (while it is 
+optional in PAYY). If the due date is expressed as a fixed date in PAYD, and 
+there is no settlement discount, the sub-element should carry a single zero. 
++ 
+Payment date 
+M F 
+9(6) 
+Date that payment should be made available to the payee to obtain the 
+specified discount. 
+: 
+Settlement discount % 
+M V 
+9(3)V9(3) 
+Percentage discount applicable. 
+PAYY 
+Settlement terms 
+C 
++ 
+Number of days 
+M V 
+9(3) 
+Days until payment is due is defined as the number of calendar days after a 
+reference date that the payment is to be made available to the payee. The 
+‘reference date’ is the date of invoice unless otherwise specified in the 
+parties’ trading agreement. 
+: 
+Settlement discount 
+percentage 
+C V 
+9(3)V9(3) 
+Percentage discount applicable. 
+: 
+Settlement code 
+C V 
+X(3) 
+User defined code for settlement terms. 
+Page 21 of 40 
+ 
+ 
+ 
+Example: 
+CLO=5012345678907' 
+EAN/GLN location number only 
+IRF=517539+070123+070123' 
+Invoice number 517539; date of invoice 23rd Jan 2007; tax-point date 23rd Jan 2007 
+PYT=1++30' 
+Payment terms 30 days from date of invoice 
+ 
+ 
+DNA 
+DATA NARRATIVE 
+C 
+One or more occurrences are optional to carry coded or free text elements 
+as specified below. 
+= 
+SEQA 
+First level sequence number 
+M V 
+9(10) 
+Starts at 1 and incremented by 1 for each first level repeat 
+DNAC 
+Data narrative code 
+C 
+Coded data identified by a code list number. No DNAC codes have so far been 
+allocated to be used in this segment 
++ 
+Code table number 
+C V 
+9(4) 
+: 
+Code value 
+C V 
+X(3) 
+A value from the specified code list 
+RTEX 
+Registered text 
+C 
+Data elements identified by RTEX codes from Code List 24. 
+The same RTEX element may be repeated up to four times, or up to four 
+different RTEX elements may be sent in one Data Narrative segment. Valid 
+RTEX codes in this context are as follows: 
+978 Cancelled invoice number: used in a recharge invoice to specify the 
+number of the invoice which it replaces. 
+979 Supplier’s internal code for invoice or credit note type. 
+984 Cancelled credit note number: used in a charge-only invoice that reverses 
+a credit note issued in error, to refer to the credit note in question. 
++ 
+1st registered application code 
+C V 
+X(3) 
+: 
+Application text 
+C V 
+X(40) 
+: 
+2nd registered application code C V 
+X(3) 
+: 
+Application text 
+C V 
+X(40) 
+: 
+3rd registered application code C V 
+X(3) 
+: 
+Application text 
+C V 
+X(40) 
+: 
+4th registered application code 
+C V 
+X(3) 
+: 
+Application text 
+C V 
+X(40) 
+GNAR 
+General narrative 
+C 
+Do not use 
++ 
+General narrative line 1 
+C V 
+X(40) 
+: 
+General narrative line 2 
+C V 
+X(40) 
+: 
+General narrative line 3 
+C V 
+X(40) 
+: 
+General narrative line 4 
+C V 
+X(40) 
+Page 22 of 40 
+ 
+ 
+ 
+12. Invoice “Order and Delivery References” Content 
+ 
+ODD 
+ORDER AND DELIVERY 
+REFERENCES 
+M 
+This segment is mandatory and introduces a group of Invoice lines 
+which derive from a single order and, if a delivery reference is given, a 
+single delivery. It may then be repeated with a further set of Invoice 
+lines from a different order (for the same delivery). 
+= 
+SEQA 
+First level sequence number 
+M V 
+9(10) 
+Starts at 1 and incremented by 1 for each first level repeat 
+ORNO 
+Order number and date 
+M 
++ 
+Customer’s order number 
+C V 
+X(17) 
+As allocated by the customer to identify the order. If the customer identified 
+the Order message with an order number, this number must be quoted in 
+ODD/ORNO. If the customer identified the Order message only with an 
+order date; that date should preferably be returned in ODD/ORNO as the 
+date when the customer placed the order. Alternatively, it is sufficient to 
+return the date when the order was received by the supplier. 
+: 
+Supplier’s order number 
+C V 
+X(17) 
+As allocated by the supplier when processing orders on behalf of a customer 
+: 
+Date order placed by 
+customer 
+C F 
+9(6) 
+Provided an order number is sent, the order date is not required. 
+Format: YYMMDD 
+: 
+Date order received by 
+supplier 
+C F 
+9(6) 
+Format: YYMMDD 
+DELN 
+Delivery note details 
+M 
+Mandatory element. Either or both a delivery note number and/or a 
+despatch date must be sent. The sub-element Delivery note number is not 
+applicable if the Invoice is itself the delivery notification. 
++ 
+Delivery note number 
+C V 
+X(17) 
+Delivery note number as allocated by the supplier 
+: 
+Date of document 
+C F 
+9(6) 
+Date of despatch where appropriate. 
+Format: YYMMDD 
++ 
+NODU 
+Number of delivery or uplift 
+units 
+C V 
+9(15) 
+Where the Invoice is itself the delivery notification, ODD/NODU may be 
+used to carry the estimated number of packages. Otherwise, do not use. 
+/continued 
+Page 23 of 40 
+ 
+ 
+ 
+DEWT 
+Delivery weights 
+C 
+Do not use the sub-element Vehicle Tare Weight. 
+Where the Invoice is itself the delivery notification, ODD/DEWT may be 
+used to carry the estimated weight of the consignment in kilos, with 3 places 
+of decimals, in sub-element Total Goods Weight. Otherwise, do not use. 
++ 
+Vehicle tare weight 
+C V 
+9(10)V9(3) 
+Do not use 
+: 
+Total goods weight 
+C V 
+9(10)V9(3) 
+In kilos. Use for total weight of consignment. 
++ 
+PODN 
+Proof of delivery details 
+C 
+Do not use 
++ 
+SCAR 
+Name of carrier 
+C 
+Do not use 
++ 
+DLOC 
+Despatch location 
+C 
+Do not use 
++ 
+TLOC 
+Transhipment location 
+C 
+Do not use 
++ 
+JORF 
+Journey reference 
+C 
+Do not use 
+SCRF 
+Specification/Contract 
+references 
+C 
+Do not use the Specification Number sub-element. The Contract Number 
+sub-element may be used to carry a reference number identifying a special 
+deal whose terms have been applied to the order now being invoiced, 
+and/or a promotion number where a publisher and bookseller have agreed 
+special terms for a promotion. 
++ 
+Specification number 
+C V 
+X(17) 
+Do not use 
+: 
+Contract number 
+C V 
+X(17) 
+Contract number to which the order relates. Use to identify a special deal or 
+publisher’s promotion. The contract number and promotion number should be 
+separated by an agreed delimiter, such as “/”. If there is a promotion number 
+and no contract number, the sub-element should begin with the delimiter, e.g. 
+/P0123. 
+ 
+ 
+Examples Showing Invoice “Order and Delivery References” Segment ODD 
+ODD=1+95TD0137+:070123+2+:38600' 
+Invoice lines group 1. Customer’s order number 95TD0137. Despatch date 
+23rd Jan 2007. 2 packages. Estimated total weight 38.6 kilos. 
+ODD=1+96TD0148+137042:070120' 
+Invoice lines group 1. Customer’s order number 96TD0148. Delivery note 
+number 137042 and date 20th Jan 2007. 
+Page 24 of 40 
+ 
+ 
+ 
+13. Invoice “Line Level” Content 
+An Invoice message may carry one or more invoice lines. Each invoice line consists of a group of “line level” segments ILD to DNC, whose content 
+is as follows: 
+ 
+ILD 
+INVOICE LINE DETAILS 
+M 
+One occurrence is mandatory in each invoice line 
+If the invoice line is for Sundry Charges refer to section 7 for details of ILD 
+segment 
+= 
+SEQA 
+First level sequence number 
+M V 
+9(10) 
+Takes the same value as the corresponding ODD segment. 
++ 
+SEQB 
+Second level sequence 
+number 
+M V 
+9(10) 
+Starts at 1 and is incremented by 1 for each second-level nested sequence of 
+this segment. Invoice line number. 
+SPRO 
+Supplier's product number 
+M 
+Must be identical to OLD/SPRO in the corresponding Order line, except in the 
+following circumstances: 
+a) Where the Order line carried a zero as the Supplier’s Code, and the item 
+was ordered by description in TDES. Having identified the item by manual 
+processing, the supplier should include the correct product code(s) in 
+ILD/SPRO so that subsequent messages can be processed without manual 
+intervention. 
+b) 
+When the Invoice line relates to a product which has been substituted for 
+the ordered item, the product code(s) will identify the substitute product. 
+c) 
+Where the invoice line covers a charge which does not relate directly to an 
+order line, e.g., for postage, the Supplier’s Code sub-element may carry a 
+charge code taken from Code List 205. 
+Where possible the EAN-13 article number should be included. 
++ 
+EAN-13 article number for 
+the traded unit 
+C F 
+9(13) 
+"Bookland" EAN-13 article number or ISBN-13. 
+ 
+/continued 
+Page 25 of 40 
+ 
+ 
+ 
+ILD 
+INVOICE LINE DETAILS (continued) 
+: 
+Supplier's code for the 
+traded unit 
+C V 
+X(30) 
+ISBN-10, without hyphens or spaces or charge code from Code List 205 (see (c) 
+in SPRO above). 
+Note: from January 2007 an ISBN-10 should no longer be transmitted. However, 
+trading partners should be prepared to accept them in incoming messages. 
+: 
+DUN-14 code for the 
+traded unit 
+C F 
+9(14) 
+Do not use 
++ 
+SACU 
+Supplier's EAN Code for the 
+designated consumer unit 
+C F 
+9(13) 
+Do not use 
+CPRO 
+Customer's product number 
+C 
+Do not use: any code sent in this field will be ignored by the receiver unless 
+specifically agreed otherwise. 
++ 
+Customer's own brand 
+EAN number 
+C F 
+9(15) 
+: 
+Customer's item code 
+C V 
+X(30) 
+UNOR 
+Unit of ordering 
+C 
++ 
+Consumer units in traded 
+unit 
+C V 
+9(15) 
+Number of consumer units making up the supplier's traded unit. Mandatory if 
+UNOR is used: always 1 in book supply. 
+: 
+Ordering measure 
+C V 
+9(10)V 
+9(3) 
+Do not use 
+: 
+Measure indicator 
+C V 
+X(6) 
+Do not use 
+QTYI 
+Quantity invoiced 
+M 
++ 
+Number of traded units 
+invoiced 
+C V 
+9(15) 
+Mandatory: number of copies invoiced. The number must represent the invoiced 
+quantity of the item whose product code was given in SPRO. If that item is a 
+dumpbin or similar, it represents the number of complete units, not the total 
+number of copies which they carry. 
+: 
+Total measure ordered 
+C V 
+9(10)V 
+9(3) 
+Do not use 
+ 
+/continued 
+Page 26 of 40 
+ 
+ 
+ 
+ILD 
+INVOICE LINE DETAILS (continued) 
+: 
+Measure indicator 
+C V 
+X(6) 
+Do not use 
+AUCT 
+Unit cost price (excluding 
+VAT) 
+M 
+Customer price per unit including discount. AUCT and LEXC are calculated 
+as follows: 
+a) If trading is based on an agreed unit cost, calculate LEXC as AUCT 
+x QTYI. 
+b) If trading is based on normal book trade practice, calculate LEXC as 
+BUCT x QTYI x (100 – DSCP)/100. Then divide LEXC by QTYI to 
+calculate AUCT, using all 4 decimal places. This approach ensures 
+that invoice lines will almost always be internally consistent, though 
+the value of AUCT for a given product may vary slightly depending 
+on the quantity invoiced. 
+Note: 4 decimal places should always be transmitted, even if rounding has 
+taken place. Zeroes should be added as appropriate. E.g., £12.99 should 
+be input as ‘129900’ and £13.924 input as ‘139240’ 
++ 
+Cost price 
+M V 
+9(10)V9(4) 
+The net unit cost in pounds, i.e., after deducting line discounts, etc., but before 
+the application of VAT. See above for method of calculation. 
+: 
+Measure indicator 
+C V 
+X(6) 
+Do not use 
++ 
+LEXC 
+Extended line cost 
+(excluding VAT) 
+M V 
+9(10)V9(4) 
+Total line cost after deducting line discounts, etc., but before the application of 
+VAT. 
+See above for method of calculation. 
+Note: 4 decimal places should always be transmitted, even if rounding has 
+taken place. Zeroes should be added as appropriate. E.g., £12.99 should be 
+input as ‘129900’ and £13.924 input as ‘139240’ 
++ 
+VATC 
+VAT Rate category code 
+M F 
+X(1) 
+Use Code values from Code List 12. 
++ 
+VATP 
+Vat Rate percentage 
+M V 
+9(3)V9(3) 
+Percentage rate for VAT Category code. 
+ 
+/continued 
+Page 27 of 40 
+ 
+ 
+ 
+ILD 
+INVOICE LINE DETAILS (continued) 
++ 
+MIXI 
+Mixed VAT Rate product 
+indicator 
+C F 
+9(1) 
+Only use for lines with mixed-rate VAT. 
+A mixed-rate VAT product is represented by a group of three invoice item 
+lines, one for the product as a whole, one for the component part that is zero- 
+rated, and one for the component part that is taxed at standard rate. Each 
+successive line in the group is numbered respectively 0, 1 and 2 in MIXI. 
++ 
+CRLI 
+Credit Line indicator 
+C V 
+X(4) 
+Do not use 
+TDES 
+Traded unit description 
+C 
+It is recommended that author/title detail (for the substitute title) should be 
+given in TDES when the Invoice line refers to an item which has been 
+substituted for the item originally ordered, or when the original order line had 
+no product code, and the item was therefore ordered by description. In all 
+other cases TDES need not, and preferably should not, be sent. 
++ 
+Traded unit description 
+line 1 
+C V 
+X(40) 
+Author 
+: 
+Traded unit description 
+line 2 
+C V 
+X(40) 
+Title 
+MSPR 
+Selling on price 
+C 
+Retail price. Although not mandatory in TRADACOMS, the Manufacturer’s 
+Recommended Selling Price sub-element should always be entered, 
+including VAT if any. Do not use any other sub-elements. 
++ 
+Manufacturer’s 
+recommended selling 
+price 
+C V 
+9(10)V9(4) 
+Price in pounds. Required in book trade practice. 
+Note: 4 decimal places should always be transmitted, even if rounding has 
+taken place. Zeroes should be added as appropriate. E.g., £12.99 should 
+be input as ‘129900’ and £13.924 input as ‘139240’ 
+: 
+Marked price 
+C V 
+9(10)V9(4) 
+Do not use 
+: 
+Split pack price 
+C V 
+9(10)V9(4) 
+Do not use 
++ 
+SRSP 
+Statutory retail selling price 
+(including VAT) 
+C V 
+9(10)V9(4) 
+Do not use 
+ 
+/continued 
+Page 28 of 40 
+ 
+ 
+ 
+ILD 
+INVOICE LINE DETAILS (continued) 
++ 
+BUCT 
+Unit cost price (excluding 
+VAT) before discount 
+C V 
+9(10)V9(4) 
+Cost of ordered unit before applying line discount – in pounds. Required in 
+book trade practice. 
+Note: 4 decimal places should always be transmitted, even if rounding has 
+taken place. Zeroes should be added as appropriate. E.g., £12.99 should 
+be input as ‘129900’ and £13.924 input as ‘139240’ 
++ 
+DSCV 
+Discount value 
+C V 
+9(10)V9(4) 
+Line discount value in pounds. Required in book trade practice. 
+Note: 4 decimal places should always be transmitted, even if rounding has 
+taken place. Zeroes should be added as appropriate. E.g., £12.99 should 
+be input as ‘129900’ and £13.924 input as ‘139240’ 
++ 
+DSCP 
+Discount percentage 
+C V 
+9(3)V9(3) 
+Line item discount percentage. Required in book trade practice. 
++ 
+SUBA 
+Subsidy amount 
+C V 
+9(10)V9(4) 
+Do not use 
++ 
+PIND 
+Special Price indicator 
+C V 
+X(4) 
+Use code values from Code List 5. 
+If PIND=F for an item which is free of charge, all monetary values which 
+would normally be entered for a priced line should carry zeros. 
++ 
+IGPI 
+Item Group identifier 
+C V 
+X(4) 
+Use code values from Code List 10. 
+Use only in invoice lines for charges which are specified by a code from BIC 
+Code List 205. 
+I = charge applied at line level, relating to the preceding main line item. 
+G = charge applied at invoice level. 
++ 
+CSDI 
+Cash settlement discount 
+identifier 
+C F 
+X(1) 
+Do not use 
++ 
+TSUP 
+VAT – Type of supply 
+C F 
+X(1) 
+Use code values from Code list 14. Omitted for normal sale. 
+Code as defined by HMRC. Mandatory unless code is A (normal sale). 
+ 
+/continued 
+Page 29 of 40 
+ 
+ 
+ 
+ILD 
+INVOICE LINE DETAILS (continued) 
+SCRF 
+Specification/ Contract 
+references 
+C 
+Do not use the Specification Number sub-element. The Contract Number 
+sub-element may be used to carry a reference number identifying a special deal 
+whose terms have been applied to the order now being invoiced, and/or a 
+promotion number where a publisher and bookseller have agreed special terms 
+for a promotion. 
++ 
+Specification number 
+C V 
+X(17) 
+Do not use 
+: 
+Contract number 
+C V 
+X(17) 
+Contract number to which the invoice relates. Use to identify a special deal or 
+publisher’s promotion. The contract number and promotion number should be 
+separated by an agreed delimiter, such as “/”. If there is a promotion number 
+and no contract number, the sub-element should begin with the delimiter, e.g. 
+/P0123. 
+ 
+Example Showing Invoice Line for a Zero-Rated Product 
+ 
+ILD=1+6+9780713639040+++1+2+59950 
++119900+Z+0++++99900++99900+79900 
++40000' 
+2 copies of EAN-13 9780713639040 invoiced 
+Unit cost price £5.995, extended line cost £11.99 
+VAT rate code ‘Z’ to signify zero-rate item 
+Manufacturer’s recommended selling price £9.99, unit price before discount and 
+excluding VAT £9.99 
+Line discount value excluding VAT £799, discount percentage 40% 
+ 
+Example Showing Invoice Line with Standard Rate VAT 
+ 
+ILD=1+7+978012345678X+++1+2+51000+1 
+02000+S+20000++++102000++85000+6800 
+0+40000' 
+2 copies of EAN-13 978012345678X invoiced (videos) 
+Unit cost price £5.10, extended line cost: 2 x £5.10 (£10.20) 
+VAT rate code ‘S’ to signify standard-rate item, percentage 20% 
+Manufacturer’s recommended selling price £10.20, unit price before discount 
+and excluding VAT £8.50 
+Line discount value excluding VAT £6.80, discount percentage 40% 
+Page 30 of 40 
+ 
+ 
+ 
+Example showing invoice line with mixed-rate VAT (e.g., book and cassette pack) 
+A mixed-rate product requires 3 invoice lines for each transaction. The first line carries details which apply to the product and transaction as a 
+whole, while the second and third subsequent lines detail the components (see section 6). 
+ 
+ 
+ILD=1+32+9780563399104+++1+1+200900 
++200900+A+0+0+++379900++334900+1340 
+00+40000' 
+Line 32. 1 copy of EAN-13 9780563399104 invoiced (book + cassette pack) 
+Unit cost price £20.09, extended line cost £20.09 
+VAT rate code ‘A’ to signify mixed-rate item (no VAT applied), mixed-rate VAT 
+item code 0 
+Manufacturer’s recommended selling price £37.99, unit price before discount 
+and excluding VAT £33.49 
+Line discount value excluding VAT £13.40, discount percentage 40% 
+ILD=1+33+9780563399104+++1+1+65900+ 
+65900+Z+0+1+++++109900+44000+40000' 
+Line 33. 1 copy of EAN-13 9780563399104 invoiced (book) 
+Unit cost price £6.59, extended line cost £6.59 
+VAT rate code ‘Z’ to signify zero-rate item, mixed-rate VAT item code 1 
+Unit price before discount and excluding VAT £10.99 
+Line discount value excluding VAT £4.40, discount percentage 40% 
+ILD=1+34+9780563399104+++1+1+135000 
++135000+S+20000+2+++++225000+90000+ 
+40000' 
+Line 34. 1 copy of EAN-13 9780563399104 invoiced (cassette) 
+Unit cost price £13.50, extended line cost £13.50 
+VAT rate code ‘S’ to signify standard-rate item (at 20%), mixed-rate VAT item code 2 
+Unit price before discount and excluding VAT £22.50 
+Line discount value excluding VAT £9.00, discount percentage 40% 
+ 
+Note that BIC has a VAT Calculator Model which may be useful in testing and to better understand how VAT should be treated in EDI; it 
+can be downloaded as an Excel spreadsheet from bic.org.uk  
+Page 31 of 40 
+ 
+ 
+DNC 
+DATA NARRATIVE 
+C 
+This segment carries information which qualifies the Invoice line. There 
+can be 1 DNC Segment for each ILD segment. But where the DNC is 
+attached to a mixed-rate VAT item which will have 3 ILD segments for a 
+single product to account for the mixed rate VAT, then there should only 
+be one DNC segment, and this should be located after the 3rd ILD segment. 
+= 
+SEQA 
+First level sequence number 
+M V 
+9(10) 
+Must match ODD/SEQA in the line to which the DNC segment belongs. 
++ 
+SEQB 
+Second level sequence number 
+M V 
+9(10) 
+Must match ILD/SEQB in the line to which the DNC segment is linked. 
++ 
+SEQC 
+Third level sequence number 
+M V 
+9(10) 
+Starts at 1 and incremented by 1 for each repeat of this segment in the ILD-DNC group. 
+DNAC 
+Data narrative code 
+C 
+Coded data identified by a code list number 
++ 
+Code table number 
+C V 
+9(4) 
+The only DNAC code which may be used in this segment is: 
+BIC list 203 Order qualifier, included only to feed back full detail of the customer’s 
+order, or to indicate that the order line is supplied on BIC standard returns 
+conditions (BIC), “firm sale” (FMS), “sale or return” (SLR) or “see safe” (SSF). 
+Note: SSF should only be used by suppliers who have not adopted the BIC 
+standard returns conditions. 
+Other code values are not used. 
+: 
+Code value 
+C V 
+X(3) 
+A value from the specified code list 
+RTEX 
+Registered text 
+C 
+Data elements identified by RTEX codes from Code List 24. The same RTEX 
+element may be repeated up to 4 times, or up to 4 different RTEX elements may be 
+sent in one Data Narrative segment. Valid RTEX codes in this context are as follows: 
+073 Currency code, format X(3) (see ANA list 31). Any currency specified here will 
+overrule that specified at file level (or “sterling” if none specified at file level). 
+082 Order line reference (buyer’s unique order line number, or customer 
+reference number): must be included if it was given in the Order message. 
+314 Binder’s pack quantity, sent as a variable-length integer. 
+971 Use to identify component items of dumpbin or pack 
+980 SOR number (reference identifying a deal under which books are supplied 
+on terms allowing unconditional sale-or-return). 
+982  HMRC commodity code (as recommended by BIC – see section 8.7) 
+ 
+/continued 
+Page 32 of 40 
+ 
+ 
+ 
+RTEX 
+Registered text (continued) 
++ 
+1st registered application code 
+C V 
+X(3) 
+: 
+Application text 
+C V 
+X(40) 
+: 
+2nd registered application code C V 
+X(3) 
+: 
+Application text 
+C V 
+X(40) 
+: 
+3rd registered application code C V 
+X(3) 
+: 
+Application text 
+C V 
+X(40) 
+: 
+4th registered application code 
+C V 
+X(3) 
+: 
+Application text 
+C V 
+(X40) 
+GNAR 
+General narrative 
+C 
+Do not use 
++ 
+General narrative line 1 
+C V 
+X(40) 
+: 
+General narrative line 2 
+C V 
+X(40) 
+: 
+General narrative line 3 
+C V 
+X(40) 
+: 
+General narrative line 4 
+C V 
+X(40) 
+ 
+Example: 
+DNC=1+1+1++082:06GH1473' 
+Segment 1.1.1. Customer order line reference 06GH1473 
+ 
+Example showing Invoice segments ILD to DNC 
+ 
+ILD=1+2+978012345678X+++1+5+99700 
++498400+Z+0++++159500++159500+299 
+100+37500' 
+Line 2 (within 1st group of invoice lines) 
+5 copies of EAN-13 978012345678X invoiced 
+Unit cost price after discount and excluding VAT £9.97, extended line cost £49.84 
+VAT rate code ‘Z’ to signify zero-rate item 
+Manufacturer’s recommended selling price £15.95, unit price before discount and 
+excluding VAT £15.95 
+Line discount value excluding VAT £2.99, discount percentage 37.5% 
+DNC=1+2+1++082:06GH1473' 
+Segment 1.2.1. Customer order line reference 06GH1473 
+Page 33 of 40 
+ 
+ 
+ 
+14. Invoice Message Trailer 
+ 
+STL 
+VAT RATE INVOICE 
+SUB- TRAILER 
+M 
+Mandatory: repeated for each ‘real’ VAT rate appearing in the invoice 
+message. 
+For the purposes of deciding the number of times the STL segment must be 
+repeated, the potentially relevant VAT rate category codes are S, Z but not A 
+(mixed rate) - since mixed rate items are covered under each of the 
+component rates concerned, nor E, X, H, L - do not occur in UK book trade 
+practice. 
+All values are in pounds. 
+= 
+SEQA 
+First level sequence number 
+M V 
+9(10) 
+Starts at 1 and incremented by 1 for each repeat of this segment 
++ 
+VATC 
+VAT Rate category code 
+M F 
+X(1) 
+Use code values from Code List 12. In current book trade conditions, the 
+only code values which may in practice occur here are: 
+S  Standard rate 
+Z Zero-rated or Export item (if VAT exemption can be claimed for this reason) 
+O Outside the scope of VAT (if publisher is below VAT threshold) 
+Each invoice message must carry one and only one STL segment for each 
+code value which occurs in the message. 
++ 
+VATP 
+VAT Rate percentage 
+M V 
+9(3)V9(3) 
+Percentage rate for the VAT rate category code. Corresponds to the code in 
+STL/VATC 
++ 
+NRIL 
+Number of item lines 
+M V 
+9(10) 
+The number of ILD segments which carry the same code value as the 
+current STL/VATC, including ILD segments which describe components of a 
+mixed rate item 
++ 
+LVLA 
+Line sub-total amount 
+(before VAT) 
+M V 
+9(10)V9(2) 
+The sum of the LEXC values from all ILD segments which carry the same 
+code value as the corresponding STL/VATC 
++ 
+QYDA 
+Discount amount for Invoice 
+quantity 
+C V 
+9(10)V9(2) 
+Value of discount for total quantity in all ILD segments which carry the same 
+code value as the current STL/VATC 
+Not expected to be used in book trade practice, since discounts are applied 
+as part of the calculation of line values 
+ 
+Page 34 of 40 
+ 
+ 
+STL 
+VAT RATE INVOICE SUB-TRAILER (continued) 
++ 
+VLDA 
+Discount amount for Invoice 
+value 
+C V 
+9(10)V9(2) 
+Value of discount for total value in all ILD segments which carry the same 
+code value as the current STL/VATC 
+Not expected to be used in book trade practice, since discounts are applied 
+as part of the calculation of line values 
++ 
+SURA 
+Surcharge amount 
+C V 
+9(10)V9(2) 
+Freight charges etc. for the current STL/VATC 
+Do not use (see section 7) 
++ 
+SSUB 
+Sub-total subsidy 
+C V 
+9(10)V9(2) 
+Do not use 
++ 
+EVLA 
+Extended sub-total amount 
+(before settlement discount 
+has been applied) 
+M V 
+9(10V9(2) 
+Before VAT. Mandatory: equals LVLA if preceding segments are not used: 
+Otherwise: EVLA = LVLA – QYDA – VLDA + SURA – SSUB 
++ 
+SEDA 
+Sub-total settlement 
+discount amount 
+C V 
+9(10)V9(2) 
+For the code value in the corresponding STL/VATC 
+Used only if payment terms include a discount for prompt settlement 
++ 
+ASDA 
+Extended sub-total amount 
+(after settlement discount 
+has been applied) 
+M V 
+9(10)V9(2) 
+Before VAT has been applied 
+Mandatory: equals EVLA if there is no settlement discount 
+Otherwise: ASDA = EVLA - SEDA 
++ 
+VATA 
+VAT amount payable 
+M V 
+9(10)V9(2) 
+VAT amount payable in respect of this VAT rate, calculated by applying 
+VATP to ASDA 
++ 
+APSE 
+Payable sub-total amount 
+(before settlement discount 
+has been applied) 
+C V 
+9(10)V9(2) 
+After VAT has been applied. APSE = EVLA + VATA 
+Used only if payment terms include a discount for prompt settlement 
++ 
+APSI 
+Payment sub-total amount 
+(after settlement discount 
+has been applied) 
+M V 
+9(10V9(2) 
+After VAT has been applied 
+Mandatory: amount payable in respect of items attracting this VAT rate, 
+including VAT, calculated as ASDA + VATA 
+Page 35 of 40 
+ 
+ 
+ 
+TLR 
+INVOICE TRAILER 
+M 
+One occurrence is mandatory at the end of each invoice message 
+Carries totals for the invoice message as a whole 
+= 
+NSTL 
+Number of total segments 
+M V 
+9(10) 
+Mandatory: number of STL segments in the message 
++ 
+LVLT 
+Lines total amount (before 
+settlement discount has 
+been applied) 
+M V 
+9(10)V9(2) 
+Mandatory: sum of the LVLA elements in the preceding STL segments, i.e., 
+the total value of the invoice excluding VAT and any further discounts or 
+charges 
++ 
+QYDT 
+Total discount amount for 
+invoice quantity 
+C V 
+9(10)V9(2) 
+Sum of the QYDA elements in the preceding STL segments. 
+Not expected to be used in book trade practice 
++ 
+VLDT 
+Total discount amount for 
+invoice value 
+C V 
+9(10)V9(2) 
+Sum of the VLDA elements in the preceding STL segments. 
+Not expected to be used in book trade practice 
++ 
+SURT 
+Total surcharge amount 
+C V 
+9(10)V9(2) 
+Do not use 
++ 
+TSUB 
+Total subsidy amount 
+C V 
+9(10)V9(2) 
+Do not use 
++ 
+EVLT 
+Total extended amount 
+(before settlement discount 
+has been applied) 
+M V 
+9(10)V9(2) 
+Mandatory: sum of the EVLA elements in the preceding STL segments, i.e., 
+the total value of the invoice excluding VAT but with further discounts and 
+charges 
++ 
+SEDT 
+Total settlement discount 
+amount 
+C V 
+9(10)V9(2) 
+Sum of the SEDA elements in the preceding STL segments 
+Used only if payment terms include a discount for prompt payment 
++ 
+ASDT 
+Total amount (after 
+settlement discount has 
+been applied) 
+M V 
+9(10)V9(2) 
+Mandatory: sum of the ASDA elements in the preceding STL segments, i.e., 
+the total value of the invoice excluding VAT but with settlement discount 
++ 
+TVAT 
+Total VAT amount payable 
+M V 
+9(10)V9(2) 
+Mandatory: sum of the VATA elements in the preceding STL segments, i.e., 
+the total VAT charged on the invoice after all applicable discounts and 
+charges 
++ 
+TPSE 
+Total payable (before 
+settlement discount has 
+been applied) 
+C V 
+9(10)V9(2) 
+Sum of the APSE elements in the preceding STL segments; i.e., the total 
+payable including VAT but without settlement discount 
+Used only if payment terms include a discount for prompt settlement 
+ 
+/continued 
+Page 36 of 40 
+ 
+ 
+ 
+TLR 
+INVOICE TRAILER (continued) 
++ 
+TPSI 
+Total payable (after 
+settlement discount has 
+been applied) 
+M V 
+9(10)V9(2) 
+Mandatory: sum of the APSI elements in the preceding STL segments, i.e., 
+the final total payable including VAT 
+ 
+ 
+Example showing Invoice message trailer segments STL and TLR 
+ 
+STL=1+S+17500+3+4325+++++4325++4325+ 
+757++5082' 
+1st STL segment: VAT at Standard rate (17.5%); 3 item lines; sub-total 
+(before VAT) £43.25; extended sub-total (before VAT) £43.25; VAT amount 
+£7.57; payable sub-total £50.82 
+STL=2+Z+0+12+34567+++++34567++34567+ 
+0++34567' 
+2nd STL segment: VAT at zero rate; 12 item lines; sub-total (before VAT) 
+£345.67; extended sub-total (before VAT) £345.67; VAT amount £0; payable 
+sub-total £345.67 
+TLR=2+38892+++++38892++38892+757++39 
+649' 
+No. of STL segments 2; lines total (before VAT) £388.92; extended sub-total 
+(before VAT) £388.92; total VAT £7.57; total payable £396.49 
+ 
+ 
+ 
+MTR 
+MESSAGE TRAILER 
+M 
+One occurrence is mandatory at the end of each invoice message 
+= 
+NOSG 
+Number of segments in 
+message 
+M V 
+9(10) 
+Control count of the number of segments comprising message. The count 
+includes the MHD and MTR segments surrounding the message 
+ 
+ 
+Example: 
+MTR=54' 
+54 segments in this invoice message 
+Page 37 of 40 
+ 
+ 
+ 
+15. Invoice File VAT Trailer 
+ 
+MHD 
+MESSAGE HEADER 
+M 
+One occurrence is mandatory following the last Invoice message in the file 
+= 
+MSRF 
+Message reference 
+M V 
+9(12) 
+Consecutive count of messages within the file 
+TYPE 
+Type of message 
+M 
++ 
+Type 
+M F 
+X(6) 
+Always 'VATTLR' 
+: 
+Version number 
+M F 
+9(1) 
+Always '9' for this version 
+ 
+Example: 
+MHD=5+VATTLR:9' 
+Message number 5 in this file 
+ 
+ 
+VRS 
+VAT RATE SUMMARY 
+M 
+Mandatory: repeated for each different ‘real’ VAT rate which occurs 
+anywhere in the file. 
+For these purposes, mixed rate A is not a ‘real’ VAT rate, since it is no 
+more than a combination of the component rates S and Z. 
+The contents of each successive VRS segment are calculated by summing 
+the corresponding data elements in the corresponding VAT rate sub- 
+trailers (STL) in each invoice message in the file 
+= 
+SEQA 
+First level sequence number 
+M V 
+9(10) 
+Starts at 1 and incremented by 1 for each repeat of this segment 
++ 
+VATC 
+VAT Rate category code 
+M F 
+X(1) 
+Use code values from Code List 12. In current book trade conditions, the only 
+code values which may in practice occur here are: 
+S  Standard rate 
+Z 
+Zero-rated or Export item (if VAT exemption can be claimed for this reason) 
+O Outside scope of VAT (if publisher is below VAT threshold) 
+Each invoice file must carry one and only one VRS segment for each code value 
+(other than A mixed rate) which occurs in the file. If mixed-rate items are 
+present, their standard and zero-rated components will be covered in the VRS 
+segments for code values S and Z. 
+/continued 
+Page 38 of 40 
+ 
+ 
+ 
+VRS 
+VAT RATE SUMMARY (continued) 
++ 
+VATP 
+VAT Rate percentage 
+M V 
+9(3)V9(3) 
+Percentage rate for the VAT rate category code. Corresponds to the code in 
+VRS/VATC 
++ 
+VSDE 
+File sub-total amount 
+(before settlement discount 
+has been applied) 
+M V 
+9(10)V9(2) 
+Sum of the EVLA elements in all STL segments in the file which carry the 
+same VAT code as the current VRS/VATC; i.e., the total amount for the 
+whole invoice file on which VAT is payable at the designated rate, before 
+any settlement discount, and excluding the applicable VAT 
++ 
+VSDI 
+File sub-total amount (after 
+settlement discount has 
+been applied) 
+M V 
+9(10)V9(2) 
+Sum of the ASDA elements in all STL segments in the file which carry the 
+same VAT code as the current VRS/VATC; i.e., the total amount for the 
+whole invoice file on which VAT is payable at the designated rate, after any 
+settlement discount, and excluding the applicable VAT 
++ 
+VVAT 
+File VAT sub-total 
+M V 
+9(10)V9(2) 
+Sum of the VATA elements in all STL segments in the file which carry the 
+same VAT code as the current VRS/VATC; i.e., the total VAT payable on the 
+whole invoice file at the designated rate 
++ 
+VPSE 
+File sub-total payable 
+(before settlement discount 
+has been applied) 
+C V 
+9(10)V9(2) 
+Sum of the APSE elements in all STL segments in the file which carry the 
+same VAT code as the current VRS/VATC; i.e., the total amount for the 
+whole invoice file on which VAT is payable at the designated rate, before 
+any settlement discount, and including the applicable VAT 
+Used only if payment terms include a discount for prompt settlement 
++ 
+VPSI 
+File sub-total payable (after 
+settlement discount has 
+been applied) 
+M V 
+9(10)V9(2) 
+Sum of the APSI elements in all STL segments in the file which carry the 
+same VAT code as the current VRS/VATC; i.e., the total amount for the 
+whole invoice file on which VAT is payable at the designated rate, after any 
+settlement discount, and including the applicable VAT 
+ 
+Example: 
+VRS=1+S+17500+4325+4325+757++5082' 
+1st VRS segment: VAT at standard rate (17.5%); file sub-total £43.25; file 
+VAT sub-total £7.57; file sub-total payable £50.82 
+VRS=2+Z+0+34567+34567+0++34567' 
+2nd VRS segment: VAT at zero rate; file sub-total £345.67; file VAT sub-total 
+£0; file sub-total payable £345.67 
+Page 39 of 40 
+ 
+ 
+ 
+MTR 
+MESSAGE TRAILER 
+M 
+One mandatory occurrence per file VAT trailer 
+= 
+NOSG 
+Number of segments in 
+message 
+M V 
+9(10) 
+Control count of the number of segments comprising VATTLR invoice VAT 
+trailer. The count Includes the MHD and MTR segments surrounding the header 
+ 
+Example: 
+MTR=3' 
+Three segments in file VAT trailer 
+ 
+ 
+16. Invoice File Trailer 
+ 
+MHD 
+MESSAGE HEADER 
+M 
+One occurrence is mandatory following the last file VAT trailer in the file 
+= 
+MSRF 
+Message reference 
+M V 
+9(12) 
+Consecutive count of messages within the file 
+TYPE 
+Type of message 
+M 
++ 
+Type 
+M F 
+X(6) 
+Always 'INVTLR' 
+: 
+Version number 
+M F 
+9(1) 
+Always '9' for this version 
+ 
+Example: 
+MHD=5+INVTLR:9' 
+Message number 5 in this file 
+ 
+ 
+TOT 
+FILE TOTALS 
+M 
+Mandatory: carries number of mandatory control totals 
+= 
+FASE 
+File total amount (before 
+VAT and settlement 
+discount have been applied) 
+M V 
+9(10)V9(2) 
+Sum of the VSDE elements in all VRS segments in the file 
++ 
+FASI 
+File total amount (before 
+VAT but after settlement 
+discount has been applied) 
+M V 
+9(10)V9(2) 
+Sum of the VSDI elements in all VRS segments in the file 
++ 
+FVAT 
+File total VAT amount 
+M V 
+9(10)V9(2) 
+Sum of the VVAT elements in all VRS segments in the file 
+/continued 
+Page 40 of 40 
+ 
+ 
+ 
+TOT 
+FILE TOTALS (continued) 
++ 
+FPSE 
+File total payable (after VAT 
+but before settlement 
+discount has been applied) 
+C V 
+9(10)V9(2) 
+Sum of the VPSE elements in all VRS segments in the file 
+Used only if payment terms include a discount for prompt settlement 
++ 
+FPSI 
+File total payable (after VAT 
+and after settlement 
+discount has been applied) 
+M V 
+9(10)V9(2) 
+Sum of the VSDE elements in all VRS segments in the file 
++ 
+FTNI 
+File total number of invoice 
+messages 
+M V 
+9(10) 
+Total number of Invoice messages in the file 
+ 
+Example: 
+TOT=38892+38892+757++39649+15' 
+File total amount £388.92; file VAT total amount £7.57; file total payable 
+£396.49; 15 invoice messages in file 
+ 
+ 
+MTR 
+MESSAGE TRAILER 
+M 
+One occurrence is mandatory at the end of each invoice file 
+= 
+NOSG 
+Number of segments in 
+message 
+M V 
+9(10) 
+Control count of the number of segments comprising message. Includes the 
+MHD and MTR segments 
+ 
+Example: 
+MTR=3' 
+Three segments in invoice file trailer 
+ 

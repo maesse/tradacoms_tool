@@ -234,78 +234,158 @@ function validateMtrCount(mtrSeg: ParsedSegment, msg: ParsedMessage): void {
 
 // ─── Document-Level Validation ──────────────────────────────────────────────
 
+/**
+ * Detect whether the file is an invoice file or a credit note file based on message types present.
+ * Returns 'invoice' | 'credit' | 'unknown'.
+ */
+function detectFileType(messages: ParsedMessage[]): 'invoice' | 'credit' | 'unknown' {
+  const types = new Set(messages.map((m) => m.type))
+  if (types.has('INVFIL') || types.has('INVOIC') || types.has('INVTLR')) return 'invoice'
+  if (types.has('CREHDR') || types.has('CREDIT') || types.has('CRETLR')) return 'credit'
+  return 'unknown'
+}
+
 function validateDocumentStructure(transmission: ParsedTransmission): void {
   const messages = transmission.messages
+  const fileType = detectFileType(messages)
 
-  // Check required message types present
   const types = messages.map((m) => m.type)
-  const hasInvfil = types.includes('INVFIL')
-  const hasInvoic = types.includes('INVOIC')
-  const hasVattlr = types.includes('VATTLR')
-  const hasInvtlr = types.includes('INVTLR')
-
   const docSpan: Span = { start: 0, end: transmission.raw.length }
 
-  if (!hasInvfil) {
-    transmission.issues.push(
-      issue('error', 'Missing required INVFIL (Invoice File Header) message', docSpan),
-    )
-  }
-  if (!hasInvoic) {
-    transmission.issues.push(
-      issue(
-        'error',
-        'Missing required INVOIC (Invoice Details) message – at least one invoice is required',
-        docSpan,
-      ),
-    )
-  }
-  if (!hasVattlr) {
-    transmission.issues.push(
-      issue('error', 'Missing required VATTLR (File VAT Trailer) message', docSpan),
-    )
-  }
-  if (!hasInvtlr) {
-    transmission.issues.push(
-      issue('error', 'Missing required INVTLR (Invoice File Trailer) message', docSpan),
-    )
-  }
+  if (fileType === 'credit') {
+    // Credit note file validation
+    const hasCrehdr = types.includes('CREHDR')
+    const hasCredit = types.includes('CREDIT')
+    const hasVattlr = types.includes('VATTLR')
+    const hasCretlr = types.includes('CRETLR')
 
-  // Check message ordering
-  validateMessageOrder(messages, transmission)
-
-  // Check MHD sequence numbers are consecutive
-  validateMhdSequence(messages, transmission)
-
-  // Check each INVOIC has at least one ILD
-  for (const msg of messages) {
-    if (msg.type === 'INVOIC') {
-      validateInvoicContent(msg)
+    if (!hasCrehdr) {
+      transmission.issues.push(
+        issue('error', 'Missing required CREHDR (Credit Note File Header) message', docSpan),
+      )
     }
-  }
-
-  // Cross-check TLR against STL segments
-  for (const msg of messages) {
-    if (msg.type === 'INVOIC') {
-      validateTlrAgainstStl(msg)
-      validateStlVatCoverage(msg)
+    if (!hasCredit) {
+      transmission.issues.push(
+        issue(
+          'error',
+          'Missing required CREDIT (Credit Note Details) message – at least one credit note is required',
+          docSpan,
+        ),
+      )
     }
+    if (!hasVattlr) {
+      transmission.issues.push(
+        issue('error', 'Missing required VATTLR (File VAT Trailer) message', docSpan),
+      )
+    }
+    if (!hasCretlr) {
+      transmission.issues.push(
+        issue('error', 'Missing required CRETLR (Credit Note File Trailer) message', docSpan),
+      )
+    }
+
+    // Check message ordering
+    validateMessageOrder(messages, transmission, 'credit')
+
+    // Check MHD sequence numbers
+    validateMhdSequence(messages, transmission)
+
+    // Check each CREDIT has at least one CLD
+    for (const msg of messages) {
+      if (msg.type === 'CREDIT') {
+        validateCreditContent(msg)
+      }
+    }
+
+    // Cross-check CTR against CST segments
+    for (const msg of messages) {
+      if (msg.type === 'CREDIT') {
+        validateCtrAgainstCst(msg)
+        validateCstVatCoverage(msg)
+      }
+    }
+
+    // Cross-check VRS against file-wide VAT codes (from CST segments)
+    validateVrsCoverage(transmission)
+
+    // Cross-check CRETLR/TOT against file
+    validateFileTotals(transmission)
+  } else {
+    // Invoice file validation (default)
+    const hasInvfil = types.includes('INVFIL')
+    const hasInvoic = types.includes('INVOIC')
+    const hasVattlr = types.includes('VATTLR')
+    const hasInvtlr = types.includes('INVTLR')
+
+    if (!hasInvfil) {
+      transmission.issues.push(
+        issue('error', 'Missing required INVFIL (Invoice File Header) message', docSpan),
+      )
+    }
+    if (!hasInvoic) {
+      transmission.issues.push(
+        issue(
+          'error',
+          'Missing required INVOIC (Invoice Details) message – at least one invoice is required',
+          docSpan,
+        ),
+      )
+    }
+    if (!hasVattlr) {
+      transmission.issues.push(
+        issue('error', 'Missing required VATTLR (File VAT Trailer) message', docSpan),
+      )
+    }
+    if (!hasInvtlr) {
+      transmission.issues.push(
+        issue('error', 'Missing required INVTLR (Invoice File Trailer) message', docSpan),
+      )
+    }
+
+    // Check message ordering
+    validateMessageOrder(messages, transmission, 'invoice')
+
+    // Check MHD sequence numbers
+    validateMhdSequence(messages, transmission)
+
+    // Check each INVOIC has at least one ILD
+    for (const msg of messages) {
+      if (msg.type === 'INVOIC') {
+        validateInvoicContent(msg)
+      }
+    }
+
+    // Cross-check TLR against STL segments
+    for (const msg of messages) {
+      if (msg.type === 'INVOIC') {
+        validateTlrAgainstStl(msg)
+        validateStlVatCoverage(msg)
+      }
+    }
+
+    // Cross-check VRS against file-wide VAT codes
+    validateVrsCoverage(transmission)
+
+    // Cross-check INVTLR/TOT against file
+    validateFileTotals(transmission)
   }
 
-  // Cross-check VRS against file-wide VAT codes
-  validateVrsCoverage(transmission)
-
-  // Cross-check INVTLR/TOT against file
-  validateFileTotals(transmission)
-
-  // Check END message count
+  // Check END message count (common to both)
   validateEndCount(transmission)
 }
 
-function validateMessageOrder(messages: ParsedMessage[], transmission: ParsedTransmission): void {
-  // Expected order: INVFIL, then INVOIC(s), then VATTLR, then INVTLR
-  // (plus possible RSG/reconciliation messages at the end)
-  const expectedOrder = ['INVFIL', 'INVOIC', 'VATTLR', 'INVTLR']
+function validateMessageOrder(
+  messages: ParsedMessage[],
+  transmission: ParsedTransmission,
+  fileType: 'invoice' | 'credit',
+): void {
+  const expectedOrder =
+    fileType === 'credit'
+      ? ['CREHDR', 'CREDIT', 'VATTLR', 'CRETLR']
+      : ['INVFIL', 'INVOIC', 'VATTLR', 'INVTLR']
+  const repeatableType = fileType === 'credit' ? 'CREDIT' : 'INVOIC'
+  const orderLabel = expectedOrder.join(' → ')
+
   let orderIdx = 0
 
   for (const msg of messages) {
@@ -314,11 +394,11 @@ function validateMessageOrder(messages: ParsedMessage[], transmission: ParsedTra
     const expectedIdx = expectedOrder.indexOf(msg.type)
     if (expectedIdx === -1) continue
 
-    if (expectedIdx < orderIdx && msg.type !== 'INVOIC') {
+    if (expectedIdx < orderIdx && msg.type !== repeatableType) {
       transmission.issues.push(
         issue(
           'warning',
-          `Message ${msg.type} appears out of expected order (expected: INVFIL → INVOIC(s) → VATTLR → INVTLR)`,
+          `Message ${msg.type} appears out of expected order (expected: ${orderLabel})`,
           msg.span,
         ),
       )
@@ -375,6 +455,117 @@ function validateInvoicContent(msg: ParsedMessage): void {
         msg.span,
       ),
     )
+  }
+}
+
+function validateCreditContent(msg: ParsedMessage): void {
+  const hasCld = msg.segments.some((s) => s.tag === 'CLD')
+  if (!hasCld) {
+    msg.issues.push(
+      issue(
+        'error',
+        'CREDIT message must contain at least one CLD (Credit Note Line Details) segment',
+        msg.span,
+      ),
+    )
+  }
+}
+
+function validateCtrAgainstCst(msg: ParsedMessage): void {
+  const cstSegments = msg.segments.filter((s) => s.tag === 'CST')
+  const ctrSegment = msg.segments.find((s) => s.tag === 'CTR')
+
+  if (!ctrSegment || cstSegments.length === 0) return
+
+  // CTR/NCST should equal number of CST segments
+  const ncstSub = ctrSegment.elements[0]?.subElements[0]
+  if (ncstSub && ncstSub.raw !== '') {
+    const declared = parseInt(ncstSub.raw, 10)
+    if (!isNaN(declared) && declared !== cstSegments.length) {
+      ncstSub.issues.push(
+        issue(
+          'error',
+          `CTR/NCST declares ${declared} CST segments, but found ${cstSegments.length}`,
+          ncstSub.span,
+        ),
+      )
+    }
+  }
+
+  // Cross-check CTR fields against CST sums
+  // CST element indices: LVLA(4), EVLA(7), VATA(10), APSI(12)
+  // CTR element indices: LVLT(1), EVLT(4), TVAT(7), TPSI(9)
+  validateTlrSum(ctrSegment, cstSegments, 1, 4, 'LVLT', 'LVLA')
+  validateTlrSum(ctrSegment, cstSegments, 4, 7, 'EVLT', 'EVLA')
+  validateTlrSum(ctrSegment, cstSegments, 7, 10, 'TVAT', 'VATA')
+  validateTlrSum(ctrSegment, cstSegments, 9, 12, 'TPSI', 'APSI')
+}
+
+/**
+ * Validate that within a CREDIT message:
+ * - The number of CST segments matches the number of distinct real VAT codes in CLD lines
+ * - Each CST/NRIL matches the count of CLD lines with that VAT code
+ */
+function validateCstVatCoverage(msg: ParsedMessage): void {
+  const cldSegments = msg.segments.filter((s) => s.tag === 'CLD')
+  const cstSegments = msg.segments.filter((s) => s.tag === 'CST')
+
+  if (cldSegments.length === 0 || cstSegments.length === 0) return
+
+  // Gather ILD-equivalent VAT codes from CLD (VATC is element index 8)
+  const vatCodeCounts = new Map<string, number>()
+  for (const cld of cldSegments) {
+    const vatcSub = cld.elements[8]?.subElements[0]
+    if (!vatcSub || vatcSub.raw === '') continue
+    const code = vatcSub.raw
+    // Mixed-rate items have real VAT codes on their component lines
+    if (code === 'A') continue // 'A' itself doesn't get a CST entry
+    vatCodeCounts.set(code, (vatCodeCounts.get(code) ?? 0) + 1)
+  }
+
+  // Also count mixed-rate components (MIXI=1 or MIXI=2)
+  for (const cld of cldSegments) {
+    const mixiSub = cld.elements[11]?.subElements[0]
+    if (mixiSub && (mixiSub.raw === '1' || mixiSub.raw === '2')) {
+      const vatcSub = cld.elements[8]?.subElements[0]
+      if (vatcSub && vatcSub.raw !== '' && vatcSub.raw !== 'A') {
+        // Already counted above, mixed components use their real VAT code
+      }
+    }
+  }
+
+  // Check CST count matches distinct VAT codes
+  if (cstSegments.length !== vatCodeCounts.size && vatCodeCounts.size > 0) {
+    msg.issues.push(
+      issue(
+        'warning',
+        `CREDIT has ${cstSegments.length} CST segment(s) but CLD lines contain ${vatCodeCounts.size} distinct real VAT code(s)`,
+        msg.span,
+      ),
+    )
+  }
+
+  // Check each CST/NRIL matches count of CLD lines with that VAT code
+  for (const cst of cstSegments) {
+    const cstVatcSub = cst.elements[1]?.subElements[0]
+    if (!cstVatcSub || cstVatcSub.raw === '') continue
+
+    const nrilSub = cst.elements[3]?.subElements[0]
+    if (!nrilSub || nrilSub.raw === '') continue
+
+    const declared = parseInt(nrilSub.raw, 10)
+    if (isNaN(declared)) continue
+
+    const expected = vatCodeCounts.get(cstVatcSub.raw) ?? 0
+    if (declared !== expected) {
+      nrilSub.issues.push(
+        issue(
+          'error',
+          `CST/NRIL declares ${declared} CLD lines for VAT code '${cstVatcSub.raw}', but found ${expected}`,
+          nrilSub.span,
+        ),
+      )
+    }
   }
 }
 
@@ -514,20 +705,24 @@ function validateStlVatCoverage(msg: ParsedMessage): void {
 
 /**
  * Validate that the VATTLR message has VRS segments matching the distinct
- * real VAT codes found across all INVOIC messages in the file.
+ * real VAT codes found across all INVOIC or CREDIT messages in the file.
  */
 function validateVrsCoverage(transmission: ParsedTransmission): void {
   const vattlr = transmission.messages.find((m) => m.type === 'VATTLR')
   if (!vattlr) return
 
   const vrsSegments = vattlr.segments.filter((s) => s.tag === 'VRS')
-  const invoicMessages = transmission.messages.filter((m) => m.type === 'INVOIC')
+  const fileType = detectFileType(transmission.messages)
 
-  // Collect all distinct real VAT codes from all STL segments across all invoices
+  // Collect all distinct real VAT codes from STL (invoices) or CST (credit notes)
   const fileVatCodes = new Set<string>()
-  for (const msg of invoicMessages) {
+  const subTrailerTag = fileType === 'credit' ? 'CST' : 'STL'
+  const detailMsgType = fileType === 'credit' ? 'CREDIT' : 'INVOIC'
+  const detailMessages = transmission.messages.filter((m) => m.type === detailMsgType)
+
+  for (const msg of detailMessages) {
     for (const seg of msg.segments) {
-      if (seg.tag === 'STL') {
+      if (seg.tag === subTrailerTag) {
         const vatcSub = seg.elements[1]?.subElements[0]
         if (vatcSub && vatcSub.raw !== '') {
           fileVatCodes.add(vatcSub.raw)
@@ -558,7 +753,7 @@ function validateVrsCoverage(transmission: ParsedTransmission): void {
       vrsVatcSub.issues.push(
         issue(
           'warning',
-          `VRS VAT code '${vrsVatcSub.raw}' does not appear in any STL segment in the file`,
+          `VRS VAT code '${vrsVatcSub.raw}' does not appear in any ${subTrailerTag} segment in the file`,
           vrsVatcSub.span,
         ),
       )
@@ -576,42 +771,48 @@ function validateVrsCoverage(transmission: ParsedTransmission): void {
       vattlr.issues.push(
         issue(
           'error',
-          `Missing VRS segment for VAT code '${code}' which appears in STL segments`,
+          `Missing VRS segment for VAT code '${code}' which appears in ${subTrailerTag} segments`,
           vattlr.span,
         ),
       )
     }
   }
 
-  // Cross-check VRS values against sums of STL fields per VAT code
-  // Build STL sums grouped by VAT code
-  const stlSums = new Map<
+  // Cross-check VRS values against sums of sub-trailer fields per VAT code
+  // For invoices: STL fields EVLA(9), ASDA(11), VATA(12), APSE(13), APSI(14)
+  // For credits: CST fields EVLA(7), ASDA(9), VATA(10), APSE(11), APSI(12)
+  const evlaIdx = fileType === 'credit' ? 7 : 9
+  const asdaIdx = fileType === 'credit' ? 9 : 11
+  const vataIdx = fileType === 'credit' ? 10 : 12
+  const apseIdx = fileType === 'credit' ? 11 : 13
+  const apsiIdx = fileType === 'credit' ? 12 : 14
+
+  const subTrailerSums = new Map<
     string,
     { evla: number; asda: number; vata: number; apse: number; apsi: number }
   >()
-  for (const msg of invoicMessages) {
+  for (const msg of detailMessages) {
     for (const seg of msg.segments) {
-      if (seg.tag !== 'STL') continue
+      if (seg.tag !== subTrailerTag) continue
       const vatcRaw = seg.elements[1]?.subElements[0]?.raw
       if (!vatcRaw || vatcRaw === '') continue
-      const sums = stlSums.get(vatcRaw) ?? { evla: 0, asda: 0, vata: 0, apse: 0, apsi: 0 }
-      const evla = parseInt(seg.elements[9]?.subElements[0]?.raw ?? '', 10)
-      const asda = parseInt(seg.elements[11]?.subElements[0]?.raw ?? '', 10)
-      const vata = parseInt(seg.elements[12]?.subElements[0]?.raw ?? '', 10)
-      const apse = parseInt(seg.elements[13]?.subElements[0]?.raw ?? '', 10)
-      const apsi = parseInt(seg.elements[14]?.subElements[0]?.raw ?? '', 10)
+      const sums = subTrailerSums.get(vatcRaw) ?? { evla: 0, asda: 0, vata: 0, apse: 0, apsi: 0 }
+      const evla = parseInt(seg.elements[evlaIdx]?.subElements[0]?.raw ?? '', 10)
+      const asda = parseInt(seg.elements[asdaIdx]?.subElements[0]?.raw ?? '', 10)
+      const vata = parseInt(seg.elements[vataIdx]?.subElements[0]?.raw ?? '', 10)
+      const apse = parseInt(seg.elements[apseIdx]?.subElements[0]?.raw ?? '', 10)
+      const apsi = parseInt(seg.elements[apsiIdx]?.subElements[0]?.raw ?? '', 10)
       if (!isNaN(evla)) sums.evla += evla
       if (!isNaN(asda)) sums.asda += asda
       if (!isNaN(vata)) sums.vata += vata
       if (!isNaN(apse)) sums.apse += apse
       if (!isNaN(apsi)) sums.apsi += apsi
-      stlSums.set(vatcRaw, sums)
+      subTrailerSums.set(vatcRaw, sums)
     }
   }
 
   // Validate each VRS segment's values
   // VRS fields: SEQA(0), VATC(1), VATP(2), VSDE(3), VSDI(4), VVAT(5), VPSE(6), VPSI(7)
-  // STL fields: EVLA(9), ASDA(11), VATA(12), APSE(13), APSI(14)
   const vrsChecks: Array<{
     vrsIdx: number
     vrsName: string
@@ -628,7 +829,7 @@ function validateVrsCoverage(transmission: ParsedTransmission): void {
   for (const vrs of vrsSegments) {
     const vrsVatcRaw = vrs.elements[1]?.subElements[0]?.raw
     if (!vrsVatcRaw || vrsVatcRaw === '') continue
-    const sums = stlSums.get(vrsVatcRaw)
+    const sums = subTrailerSums.get(vrsVatcRaw)
     if (!sums) continue
 
     for (const check of vrsChecks) {
@@ -641,7 +842,7 @@ function validateVrsCoverage(transmission: ParsedTransmission): void {
         vrsSub.issues.push(
           issue(
             'error',
-            `VRS/${check.vrsName} (${vrsValue}) does not equal Σ STL/${check.stlName} for VAT code '${vrsVatcRaw}' (${expected})`,
+            `VRS/${check.vrsName} (${vrsValue}) does not equal Σ ${subTrailerTag}/${check.stlName} for VAT code '${vrsVatcRaw}' (${expected})`,
             vrsSub.span,
           ),
         )
@@ -651,29 +852,33 @@ function validateVrsCoverage(transmission: ParsedTransmission): void {
 }
 
 function validateFileTotals(transmission: ParsedTransmission): void {
-  const invtlr = transmission.messages.find((m) => m.type === 'INVTLR')
-  if (!invtlr) return
+  const fileType = detectFileType(transmission.messages)
+  const trailerMsgType = fileType === 'credit' ? 'CRETLR' : 'INVTLR'
+  const detailMsgType = fileType === 'credit' ? 'CREDIT' : 'INVOIC'
 
-  const totSeg = invtlr.segments.find((s) => s.tag === 'TOT')
+  const trailer = transmission.messages.find((m) => m.type === trailerMsgType)
+  if (!trailer) return
+
+  const totSeg = trailer.segments.find((s) => s.tag === 'TOT')
   if (!totSeg) return
 
-  // FTNI should match number of INVOIC messages
+  // FTNI should match number of detail messages (INVOIC or CREDIT)
   const ftniSub = totSeg.elements[5]?.subElements[0]
   if (ftniSub && ftniSub.raw !== '') {
     const declared = parseInt(ftniSub.raw, 10)
-    const actualInvoicCount = transmission.messages.filter((m) => m.type === 'INVOIC').length
-    if (!isNaN(declared) && declared !== actualInvoicCount) {
+    const actualCount = transmission.messages.filter((m) => m.type === detailMsgType).length
+    if (!isNaN(declared) && declared !== actualCount) {
       ftniSub.issues.push(
         issue(
           'error',
-          `TOT/FTNI declares ${declared} invoice messages, but file contains ${actualInvoicCount}`,
+          `TOT/FTNI declares ${declared} ${detailMsgType.toLowerCase()} messages, but file contains ${actualCount}`,
           ftniSub.span,
         ),
       )
     }
   }
 
-  // Cross-check TOT against Σ VRS values (the proper aggregation chain is STL → VRS → TOT)
+  // Cross-check TOT against Σ VRS values
   const vattlr = transmission.messages.find((m) => m.type === 'VATTLR')
   if (vattlr) {
     const vrsSegments = vattlr.segments.filter((s) => s.tag === 'VRS')
@@ -754,6 +959,37 @@ export function validateCodeLists(transmission: ParsedTransmission): void {
   for (const msg of transmission.messages) {
     for (const seg of msg.segments) {
       validateSegmentCodeLists(seg, msg.type)
+      validateGenericCodeLists(seg)
+    }
+  }
+}
+
+/**
+ * Generic code list validation: for any sub-element that has a codeList defined
+ * in the schema, check that the actual value is in the list.
+ */
+function validateGenericCodeLists(seg: ParsedSegment): void {
+  for (const el of seg.elements) {
+    for (const sub of el.subElements) {
+      if (!sub.def?.codeList || sub.raw === '') continue
+      const validCodes = sub.def.codeList.map((c) => c.code)
+      if (!validCodes.includes(sub.raw)) {
+        // Don't duplicate issues already raised by specific validators
+        const alreadyHasCodeError = sub.issues.some(
+          (i) => i.message.includes('Invalid') || i.message.includes('Unexpected'),
+        )
+        if (!alreadyHasCodeError) {
+          const entry = sub.def.codeList.slice(0, 5).map((c) => `${c.code} (${c.name})`)
+          const suffix = sub.def.codeList.length > 5 ? `, … (${sub.def.codeList.length} total)` : ''
+          sub.issues.push(
+            issue(
+              'warning',
+              `Value "${sub.raw}" is not in the expected code list for ${el.def?.code ?? seg.tag}. Valid: ${entry.join(', ')}${suffix}`,
+              sub.span,
+            ),
+          )
+        }
+      }
     }
   }
 }
@@ -761,103 +997,67 @@ export function validateCodeLists(transmission: ParsedTransmission): void {
 function validateSegmentCodeLists(seg: ParsedSegment, messageType: string): void {
   switch (seg.tag) {
     case 'TYP':
-      validateTypCodes(seg)
+      validateTypCodes(seg, messageType)
       break
     case 'ILD':
       validateIldCodes(seg)
       break
+    case 'CLD':
+      validateCldCodes(seg)
+      break
     case 'STL':
     case 'VRS':
+    case 'CST':
       validateVatcCode(seg)
       break
   }
-  // Suppress unused
-  void messageType
 }
 
-function validateTypCodes(seg: ParsedSegment): void {
+function validateTypCodes(seg: ParsedSegment, messageType: string): void {
   const tcdeSub = seg.elements[0]?.subElements[0]
   if (!tcdeSub || tcdeSub.raw === '') return
 
-  const validCodes = ['0700', '0709']
+  const invoiceCodes = ['0700', '0709']
+  const creditCodes = ['0740', '0749']
+  const isCredit = messageType === 'CREHDR'
+  const validCodes = isCredit ? creditCodes : invoiceCodes
+
   if (!validCodes.includes(tcdeSub.raw)) {
+    const desc = isCredit
+      ? '0740 (Original credit note), 0749 (Copy credit note)'
+      : '0700 (Original invoice), 0709 (Copy invoice)'
     tcdeSub.issues.push(
-      issue(
-        'error',
-        `Invalid transaction code "${tcdeSub.raw}". Valid BIC codes: 0700 (Original invoice), 0709 (Copy invoice)`,
-        tcdeSub.span,
-      ),
+      issue('error', `Invalid transaction code "${tcdeSub.raw}". Valid BIC codes: ${desc}`, tcdeSub.span),
     )
   }
 }
 
 function validateIldCodes(seg: ParsedSegment): void {
-  // VATC (element index 9)
-  const vatcSub = seg.elements[9]?.subElements[0]
-  if (vatcSub && vatcSub.raw !== '') {
-    const validVatc = ['S', 'Z', 'A', 'O', 'E', 'X', 'H', 'L']
-    if (!validVatc.includes(vatcSub.raw)) {
-      vatcSub.issues.push(
-        issue(
-          'error',
-          `Invalid VAT category code "${vatcSub.raw}". Valid: S (Standard), Z (Zero), A (Mixed), O (Outside scope)`,
-          vatcSub.span,
-        ),
-      )
-    }
-  }
-
-  // MIXI (element index 11)
-  const mixiSub = seg.elements[11]?.subElements[0]
-  if (mixiSub && mixiSub.raw !== '') {
-    const validMixi = ['0', '1', '2']
-    if (!validMixi.includes(mixiSub.raw)) {
-      mixiSub.issues.push(
-        issue(
-          'error',
-          `Invalid mixed-rate indicator "${mixiSub.raw}". Valid: 0 (whole product), 1 (zero-rated component), 2 (standard-rate component)`,
-          mixiSub.span,
-        ),
-      )
-    }
-  }
-
-  // IGPI (element index 21)
-  const igpiSub = seg.elements[21]?.subElements[0]
-  if (igpiSub && igpiSub.raw !== '') {
-    const validIgpi = ['I', 'G']
-    if (!validIgpi.includes(igpiSub.raw)) {
-      igpiSub.issues.push(
-        issue(
-          'warning',
-          `Unexpected IGPI code "${igpiSub.raw}". Expected: I (line-level charge) or G (invoice-level charge)`,
-          igpiSub.span,
-        ),
-      )
-    }
-  }
-
   // PIND = F means all monetary values should be zero (info-level, not enforced yet)
   const pindSub = seg.elements[20]?.subElements[0]
   if (pindSub && pindSub.raw === 'F') {
-    // Just info for now
     pindSub.issues.push(
       issue('info', 'Free item: all monetary values should be zero for this line', pindSub.span),
     )
   }
 }
 
+function validateCldCodes(_seg: ParsedSegment): void {
+  // All CLD code list validation is handled by the generic validator
+}
+
 function validateVatcCode(seg: ParsedSegment): void {
-  // VATC is element index 1 in STL and VRS
+  // VATC is element index 1 in STL, VRS, and CST
   const vatcSub = seg.elements[1]?.subElements[0]
   if (!vatcSub || vatcSub.raw === '') return
 
-  const validCodes = ['S', 'Z', 'O']
-  if (!validCodes.includes(vatcSub.raw)) {
+  // 'A' (mixed) must not appear in trailer segments — the generic code list
+  // validator handles the full set, but we add a specific message for 'A'
+  if (vatcSub.raw === 'A') {
     vatcSub.issues.push(
       issue(
         'error',
-        `Invalid VAT category code "${vatcSub.raw}" in ${seg.tag}. Valid in trailers: S (Standard), Z (Zero-rated), O (Outside scope). Code A (mixed) should not appear in ${seg.tag}.`,
+        `VAT code 'A' (mixed) should not appear in ${seg.tag}. Mixed-rate items should be broken into their real rate components.`,
         vatcSub.span,
       ),
     )
