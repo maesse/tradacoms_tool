@@ -260,15 +260,13 @@ function getElementPreview(elIdx: number): string {
                 ><span class="select-none text-blue-500 dark:text-blue-400 font-bold">.</span
                 ><span class="tabular-nums">{{ sub.raw.slice(2, 4) }}</span
                 ><span class="select-none text-blue-500 dark:text-blue-400 font-bold">.</span
-                ><span class="tabular-nums">{{ sub.raw.slice(4, 6) }}</span
-              ></template
+                ><span class="tabular-nums">{{ sub.raw.slice(4, 6) }}</span></template
               ><template v-else-if="isTimeFormatted(sub)"
                 ><span class="tabular-nums">{{ sub.raw.slice(0, 2) }}</span
                 ><span class="select-none text-blue-500 dark:text-blue-400 font-bold">:</span
                 ><span class="tabular-nums">{{ sub.raw.slice(2, 4) }}</span
                 ><span class="select-none text-blue-500 dark:text-blue-400 font-bold">:</span
-                ><span class="tabular-nums">{{ sub.raw.slice(4, 6) }}</span
-              ></template
+                ><span class="tabular-nums">{{ sub.raw.slice(4, 6) }}</span></template
               ><template v-else-if="sub.raw">{{ sub.raw }}</template></span
             >
 
@@ -293,8 +291,7 @@ function getElementPreview(elIdx: number): string {
                 <!-- Element-level validation rule / calculation -->
                 <div
                   v-if="
-                    el.def?.description &&
-                    el.def.description.replace(/\.\s*$/, '') !== el.def.name
+                    el.def?.description && el.def.description.replace(/\.\s*$/, '') !== el.def.name
                   "
                   class="text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded px-2 py-1 leading-relaxed"
                 >
@@ -383,9 +380,7 @@ function getElementPreview(elIdx: number): string {
                 <!-- Code list: current value meaning -->
                 <div
                   v-if="
-                    sub.def?.codeList &&
-                    sub.raw &&
-                    sub.def.codeList.find((c) => c.code === sub.raw)
+                    sub.def?.codeList && sub.raw && sub.def.codeList.find((c) => c.code === sub.raw)
                   "
                   class="border-t pt-1.5 mt-1"
                 >

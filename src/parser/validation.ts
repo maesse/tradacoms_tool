@@ -1027,7 +1027,11 @@ function validateTypCodes(seg: ParsedSegment, messageType: string): void {
       ? '0740 (Original credit note), 0749 (Copy credit note)'
       : '0700 (Original invoice), 0709 (Copy invoice)'
     tcdeSub.issues.push(
-      issue('error', `Invalid transaction code "${tcdeSub.raw}". Valid BIC codes: ${desc}`, tcdeSub.span),
+      issue(
+        'error',
+        `Invalid transaction code "${tcdeSub.raw}". Valid BIC codes: ${desc}`,
+        tcdeSub.span,
+      ),
     )
   }
 }

@@ -306,25 +306,12 @@ const typSegment: SegmentDef = seg(
   'M',
   'Once',
   [
-    elem(
-      'TCDE',
-      'Transaction code',
-      'Code List 2: Transaction type for this file.',
-      'M',
-      '=',
-      [
-        sub(
-          0,
-          'Transaction code',
-          'Code List 2',
-          'M',
-          'F',
-          '9(4)',
-          '',
-          [...CL02_TCDE_INVOICE, ...CL02_TCDE_CREDIT],
-        ),
-      ],
-    ),
+    elem('TCDE', 'Transaction code', 'Code List 2: Transaction type for this file.', 'M', '=', [
+      sub(0, 'Transaction code', 'Code List 2', 'M', 'F', '9(4)', '', [
+        ...CL02_TCDE_INVOICE,
+        ...CL02_TCDE_CREDIT,
+      ]),
+    ]),
     elem('TTYP', 'Transaction type', 'Do not use: this field is redundant.', 'C', '+', [
       sub(0, 'Transaction type text', 'Redundant field – do not use', 'C', 'V', 'X(12)'),
     ]),
@@ -860,25 +847,15 @@ const ildSegment: SegmentDef = seg(
       '+',
       [sub(0, 'Extended line cost', 'In pounds, 4 implied decimal places', 'M', 'V', '9(10)V9(4)')],
     ),
-    elem(
-      'VATC',
-      'VAT Rate category code',
-      'Code List 12.',
-      'M',
-      '+',
-      [sub(0, 'VAT category code', 'Code List 12', 'M', 'F', 'X(1)', '', CL12_VATC_LINE)],
-    ),
+    elem('VATC', 'VAT Rate category code', 'Code List 12.', 'M', '+', [
+      sub(0, 'VAT category code', 'Code List 12', 'M', 'F', 'X(1)', '', CL12_VATC_LINE),
+    ]),
     elem('VATP', 'VAT Rate percentage', '', 'M', '+', [
       sub(0, 'VAT percentage', '3 integer + 3 decimal digits', 'M', 'V', '9(3)V9(3)'),
     ]),
-    elem(
-      'MIXI',
-      'Mixed VAT Rate product indicator',
-      'Only for mixed-rate items.',
-      'C',
-      '+',
-      [sub(0, 'Mixed-rate indicator', '', 'C', 'F', '9(1)', '', MIXI_CODES)],
-    ),
+    elem('MIXI', 'Mixed VAT Rate product indicator', 'Only for mixed-rate items.', 'C', '+', [
+      sub(0, 'Mixed-rate indicator', '', 'C', 'F', '9(1)', '', MIXI_CODES),
+    ]),
     elem('CRLI', 'Credit Line indicator', 'Do not use.', 'C', '+', [
       sub(0, 'Credit line indicator', '', 'C', 'V', 'X(4)'),
     ]),
@@ -937,22 +914,12 @@ const ildSegment: SegmentDef = seg(
     elem('SUBA', 'Subsidy amount', 'Do not use.', 'C', '+', [
       sub(0, 'Subsidy', '', 'C', 'V', '9(10)V9(4)'),
     ]),
-    elem(
-      'PIND',
-      'Special Price indicator',
-      'Code List 5.',
-      'C',
-      '+',
-      [sub(0, 'Price indicator code', 'Code List 5', 'C', 'V', 'X(4)', '', CL05_PIND)],
-    ),
-    elem(
-      'IGPI',
-      'Item Group identifier',
-      'Code List 10.',
-      'C',
-      '+',
-      [sub(0, 'Group identifier', 'Code List 10', 'C', 'V', 'X(4)', '', CL10_IGPI)],
-    ),
+    elem('PIND', 'Special Price indicator', 'Code List 5.', 'C', '+', [
+      sub(0, 'Price indicator code', 'Code List 5', 'C', 'V', 'X(4)', '', CL05_PIND),
+    ]),
+    elem('IGPI', 'Item Group identifier', 'Code List 10.', 'C', '+', [
+      sub(0, 'Group identifier', 'Code List 10', 'C', 'V', 'X(4)', '', CL10_IGPI),
+    ]),
     elem('CSDI', 'Cash settlement discount identifier', 'Do not use.', 'C', '+', [
       sub(0, 'Identifier', '', 'C', 'F', 'X(1)'),
     ]),
@@ -1482,7 +1449,14 @@ const cldSegment: SegmentDef = seg(
       sub(1, "Customer's item code", '', 'C', 'V', 'X(30)'),
     ]),
     elem('UNOR', 'Unit of ordering', '', 'C', '+', [
-      sub(0, 'Consumer units in traded unit', 'Number of consumer units per traded unit', 'C', 'V', '9(15)'),
+      sub(
+        0,
+        'Consumer units in traded unit',
+        'Number of consumer units per traded unit',
+        'C',
+        'V',
+        '9(15)',
+      ),
       sub(1, 'Ordering measure', 'Do not use', 'C', 'V', '9(10)V9(3)'),
       sub(2, 'Measure indicator', 'Do not use', 'C', 'V', 'X(6)'),
     ]),
@@ -1508,39 +1482,31 @@ const cldSegment: SegmentDef = seg(
       'Total line credit value after discount, before VAT.',
       'M',
       '+',
-      [sub(0, 'Extended line value', 'In pounds, 4 implied decimal places', 'M', 'V', '9(10)V9(4)')],
+      [
+        sub(
+          0,
+          'Extended line value',
+          'In pounds, 4 implied decimal places',
+          'M',
+          'V',
+          '9(10)V9(4)',
+        ),
+      ],
     ),
-    elem(
-      'VATC',
-      'VAT Rate category code',
-      'Code List 12.',
-      'M',
-      '+',
-      [sub(0, 'VAT category code', 'Code List 12', 'M', 'F', 'X(1)', '', CL12_VATC_LINE)],
-    ),
+    elem('VATC', 'VAT Rate category code', 'Code List 12.', 'M', '+', [
+      sub(0, 'VAT category code', 'Code List 12', 'M', 'F', 'X(1)', '', CL12_VATC_LINE),
+    ]),
     elem('VATP', 'VAT Rate percentage', '', 'M', '+', [
       sub(0, 'VAT percentage', '3 integer + 3 decimal digits', 'M', 'V', '9(3)V9(3)'),
     ]),
-    elem(
-      'CRRE',
-      'Reason for credit',
-      'Code List 13.',
-      'M',
-      '+',
-      [
-        sub(0, 'ANA credit reason code', 'Code List 13', 'C', 'F', 'X(2)', '', CL13_CRRE),
-        sub(1, "Trading partner's code", 'Do not use', 'C', 'V', 'X(2)'),
-        sub(2, 'Credit reason description', 'Do not use', 'C', 'V', 'X(40)'),
-      ],
-    ),
-    elem(
-      'MIXI',
-      'Mixed VAT Rate product indicator',
-      'Only for mixed-rate items.',
-      'C',
-      '+',
-      [sub(0, 'Mixed-rate indicator', '', 'C', 'F', '9(1)', '', MIXI_CODES)],
-    ),
+    elem('CRRE', 'Reason for credit', 'Code List 13.', 'M', '+', [
+      sub(0, 'ANA credit reason code', 'Code List 13', 'C', 'F', 'X(2)', '', CL13_CRRE),
+      sub(1, "Trading partner's code", 'Do not use', 'C', 'V', 'X(2)'),
+      sub(2, 'Credit reason description', 'Do not use', 'C', 'V', 'X(40)'),
+    ]),
+    elem('MIXI', 'Mixed VAT Rate product indicator', 'Only for mixed-rate items.', 'C', '+', [
+      sub(0, 'Mixed-rate indicator', '', 'C', 'F', '9(1)', '', MIXI_CODES),
+    ]),
     elem('DRLI', 'Debit Line indicator', 'Do not use.', 'C', '+', [
       sub(0, 'Debit line indicator', '', 'C', 'V', 'X(4)'),
     ]),
@@ -1561,19 +1527,23 @@ const cldSegment: SegmentDef = seg(
       'Unit credit value before line discount.',
       'C',
       '+',
-      [sub(0, 'Unit credit before discount', 'In pounds, 4 decimal places', 'C', 'V', '9(10)V9(4)')],
+      [
+        sub(
+          0,
+          'Unit credit before discount',
+          'In pounds, 4 decimal places',
+          'C',
+          'V',
+          '9(10)V9(4)',
+        ),
+      ],
     ),
     elem('CDSV', 'Credit discount value', 'Do not use.', 'C', '+', [
       sub(0, 'Credit discount value', '', 'C', 'V', '9(10)V9(4)'),
     ]),
-    elem(
-      'IGPI',
-      'Item Group identifier',
-      'Code List 10.',
-      'C',
-      '+',
-      [sub(0, 'Group identifier', 'Code List 10', 'C', 'V', 'X(4)', '', CL10_IGPI)],
-    ),
+    elem('IGPI', 'Item Group identifier', 'Code List 10.', 'C', '+', [
+      sub(0, 'Group identifier', 'Code List 10', 'C', 'V', 'X(4)', '', CL10_IGPI),
+    ]),
     elem(
       'SCRF',
       'Specification/Contract references',
@@ -1811,7 +1781,6 @@ export const cretlrMessageDef: MessageDef = {
   description: 'One occurrence at the end of the file. File-level control totals.',
   segments: [mhdSegment('CRETLR', 'Credit note file trailer'), totSegment, mtrSegment],
 }
-
 
 export const invfilMessageDef: MessageDef = {
   type: 'INVFIL',
